@@ -1,8 +1,7 @@
 "use client";
-import React, { useState } from "react";
-import { Layout, Menu, Button, theme, ConfigProvider } from "antd";
+import React from "react";
+import { Layout, Menu, Button, Space, Avatar, ConfigProvider } from "antd";
 import {
-  MenuFoldOutlined,
   MenuUnfoldOutlined,
   PictureOutlined,
   FileTextOutlined,
@@ -11,57 +10,25 @@ import {
   SafetyCertificateOutlined,
   FlagOutlined,
   DashboardOutlined,
-  HomeOutlined,
-  LogoutOutlined
+  LogoutOutlined,
+  GlobalOutlined,
+  UserOutlined
 } from "@ant-design/icons";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const { Header, Sider, Content } = Layout;
 
 export default function AdminLayout({ children }) {
-  const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
 
   const menuItems = [
-    {
-      key: "/admin",
-      icon: <DashboardOutlined />,
-      label: <Link href="/admin">Tổng quan</Link>,
-    },
-    {
-      key: "/admin/banners",
-      icon: <PictureOutlined />,
-      label: <Link href="/admin/banners">Banner Slider</Link>,
-    },
-    {
-      key: "/admin/news",
-      icon: <FileTextOutlined />,
-      label: <Link href="/admin/news">Tin tức hoạt động</Link>,
-    },
-    {
-      key: "/admin/history",
-      icon: <HistoryOutlined />,
-      label: <Link href="/admin/history">Lịch sử phát triển</Link>,
-    },
-    {
-      key: "/admin/capacity",
-      icon: <ThunderboltOutlined />,
-      label: <Link href="/admin/capacity">Năng lực hoạt động</Link>,
-    },
-    {
-      key: "/admin/quality",
-      icon: <SafetyCertificateOutlined />,
-      label: <Link href="/admin/quality">Quy trình chất lượng</Link>,
-    },
-    {
-      key: "/admin/goals",
-      icon: <FlagOutlined />,
-      label: <Link href="/admin/goals">Mục tiêu chiến lược</Link>,
-    },
+    { key: "/admin", icon: <DashboardOutlined />, label: "Tổng quan" },
+    { key: "/admin/banners", icon: <PictureOutlined />, label: "Banner Slider" },
+    { key: "/admin/news", icon: <FileTextOutlined />, label: "Tin tức hoạt động" },
+    { key: "/admin/history", icon: <HistoryOutlined />, label: "Lịch sử phát triển" },
+    { key: "/admin/capacity", icon: <ThunderboltOutlined />, label: "Năng lực hoạt động" },
+    { key: "/admin/quality", icon: <SafetyCertificateOutlined />, label: "Quy trình chất lượng" },
+    { key: "/admin/goals", icon: <FlagOutlined />, label: "Mục tiêu chiến lược" },
   ];
 
   return (
@@ -69,66 +36,82 @@ export default function AdminLayout({ children }) {
       theme={{
         token: {
           colorPrimary: "#0ea5e9",
-          borderRadius: 6,
-          fontSize: 13, // Smaller base font for compact feel
+          borderRadius: 8,
+          fontSize: 13,
         },
       }}
     >
-      <Layout className="min-h-screen">
-        <Sider trigger={null} collapsible collapsed={collapsed} theme="light" className="shadow-xl z-20" width={240}>
-          <div className="p-6 flex items-center gap-3 mb-4 border-b border-gray-50">
-             <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-lg object-cover" />
-             {!collapsed && (
-               <div className="flex flex-col">
-                 <span className="font-black text-[14px] leading-tight tracking-tighter">KHIÊN HÀ</span>
-                 <span className="text-[9px] font-bold text-primary uppercase tracking-widest">ADMIN</span>
-               </div>
-             )}
+      <Layout className="min-h-screen bg-[#f8fafc]">
+        <Sider 
+          width={240} 
+          theme="light" 
+          className="border-r border-gray-100 hidden lg:block sticky top-0 h-screen"
+        >
+          <div className="p-6 flex flex-col items-center justify-center border-b border-gray-50 bg-[#0f172a]">
+            <img src="/logo.png" alt="Khiên Hà" className="w-10 h-10 object-contain mb-3 brightness-0 invert" />
+            <div className="text-center">
+               <div className="text-white text-[11px] font-black uppercase tracking-widest leading-none">KHIÊN HÀ</div>
+               <div className="text-primary text-[9px] font-bold uppercase mt-1">ADMIN CONTROL</div>
+            </div>
           </div>
+          
           <Menu
             mode="inline"
             selectedKeys={[pathname]}
-            items={menuItems}
-            className="border-none px-2"
+            className="border-none mt-4 font-medium px-2"
+            items={menuItems.map(item => ({
+              ...item,
+              onClick: () => { window.location.href = item.key },
+              className: `rounded-xl mb-1 ${pathname === item.key ? '!bg-primary/5 !text-primary' : ''}`
+            }))}
           />
-          <div className="absolute bottom-6 left-0 w-full px-6">
+
+          <div className="absolute bottom-6 left-0 right-0 px-6">
              <Button 
-                type="text" 
-                danger 
-                icon={<LogoutOutlined />} 
-                block 
-                className="flex items-center justify-start h-10 font-bold text-xs"
+               block 
+               danger 
+               type="text"
+               icon={<LogoutOutlined />} 
+               className="h-9 rounded-xl text-[12px] font-bold flex items-center justify-center"
              >
-                {!collapsed && "Đăng xuất"}
+               Đăng xuất
              </Button>
           </div>
         </Sider>
+
         <Layout>
-          <Header style={{ padding: 0, background: colorBgContainer }} className="flex items-center justify-between px-6 border-b border-gray-100 h-16">
-            <Button
-              type="text"
-              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-              onClick={() => setCollapsed(!collapsed)}
-              style={{ fontSize: "16px", width: 48, height: 48 }}
-            />
-            <div className="flex items-center gap-4">
-               <Link href="/">
-                  <Button icon={<HomeOutlined />} size="small" className="text-xs font-bold">Xem Website</Button>
-               </Link>
-               <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-black text-primary">AD</div>
-            </div>
+          <Header className="bg-white px-6 h-14 flex items-center justify-between border-b border-gray-100 sticky top-0 z-50">
+            <Space>
+               <MenuUnfoldOutlined className="text-gray-400 cursor-pointer lg:hidden" />
+               <div className="lg:hidden px-2">
+                  <img src="/logo.png" className="h-6" />
+               </div>
+               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-2 hidden sm:block">Shipbuilding Management System</span>
+            </Space>
+            
+            <Space size="large">
+               <Button 
+                 icon={<GlobalOutlined />} 
+                 type="text" 
+                 className="text-[12px] font-bold hover:text-primary h-9 rounded-lg"
+                 onClick={() => window.open('/', '_blank')}
+               >
+                 Xem Website
+               </Button>
+               <div className="flex items-center gap-3 pl-4 border-l border-gray-100">
+                  <div className="text-right hidden sm:block">
+                     <div className="text-[11px] font-black leading-none">TRƯƠNG NCPT</div>
+                     <div className="text-[9px] font-bold text-primary uppercase mt-1">Administrator</div>
+                  </div>
+                  <Avatar icon={<UserOutlined />} className="bg-[#0f172a]" />
+               </div>
+            </Space>
           </Header>
-          <Content
-            style={{
-              margin: "20px 20px",
-              padding: 20,
-              minHeight: 280,
-              background: colorBgContainer,
-              borderRadius: 12,
-            }}
-            className="shadow-sm overflow-auto"
-          >
-            {children}
+
+          <Content className="p-6 overflow-auto">
+            <div className="max-w-7xl mx-auto">
+               {children}
+            </div>
           </Content>
         </Layout>
       </Layout>

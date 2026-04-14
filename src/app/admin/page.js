@@ -1,96 +1,131 @@
 "use client";
-import React from "react";
-import { Row, Col, Card, Statistic, List, Badge, Typography, Space } from "antd";
+import React, { useState, useEffect } from "react";
+import { Row, Col, Card, Statistic, Typography, Space, List, Tag, Table } from "antd";
 import { 
+  FileTextOutlined, 
+  PictureOutlined, 
   HistoryOutlined, 
   ThunderboltOutlined, 
-  SafetyCertificateOutlined, 
-  FlagOutlined,
-  EyeOutlined,
-  EditOutlined
+  DashboardOutlined,
+  CheckCircleOutlined
 } from "@ant-design/icons";
+import { getNews, getSiteContent } from "@/services/api";
 
 const { Title, Text } = Typography;
 
 export default function AdminDashboard() {
-  const stats = [
-    { title: "Lịch sử", value: 12, icon: <HistoryOutlined className="text-blue-500" /> },
-    { title: "Năng lực", value: 45, icon: <ThunderboltOutlined className="text-yellow-500" /> },
-    { title: "Quy trình", value: 8, icon: <SafetyCertificateOutlined className="text-green-500" /> },
-    { title: "Mục tiêu", value: 5, icon: <FlagOutlined className="text-red-500" /> },
-  ];
+  const [stats, setStats] = useState({
+    newsCount: 0,
+    bannerCount: 0,
+    capacityCount: 0,
+    historyCount: 0
+  });
+  const [news, setNews] = useState([]);
 
-  const recentActivities = [
-    { type: "Cập nhật", module: "Năng lực hoạt động", time: "2 giờ trước", user: "Admin" },
-    { type: "Thêm mới", module: "Lịch sử phát triển", time: "5 giờ trước", user: "Admin" },
-    { type: "Chỉnh sửa", module: "Mục tiêu chiến lược", time: "Hôm qua", user: "Manager" },
-  ];
+  useEffect(() => {
+    async function load() {
+      const newsData = await getNews();
+      const siteData = await getSiteContent();
+      
+      setStats({
+        newsCount: newsData?.length || 0,
+        bannerCount: siteData?.banners?.length || 0,
+        capacityCount: siteData?.capacity?.length || 0,
+        historyCount: siteData?.history?.length || 0
+      });
+      setNews((newsData || []).slice(0, 5));
+    }
+    load();
+  }, []);
 
   return (
-    <div>
-      <Title level={3}>Trang Quản Trị Hệ Thống</Title>
-      <Text type="secondary">Chào mừng bạn trở lại! Dưới đây là tóm tắt dữ liệu hiện tại của nhà máy.</Text>
-      
-      <Row gutter={[16, 16]} className="mt-8">
-        {stats.map((stat, i) => (
-          <Col xs={24} sm={12} lg={6} key={i}>
-            <Card bordered={false} className="shadow-sm hover:shadow-md transition-shadow">
-              <Statistic 
-                title={stat.title} 
-                value={stat.value} 
-                prefix={stat.icon} 
-                valueStyle={{ fontWeight: "bold" }}
-              />
-            </Card>
-          </Col>
-        ))}
-      </Row>
+    <div className="space-y-6">
+      <div className="mb-8">
+        <Title level={4} className="!m-0 flex items-center gap-2">
+           <DashboardOutlined className="text-primary" /> Tổng Quan Hệ Thống
+        </Title>
+        <Text type="secondary" className="text-xs">Theo dõi và quản lý toàn bộ dữ liệu của website Khiên Hà.</Text>
+      </div>
 
-      <Row gutter={[16, 16]} className="mt-8">
-        <Col span={16}>
-          <Card 
-            title="Quản lý 4 mục nội dung cốt lõi" 
-            bordered={false} 
-            className="shadow-sm"
-            extra={<Space><EyeOutlined /> <EditOutlined /></Space>}
-          >
-            <List
-              itemLayout="horizontal"
-              dataSource={[
-                { title: "Lịch sử phát triển nhà máy", status: "Đang hoạt động", color: "green" },
-                { title: "Năng lực hoạt động", status: "Đang hoạt động", color: "green" },
-                { title: "Quy trình quản lý chất lượng", status: "Bản nháp", color: "orange" },
-                { title: "Mục tiêu", status: "Đang hoạt động", color: "green" },
-              ]}
-              renderItem={(item) => (
-                <List.Item
-                  actions={[<a key="edit">Sửa</a>, <a key="view">Xem</a>]}
-                >
-                  <List.Item.Meta
-                    title={item.title}
-                    description={<Badge status="processing" color={item.color} text={item.status} />}
-                  />
-                </List.Item>
-              )}
+      <Row gutter={[16, 16]}>
+        <Col xs={24} sm={12} lg={6}>
+          <Card bordered={false} className="shadow-sm hover:shadow-md transition-shadow">
+            <Statistic 
+              title={<span className="text-[11px] font-bold uppercase text-gray-400">Tin tức hoạt động</span>}
+              value={stats.newsCount}
+              prefix={<FileTextOutlined className="text-blue-500 mr-2" />}
+              valueStyle={{ fontSize: '24px', fontWeight: '900' }}
             />
           </Card>
         </Col>
-        <Col span={8}>
-          <Card title="Hoạt động gần đây" bordered={false} className="shadow-sm">
-            <List
-              dataSource={recentActivities}
-              renderItem={(item) => (
-                <List.Item>
-                  <div className="flex flex-col gap-1">
-                    <Text strong>{item.type} {item.module}</Text>
-                    <Space split={<div className="w-1 h-1 rounded-full bg-gray-300" />}>
-                       <Text type="secondary" size="small">{item.time}</Text>
-                       <Text type="secondary" size="small">bởi {item.user}</Text>
-                    </Space>
-                  </div>
-                </List.Item>
-              )}
+        <Col xs={24} sm={12} lg={6}>
+          <Card bordered={false} className="shadow-sm hover:shadow-md transition-shadow">
+            <Statistic 
+              title={<span className="text-[11px] font-bold uppercase text-gray-400">Banner Slider</span>}
+              value={stats.bannerCount}
+              prefix={<PictureOutlined className="text-purple-500 mr-2" />}
+              valueStyle={{ fontSize: '24px', fontWeight: '900' }}
             />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card bordered={false} className="shadow-sm hover:shadow-md transition-shadow">
+            <Statistic 
+              title={<span className="text-[11px] font-bold uppercase text-gray-400">Năng lực cốt lõi</span>}
+              value={stats.capacityCount}
+              prefix={<ThunderboltOutlined className="text-orange-500 mr-2" />}
+              valueStyle={{ fontSize: '24px', fontWeight: '900' }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card bordered={false} className="shadow-sm hover:shadow-md transition-shadow">
+            <Statistic 
+              title={<span className="text-[11px] font-bold uppercase text-gray-400">Trạng thái MongoDB</span>}
+              value="Connected"
+              prefix={<CheckCircleOutlined className="text-green-500 mr-2" />}
+              valueStyle={{ fontSize: '18px', fontWeight: '900', color: '#10b981' }}
+            />
+          </Card>
+        </Col>
+      </Row>
+
+      <Row gutter={[16, 16]}>
+        <Col lg={16} xs={24}>
+          <Card 
+            title={<span className="text-xs font-black uppercase">Tin tức mới cập nhật</span>} 
+            bordered={false} 
+            className="shadow-sm"
+            extra={<a href="/admin/news" className="text-[11px] font-bold">Quản lý</a>}
+          >
+            <Table 
+              size="small"
+              pagination={false}
+              dataSource={news}
+              rowKey="id"
+              columns={[
+                { title: 'Tiêu đề', dataIndex: 'title', key: 'title', ellipsis: true },
+                { title: 'Ngày', dataIndex: 'date', key: 'date', width: 120 },
+                { title: 'Loại', dataIndex: 'category', key: 'category', render: (c) => <Tag color="blue" className="text-[10px]">{c}</Tag> }
+              ]}
+            />
+          </Card>
+        </Col>
+        <Col lg={8} xs={24}>
+          <Card 
+             title={<span className="text-xs font-black uppercase">Cột mốc lịch sử</span>} 
+             bordered={false} 
+             className="shadow-sm"
+          >
+             <List
+                size="small"
+                dataSource={Array.from({ length: stats.historyCount })}
+                renderItem={(_, i) => (
+                  <List.Item className="text-xs font-medium">
+                    <Space><HistoryOutlined className="text-gray-300" /> Bản ghi lịch sử #{i+1}</Space>
+                  </List.Item>
+                )}
+             />
           </Card>
         </Col>
       </Row>

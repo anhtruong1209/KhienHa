@@ -1,7 +1,7 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { siteContent } from "@/data/site-content";
+import { getSiteContent } from "@/services/api";
 import { ShieldCheck, History, Award, Globe, ArrowUpRight, Settings, Layers, Hammer } from "lucide-react";
 
 const getIcon = (iconName) => {
@@ -15,7 +15,19 @@ const getIcon = (iconName) => {
 };
 
 export function About() {
-  const metrics = siteContent.capacity;
+  const [metrics, setMetrics] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      const data = await getSiteContent();
+      if (data && data.capacity) {
+        setMetrics(data.capacity);
+      }
+      setLoading(false);
+    }
+    load();
+  }, []);
   return (
     <section id="about" className="section-padding bg-[#f8fafc]">
       <div className="container">

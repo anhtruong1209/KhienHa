@@ -1,13 +1,22 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Maximize2, X } from "lucide-react";
-import { siteContent } from "@/data/site-content";
-
-const images = siteContent.gallery;
+import { getSiteContent } from "@/services/api";
 
 export function Gallery() {
   const [selected, setSelected] = useState(null);
+  const [images, setImages] = useState([]);
+
+  useEffect(() => {
+    async function load() {
+      const data = await getSiteContent();
+      if (data && data.gallery) {
+        setImages(data.gallery);
+      }
+    }
+    load();
+  }, []);
 
   return (
     <section id="gallery" className="section-padding bg-white">

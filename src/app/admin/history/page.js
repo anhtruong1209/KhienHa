@@ -1,115 +1,125 @@
 "use client";
-import React, { useState } from "react";
-import { Table, Button, Space, Card, Typography, Modal, Form, Input, message, Tag } from "antd";
+import React, { useState, useEffect } from "react";
+import { Table, Button, Space, Card, Typography, Modal, Form, Input, message } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined } from "@ant-design/icons";
-
-import { siteContent } from "@/data/site-content";
+import { getSiteContent, updateSiteContent } from "@/services/api";
 
 const { Title, Text } = Typography;
 
 export default function HistoryManager() {
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
-  
-  // Seeding from shared data store
-  const [data, setData] = useState(siteContent.history.map(item => ({ ...item, status: "Active" })));
+  const [originalContent, setOriginalContent] = useState({});
+
+  const loadData = async () => {
+    setLoading(true);
+    const content = await getSiteContent();
+    if (content) {
+      setOriginalContent(content);
+      setData(content.history || []);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const syncToDB = async (currentData) => {
+    const updatedContent = { ...originalContent, history: currentData };
+    const success = await updateSiteContent(updatedContent);
+    if (success) {
+      message.success("Đã lưu thay đổi vào MongoDB");
+      loadData();
+    }
+  };
+
+  const handleDelete = (id) => {
+    Modal.confirm({
+      title: 'Xóa cột mốc này?',
+      okText: 'Xóa',
+      cancelText: 'Hủy',
+      onOk: () => {
+        const newData = data.filter(item => item.id !== id);
+        setData(newData);
+        syncToDB(newData);
+      }
+    });
+  };
+
+  const handleOk = async () => {
+    const values = await form.validateFields();
+    let newData;
+    if (values.id) {
+       newData = data.map(item => item.id === values.id ? { ...item, ...values } : item);
+    } else {
+       newData = [...data, { ...values, id: Date.now() }];
+    }
+    setData(newData);
+    await syncToDB(newData);
+    setIsModalOpen(false);
+  };
 
   const columns = [
     { title: "Năm", dataIndex: "year", key: "year", width: 100 },
     { title: "Tiêu đề", dataIndex: "title", key: "title", width: 250 },
     { title: "Nội dung", dataIndex: "content", key: "content" },
-    { 
-      title: "Trạng thái", 
-      dataIndex: "status", 
-      key: "status",
-      render: (status) => <Tag color={status === "Active" ? "green" : "orange"}>{status.toUpperCase()}</Tag>
-    },
     {
       title: "Thao tác",
       key: "action",
       width: 150,
       render: (_, record) => (
         <Space size="middle">
-          <Button type="text" icon={<EditOutlined />} onClick={() => handleEdit(record)} />
+          <Button type="text" icon={<EditOutlined />} onClick={() => { form.setFieldsValue(record); setIsModalOpen(true); }} />
           <Button type="text" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)} />
         </Space>
       ),
     },
   ];
 
-  const handleEdit = (record) => {
-    form.setFieldsValue(record);
-    setIsModalOpen(true);
-  };
-
-  const handleDelete = (id) => {
-    setData(data.filter(item => item.id !== id));
-    message.success("Đã xóa mục thành công");
-  };
-
-  const handleAdd = () => {
-    form.resetFields();
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    form.validateFields().then(values => {
-      if (values.id) {
-        setData(data.map(item => item.id === values.id ? { ...item, ...values } : item));
-        message.success("Cập nhật thành công");
-      } else {
-        setData([...data, { ...values, id: Date.now(), status: "Active" }]);
-        message.success("Thêm mới thành công");
-      }
-      setIsModalOpen(false);
-    });
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between mb-6">
         <Space direction="vertical">
           <Title level={4} className="!m-0 flex items-center gap-2">
-             <HistoryOutlined className="text-primary" /> Quản Lý Lịch Sử Phát Triển Nhà Máy
+             <HistoryOutlined className="text-primary" /> Quản Lý Lịch Sử (Live persistence)
           </Title>
-          <Text type="secondary">Cập nhật các cột mốc lịch sử phát triển của nhà máy Khiên Hà.</Text>
+          <Text type="secondary" className="text-xs">Dữ liệu được lưu trữ chuyên nghiệp trên Cloud.</Text>
         </Space>
         <Button 
            type="primary" 
            icon={<PlusOutlined />} 
-           onClick={handleAdd}
-           className="h-10 rounded-lg"
+           onClick={() => { form.resetFields(); setIsModalOpen(true); }}
+           className="h-10 rounded-lg text-xs"
         >
-          Thêm cột mốc mới
+          Thêm cột mốc
         </Button>
       </div>
 
       <Card bordered={false} className="shadow-sm">
-        <Table columns={columns} dataSource={data} rowKey="id" />
+        <Table columns={columns} dataSource={data} rowKey="id" loading={loading} size="small" />
       </Card>
 
       <Modal
-        title={form.getFieldValue("id") ? "Chỉnh sửa cột mốc" : "Thêm cột mốc lịch sử"}
+        title={form.getFieldValue("id") ? "Chỉnh sửa cột mốc" : "Thêm cột mốc mới"}
         open={isModalOpen}
         onOk={handleOk}
         onCancel={() => setIsModalOpen(false)}
         okText="Lưu lại"
         cancelText="Hủy"
-        width={600}
       >
         <Form form={form} layout="vertical" className="mt-4">
           <Form.Item name="id" hidden><Input /></Form.Item>
-          <Form.Item name="year" label="Năm mốc thời gian" rules={[{ required: true }]}>
-             <Input placeholder="Vd: 2023" />
+          <Form.Item name="year" label="Năm" rules={[{ required: true }]}>
+             <Input placeholder="Vd: 2024" />
           </Form.Item>
-          <Form.Item name="title" label="Tiêu đề bài viết" rules={[{ required: true }]}>
-             <Input placeholder="Nhập tiêu đề ngắn gọn..." />
+          <Form.Item name="title" label="Tiêu đề" rules={[{ required: true }]}>
+             <Input />
           </Form.Item>
-          <Form.Item name="content" label="Nội dung chi tiết" rules={[{ required: true }]}>
-             <Input.TextArea rows={4} placeholder="Nhập nội dung mô tả..." />
-          </Form.Item>
-          <Form.Item name="status" label="Trạng thái" initialValue="Active">
-             <Tag.CheckableTag checked>Hiển thị trên website</Tag.CheckableTag>
+          <Form.Item name="content" label="Nội dung" rules={[{ required: true }]}>
+             <Input.TextArea rows={4} />
           </Form.Item>
         </Form>
       </Modal>

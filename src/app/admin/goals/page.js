@@ -1,74 +1,89 @@
 "use client";
-import React, { useState } from "react";
-import { Table, Button, Space, Card, Typography, Modal, Form, Input, message, Tag } from "antd";
+import React, { useState, useEffect } from "react";
+import { Table, Button, Space, Card, Typography, Modal, Form, Input, message } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined, FlagOutlined } from "@ant-design/icons";
-import { siteContent } from "@/data/site-content";
+import { getSiteContent, updateSiteContent } from "@/services/api";
 
 const { Title, Text } = Typography;
 
 export default function GoalsManager() {
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
-  
-  const [data, setData] = useState(siteContent.goals.map(g => ({
-    ...g,
-    type: g.title.includes("Tầm nhìn") ? "Dài hạn" : "Sứ mệnh",
-    status: "Active"
-  })));
+  const [originalContent, setOriginalContent] = useState({});
+
+  const loadData = async () => {
+    setLoading(true);
+    const content = await getSiteContent();
+    if (content) {
+      setOriginalContent(content);
+      setData(content.goals || []);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const syncToDB = async (currentData) => {
+    const updatedContent = { ...originalContent, goals: currentData };
+    const success = await updateSiteContent(updatedContent);
+    if (success) {
+      message.success("Đã đồng bộ Cloud");
+      loadData();
+    }
+  };
+
+  const handleDelete = (id) => {
+    Modal.confirm({
+      title: 'Xóa mục tiêu?',
+      onOk: () => {
+        const newData = data.filter(item => item.id !== id);
+        setData(newData);
+        syncToDB(newData);
+      }
+    });
+  };
+
+  const handleOk = async () => {
+    const values = await form.validateFields();
+    let newData;
+    if (values.id) {
+       newData = data.map(item => item.id === values.id ? { ...item, ...values } : item);
+    } else {
+       newData = [...data, { ...values, id: Date.now() }];
+    }
+    setData(newData);
+    await syncToDB(newData);
+    setIsModalOpen(false);
+  };
 
   const columns = [
-    { 
-      title: "Loại mục tiêu", 
-      dataIndex: "type", 
-      key: "type", 
-      width: 150,
-      render: (type) => <Tag color={type === "Dài hạn" ? "purple" : "blue"}>{type}</Tag>
-    },
-    { title: "Nội dung chiến lược", dataIndex: "content", key: "content" },
+    { title: "Tên mục tiêu", dataIndex: "title", key: "title", width: 200 },
+    { title: "Nội dung chi tiết", dataIndex: "content", key: "content" },
     {
       title: "Thao tác",
       key: "action",
       width: 150,
       render: (_, record) => (
         <Space size="middle">
-          <Button type="text" icon={<EditOutlined />} onClick={() => handleEdit(record)} />
+          <Button type="text" icon={<EditOutlined />} onClick={() => { form.setFieldsValue(record); setIsModalOpen(true); }} />
           <Button type="text" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)} />
         </Space>
       ),
     },
   ];
 
-  const handleEdit = (record) => {
-    form.setFieldsValue(record);
-    setIsModalOpen(true);
-  };
-
-  const handleDelete = (id) => {
-    setData(data.filter(item => item.id !== id));
-    message.success("Đã xóa mục tiêu");
-  };
-
-  const handleOk = () => {
-    form.validateFields().then(values => {
-      if (values.id) {
-        setData(data.map(item => item.id === values.id ? { ...item, ...values } : item));
-        message.success("Cập nhật thành công");
-      } else {
-        setData([...data, { ...values, id: Date.now(), status: "Active" }]);
-        message.success("Thêm mới thành công");
-      }
-      setIsModalOpen(false);
-    });
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between mb-6">
         <Space direction="vertical">
           <Title level={4} className="!m-0 flex items-center gap-2">
-             <FlagOutlined className="text-primary" /> Quản lý Mục tiêu chiến lược
+             <FlagOutlined className="text-primary" /> Mục Tiêu Chiến Lược
           </Title>
-          <Text type="secondary" className="text-xs">Quản lý các mục tiêu và kế hoạch phát triển chiến lược của công ty.</Text>
+          <Text type="secondary" className="text-xs">Quản lý định hướng phát triển của Khiên Hà.</Text>
         </Space>
         <Button 
            type="primary" 
@@ -81,24 +96,23 @@ export default function GoalsManager() {
       </div>
 
       <Card bordered={false} className="shadow-sm">
-        <Table columns={columns} dataSource={data} rowKey="id" size="small" />
+        <Table columns={columns} dataSource={data} rowKey="id" size="small" loading={loading} />
       </Card>
 
       <Modal
-        title="Thông tin mục tiêu chiến lược"
+        title="Thông tin mục tiêu"
         open={isModalOpen}
         onOk={handleOk}
         onCancel={() => setIsModalOpen(false)}
         okText="Lưu lại"
-        cancelText="Hủy"
       >
         <Form form={form} layout="vertical" className="mt-4">
           <Form.Item name="id" hidden><Input /></Form.Item>
-          <Form.Item name="type" label="Loại mục tiêu" initialValue="Dài hạn">
-             <Input placeholder="Vd: Ngắn hạn, Dài hạn, Sứ mệnh..." />
+          <Form.Item name="title" label="Tiêu đề (Vd: Tầm nhìn 2030)" rules={[{ required: true }]}>
+             <Input />
           </Form.Item>
-          <Form.Item name="content" label="Nội dung chi tiết" rules={[{ required: true }]}>
-             <Input.TextArea rows={4} placeholder="Nhập nội dung chiến lược..." />
+          <Form.Item name="content" label="Nội dung" rules={[{ required: true }]}>
+             <Input.TextArea rows={4} />
           </Form.Item>
         </Form>
       </Modal>

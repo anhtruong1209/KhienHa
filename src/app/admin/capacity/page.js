@@ -1,21 +1,74 @@
 "use client";
-import React, { useState } from "react";
-import { Table, Button, Space, Card, Typography, Modal, Form, Input, message, Tag } from "antd";
+import React, { useState, useEffect } from "react";
+import { Table, Button, Space, Card, Typography, Modal, Form, Input, message, Upload, Image } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined, ThunderboltOutlined } from "@ant-design/icons";
-import { siteContent } from "@/data/site-content";
+import { getSiteContent, updateSiteContent } from "@/services/api";
 
 const { Title, Text } = Typography;
 
 export default function CapacityManager() {
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
-  
-  const [data, setData] = useState(siteContent.capacity.map(item => ({ 
-    ...item, 
-    value: item.detail, 
-    category: "Chung",
-    status: "Active" 
-  })));
+  const [imageUrl, setImageUrl] = useState("");
+  const [originalContent, setOriginalContent] = useState({});
+
+  const loadData = async () => {
+    setLoading(true);
+    const content = await getSiteContent();
+    if (content) {
+      setOriginalContent(content);
+      setData(content.capacity || []);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const handleUpload = (info) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImageUrl(e.target.result);
+      form.setFieldsValue({ image: e.target.result });
+    };
+    reader.readAsDataURL(info.file.originFileObj);
+  };
+
+  const syncToDB = async (currentData) => {
+    const updatedContent = { ...originalContent, capacity: currentData };
+    const success = await updateSiteContent(updatedContent);
+    if (success) {
+      message.success("Đã lưu vào Cloud");
+      loadData();
+    }
+  };
+
+  const handleDelete = (id) => {
+    Modal.confirm({
+      title: 'Xóa năng lực này?',
+      onOk: () => {
+        const newData = data.filter(item => item.id !== id);
+        setData(newData);
+        syncToDB(newData);
+      }
+    });
+  };
+
+  const handleOk = async () => {
+    const values = await form.validateFields();
+    let newData;
+    if (values.id) {
+       newData = data.map(item => item.id === values.id ? { ...item, ...values } : item);
+    } else {
+       newData = [...data, { ...values, id: Date.now() }];
+    }
+    setData(newData);
+    await syncToDB(newData);
+    setIsModalOpen(false);
+  };
 
   const columns = [
     { 
@@ -23,76 +76,57 @@ export default function CapacityManager() {
       dataIndex: "image", 
       key: "image", 
       width: 100,
-      render: (img) => <img src={img} className="w-12 h-12 rounded-lg object-cover shadow-sm" />
+      render: (img) => <Image src={img} width={60} className="rounded-lg object-cover h-10" />
     },
     { title: "Phân loại", dataIndex: "category", key: "category", width: 120 },
-    { title: "Năng lực / Thiết bị", dataIndex: "title", key: "title", width: 220 },
-    { title: "Thông số chi tiết", dataIndex: "detail", key: "detail", ellipsis: true },
+    { title: "Tiêu đề", dataIndex: "title", key: "title", width: 220 },
+    { title: "Chi tiết", dataIndex: "detail", key: "detail", ellipsis: true },
     {
       title: "Thao tác",
       key: "action",
       width: 120,
       render: (_, record) => (
         <Space size="middle">
-          <Button type="text" icon={<EditOutlined />} onClick={() => handleEdit(record)} />
+          <Button type="text" icon={<EditOutlined />} onClick={() => { 
+            form.setFieldsValue(record); 
+            setImageUrl(record.image);
+            setIsModalOpen(true); 
+          }} />
           <Button type="text" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)} />
         </Space>
       ),
     },
   ];
 
-  const handleEdit = (record) => {
-    form.setFieldsValue(record);
-    setIsModalOpen(true);
-  };
-
-  const handleDelete = (id) => {
-    setData(data.filter(item => item.id !== id));
-    message.success("Đã xóa mục thành công");
-  };
-
-  const handleOk = () => {
-    form.validateFields().then(values => {
-      if (values.id) {
-        setData(data.map(item => item.id === values.id ? { ...item, ...values } : item));
-        message.success("Cập nhật thành công");
-      } else {
-        setData([...data, { ...values, id: Date.now(), status: "Active" }]);
-        message.success("Thêm mới thành công");
-      }
-      setIsModalOpen(false);
-    });
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between mb-6">
         <Space direction="vertical">
           <Title level={4} className="!m-0 flex items-center gap-2">
-             <ThunderboltOutlined className="text-primary" /> Quản lý Năng lực Hoạt động
+             <ThunderboltOutlined className="text-primary" /> Quản lý Năng lực (Hỗ trợ Upload)
           </Title>
-          <Text type="secondary" className="text-xs">Quản lý cơ sở vật chất, nhân sự và trang thiết bị đóng tàu.</Text>
+          <Text type="secondary" className="text-xs">Chỉnh sửa nội dung và tải ảnh thực tế lên hệ thống.</Text>
         </Space>
         <Button 
            type="primary" 
            icon={<PlusOutlined />} 
-           onClick={() => { form.resetFields(); setIsModalOpen(true); }}
+           onClick={() => { form.resetFields(); setImageUrl(""); setIsModalOpen(true); }}
            className="h-10 rounded-lg text-xs"
         >
-          Thêm năng lực mới
+          Thêm năng lực
         </Button>
       </div>
 
       <Card bordered={false} className="shadow-sm">
-        <Table columns={columns} dataSource={data} rowKey="id" size="small" />
+        <Table columns={columns} dataSource={data} rowKey="id" size="small" loading={loading} />
       </Card>
 
       <Modal
-        title="Thông tin năng lực hoạt động"
+        title={form.getFieldValue("id") ? "Chỉnh sửa năng lực" : "Thêm mới năng lực"}
         open={isModalOpen}
         onOk={handleOk}
         onCancel={() => setIsModalOpen(false)}
-        okText="Lưu lại"
+        okText="Lưu dữ liệu"
         cancelText="Hủy"
         width={700}
       >
@@ -102,18 +136,32 @@ export default function CapacityManager() {
             <Form.Item name="category" label="Phân loại" rules={[{ required: true }]}>
                <Input placeholder="Vd: Con người, Hạ tầng..." />
             </Form.Item>
-            <Form.Item name="title" label="Tiêu đề năng lực" rules={[{ required: true }]}>
-               <Input placeholder="Vd: Đội ngũ nhân sự" />
+            <Form.Item name="title" label="Tiêu đề" rules={[{ required: true }]}>
+               <Input />
             </Form.Item>
           </div>
-          <Form.Item name="image" label="URL Hình ảnh trực tiếp" rules={[{ required: true }]}>
-             <Input placeholder="https://khienha.vn/uploads/..." />
+          <Form.Item label="Tải ảnh minh họa">
+             <Upload 
+                listType="picture-card" 
+                maxCount={1} 
+                beforeUpload={() => false} 
+                onChange={handleUpload}
+                showUploadList={false}
+             >
+               {imageUrl ? <img src={imageUrl} alt="preview" style={{ width: '100%' }} /> : (
+                 <div className="flex flex-col items-center">
+                   <PlusOutlined />
+                   <div className="mt-2 text-xs">Tải ảnh</div>
+                 </div>
+               )}
+             </Upload>
           </Form.Item>
-          <Form.Item name="detail" label="Mô tả chi tiết" rules={[{ required: true }]}>
-             <Input.TextArea rows={6} placeholder="Nhập nội dung mô tả chi tiết năng lực..." />
+          <Form.Item name="image" hidden><Input /></Form.Item>
+          <Form.Item name="detail" label="Mô tả kỹ thuật chi tiết" rules={[{ required: true }]}>
+             <Input.TextArea rows={6} />
           </Form.Item>
-          <Form.Item name="icon" label="Tên Icon (Lucide)" initialValue="Building2">
-             <Input placeholder="Users, Building2, Cpu, Wind..." />
+          <Form.Item name="icon" label="Tên Icon (Users, Building2, Cpu, Wind)" initialValue="Building2">
+             <Input />
           </Form.Item>
         </Form>
       </Modal>

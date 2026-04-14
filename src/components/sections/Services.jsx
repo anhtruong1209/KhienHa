@@ -1,8 +1,8 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Users, Building2, Cpu, Wind, ChevronRight } from "lucide-react";
-import { siteContent } from "@/data/site-content";
+import { getSiteContent } from "@/services/api";
 
 const getIcon = (iconName) => {
   switch(iconName) {
@@ -15,7 +15,17 @@ const getIcon = (iconName) => {
 };
 
 export function Services() {
-  const capacities = siteContent.capacity;
+  const [capacities, setCapacities] = useState([]);
+
+  useEffect(() => {
+    async function load() {
+      const data = await getSiteContent();
+      if (data && data.capacity) {
+        setCapacities(data.capacity);
+      }
+    }
+    load();
+  }, []);
 
   return (
     <section id="services" className="section-padding bg-[#f4f7fa]">

@@ -1,59 +1,77 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-import { Ship, Settings, Layers, Hammer, ChevronRight } from "lucide-react";
+import { Users, Building2, Cpu, Wind, ChevronRight } from "lucide-react";
 import { siteContent } from "@/data/site-content";
 
 const getIcon = (iconName) => {
   switch(iconName) {
-    case 'Ship': return <Ship className="w-8 h-8" />;
-    case 'Settings': return <Settings className="w-8 h-8" />;
-    case 'Layers': return <Layers className="w-8 h-8" />;
-    case 'Hammer': return <Hammer className="w-8 h-8" />;
-    default: return <Ship className="w-8 h-8" />;
+    case 'Users': return <Users className="w-8 h-8" />;
+    case 'Building2': return <Building2 className="w-8 h-8" />;
+    case 'Cpu': return <Cpu className="w-8 h-8" />;
+    case 'Wind': return <Wind className="w-8 h-8" />;
+    default: return <Building2 className="w-8 h-8" />;
   }
 };
 
 export function Services() {
-  const services = siteContent.capacity;
+  const capacities = siteContent.capacity;
 
   return (
     <section id="services" className="section-padding bg-[#f4f7fa]">
       <div className="container">
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
           <div className="max-w-xl">
+            <div className="flex items-center gap-2 mb-6">
+               <span className="w-8 h-[2px] bg-primary" />
+               <span className="text-sm font-bold uppercase tracking-widest text-primary">Năng lực hoạt động</span>
+            </div>
             <h3 className="text-4xl md:text-5xl font-black text-[#0f172a] mb-6">
-              Giải Pháp Hàng Hải <br />
-              <span className="text-primary italic">Toàn Diện</span>
+              Sức Mạnh <br />
+              <span className="text-primary italic">Nội Lực Toàn Diện</span>
             </h3>
             <p className="text-base text-foreground/50 font-medium">
-              Chúng tôi cung cấp hệ sinh thái dịch vụ từ thiết kế đến hạ thủy, đảm bảo tiến độ và chất lượng quốc tế.
+              Sự kết hợp hoàn hảo giữa con người dày dặn kinh nghiệm và hệ thống cơ sở hạ tầng hiện đại bậc nhất.
             </p>
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {services.map((s, i) => (
+        <div className="grid md:grid-cols-2 gap-8">
+          {capacities.map((item, i) => (
             <motion.div
-              key={s.id}
-              initial={{ opacity: 0, y: 20 }}
+              key={item.id}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="group bg-white p-8 rounded-[2.5rem] border border-border hover:border-primary/20 hover:shadow-2xl transition-all"
+              className="group flex flex-col lg:flex-row bg-white rounded-[2.5rem] overflow-hidden border border-border hover:border-primary/20 hover:shadow-2xl transition-all"
             >
-              <div className="w-16 h-16 rounded-2xl bg-primary/5 text-primary flex items-center justify-center mb-8 group-hover:bg-primary group-hover:text-white transition-all">
-                {getIcon(s.icon)}
+              <div className="lg:w-2/5 relative h-64 lg:h-auto overflow-hidden">
+                <img 
+                  src={item.image} 
+                  alt={item.title} 
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent" />
               </div>
-              <h4 className="text-xl font-bold text-[#0f172a] mb-4 group-hover:text-primary transition-colors">
-                {s.title}
-              </h4>
-              <p className="text-sm text-foreground/40 font-medium leading-relaxed mb-8">
-                {s.detail}
-              </p>
-              <button className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-[#0f172a] hover:text-primary transition-all">
-                Xem chi tiết <ChevronRight className="w-4 h-4" />
-              </button>
+              
+              <div className="lg:w-3/5 p-8 flex flex-col justify-center">
+                <div className="p-3 w-fit rounded-xl bg-primary/5 text-primary mb-6 group-hover:bg-primary group-hover:text-white transition-all">
+                  {getIcon(item.icon)}
+                </div>
+                <div className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-2">{item.category}</div>
+                <h4 className="text-2xl font-black text-[#0f172a] mb-4 group-hover:text-primary transition-colors">
+                  {item.title}
+                </h4>
+                <p className="text-sm text-foreground/40 font-medium leading-relaxed mb-8 italic">
+                  "{item.detail}"
+                </p>
+                <div className="mt-auto">
+                   <button className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#0f172a] hover:text-primary transition-all">
+                      Xem hồ sơ kỹ thuật <ChevronRight className="w-4 h-4" />
+                   </button>
+                </div>
+              </div>
             </motion.div>
           ))}
         </div>

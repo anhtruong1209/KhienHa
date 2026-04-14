@@ -6,10 +6,38 @@ export const siteContent = {
     { id: 4, year: "2021", title: "Nâng tầm", content: "Chứng nhận năng lực đóng mới tàu đến 25,000 DWT." }
   ],
   capacity: [
-    { id: 1, title: "Đóng mới tàu nội địa", detail: "Trọng tải lên đến 5,000 DWT", icon: "Ship" },
-    { id: 2, title: "Sửa chữa tàu biển", detail: "Lên đà sửa chữa hệ thống máy, vỏ tàu 10,000 DWT", icon: "Settings" },
-    { id: 3, title: "Tàu sà lan chuyên tuyến", detail: "Phục vụ vận tải khoáng sản và container", icon: "Layers" },
-    { id: 4, title: "Cơ khí hàng hải", detail: "Gia công kết cấu thép, phụ tùng tàu thủy", icon: "Hammer" }
+    { 
+      id: 1, 
+      category: "Con người",
+      title: "Đội ngũ nhân sự chuyên nghiệp", 
+      detail: "Hơn 20 năm tích lũy, đội ngũ kỹ thuật năng động, nhiệt huyết, luôn cập nhật thành tựu khoa học mới nhất. Công nhân dày dặn kinh nghiệm, ý thức kỷ luật cao.",
+      icon: "Users",
+      image: "https://khienha.vn/uploads/anh/233516468994642.jpg"
+    },
+    { 
+      id: 2, 
+      category: "Hạ tầng",
+      title: "Cơ sở hạ tầng quy mô", 
+      detail: "Diện tích trên 5ha, nhà xưởng 4.500m2. Hệ thống đường triền cứng 300m, túi khí hạ thủy tàu đến 25,000 DWT. Khả năng sửa chữa 10 tàu cùng lúc.",
+      icon: "Building2",
+      image: "https://khienha.vn/uploads/anh/367316468994953.jpg"
+    },
+    { 
+      id: 3, 
+      category: "Thiết bị",
+      title: "Trang thiết bị hiện đại", 
+      detail: "Dầm cổng trục 200 tấn, 100 tấn, dàn cẩu trục 60T, 30T. Hệ thống cắt CNC hiện đại, máy tiện, máy lốc tôn thủy lực phục vụ đóng mới chính xác.",
+      icon: "Cpu",
+      image: "https://khienha.vn/uploads/anh/299816468995344.jpg"
+    },
+    { 
+      id: 4, 
+      category: "Công nghệ",
+      title: "Hệ thống phun sơn & Bắn cát", 
+      detail: "Hệ thống khí nén khép kín, 8 súng bắn hạt mài tự động công suất lớn. Đội ngũ bắn cát, phun sơn chuyên nghiệp, đảm bảo tiến độ và bề mặt chuẩn quốc tế.",
+      icon: "Wind",
+      image: "https://khienha.vn/uploads/anh/639616469009097.jpg"
+    }
   ],
   quality: {
     title: "Quy trình quản lý chất lượng",

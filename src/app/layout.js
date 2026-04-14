@@ -1,14 +1,10 @@
-import { Inter, Outfit } from "next/font/google";
+import { Be_Vietnam_Pro } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin", "vietnamese"],
-});
-
-const outfit = Outfit({
-  variable: "--font-outfit",
-  subsets: ["latin", "vietnamese"],
+const beVietnam = Be_Vietnam_Pro({
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  subsets: ["vietnamese", "latin"],
+  variable: "--font-be-vietnam",
 });
 
 export const metadata = {
@@ -19,8 +15,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="vi" className="dark scroll-smooth">
-      <body className={`${inter.variable} ${outfit.variable} font-sans antialiased bg-background text-foreground`}>
+    <html lang="vi" className="scroll-smooth">
+      <body className={`${beVietnam.variable} font-sans antialiased bg-background text-foreground`}>
         {children}
       </body>
     </html>

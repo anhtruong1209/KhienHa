@@ -1,65 +1,59 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-import { Ship, Filter, Settings, Hammer, Zap, HardHat } from "lucide-react";
+import { Ship, Settings, Layers, Hammer, ChevronRight } from "lucide-react";
+import { siteContent } from "@/data/site-content";
 
-const services = [
-  {
-    title: "Đóng mới tàu nội địa",
-    desc: "Thiết kế và thi công các loại tàu chở hàng, tàu vận tải chạy nội địa.",
-    icon: <Ship className="w-10 h-10" />,
-    size: "col-span-2 row-span-2",
-  },
-  {
-    title: "Sửa chữa tàu biển",
-    desc: "Dịch vụ bảo dưỡng, lên đà và sửa chữa tàu biển chuyên nghiệp.",
-    icon: <Settings className="w-10 h-10" />,
-    size: "col-span-1 row-span-2",
-  },
-  {
-    title: "Tàu chuyên tuyến",
-    desc: "Đóng tàu vận tải quốc tế vượt đại dương.",
-    icon: <Filter className="w-10 h-10" />,
-    size: "col-span-1 row-span-1",
-  },
-  {
-    title: "Sà lan biển",
-    desc: "Sản xuất sà lan chất lượng cao, bền bỉ.",
-    icon: <Hammer className="w-10 h-10" />,
-    size: "col-span-1 row-span-1",
-  },
-  {
-    title: "Cơ khí hàng hải",
-    desc: "Gia công các thiết bị cơ khí chuyên dụng cho ngành tàu thủy.",
-    icon: <HardHat className="w-10 h-10" />,
-    size: "col-span-2 row-span-1",
+const getIcon = (iconName) => {
+  switch(iconName) {
+    case 'Ship': return <Ship className="w-8 h-8" />;
+    case 'Settings': return <Settings className="w-8 h-8" />;
+    case 'Layers': return <Layers className="w-8 h-8" />;
+    case 'Hammer': return <Hammer className="w-8 h-8" />;
+    default: return <Ship className="w-8 h-8" />;
   }
-];
+};
 
 export function Services() {
+  const services = siteContent.capacity;
+
   return (
-    <section id="services" className="py-24 bg-muted/30">
-      <div className="container px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-sm font-semibold text-primary uppercase tracking-[0.2em] mb-4">Năng lực hoạt động</h2>
-          <h3 className="text-4xl font-bold font-heading">Lĩnh Vực Chuyên Môn</h3>
+    <section id="services" className="section-padding bg-[#f4f7fa]">
+      <div className="container">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+          <div className="max-w-xl">
+            <h3 className="text-4xl md:text-5xl font-black text-[#0f172a] mb-6">
+              Giải Pháp Hàng Hải <br />
+              <span className="text-primary italic">Toàn Diện</span>
+            </h3>
+            <p className="text-base text-foreground/50 font-medium">
+              Chúng tôi cung cấp hệ sinh thái dịch vụ từ thiết kế đến hạ thủy, đảm bảo tiến độ và chất lượng quốc tế.
+            </p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 h-auto md:h-[600px]">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {services.map((s, i) => (
             <motion.div
-              key={i}
-              whileHover={{ y: -5 }}
-              className={`${s.size} group relative overflow-hidden glass-card p-8 flex flex-col justify-end transition-all hover:bg-white/5 border-white/5`}
+              key={s.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="group bg-white p-8 rounded-[2.5rem] border border-border hover:border-primary/20 hover:shadow-2xl transition-all"
             >
-              <div className="absolute top-8 right-8 text-primary/40 group-hover:text-primary transition-colors">
-                {s.icon}
+              <div className="w-16 h-16 rounded-2xl bg-primary/5 text-primary flex items-center justify-center mb-8 group-hover:bg-primary group-hover:text-white transition-all">
+                {getIcon(s.icon)}
               </div>
-              <div className="relative z-10">
-                <h4 className="text-2xl font-bold mb-3">{s.title}</h4>
-                <p className="text-foreground/60 leading-relaxed">{s.desc}</p>
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 pointer-events-none" />
+              <h4 className="text-xl font-bold text-[#0f172a] mb-4 group-hover:text-primary transition-colors">
+                {s.title}
+              </h4>
+              <p className="text-sm text-foreground/40 font-medium leading-relaxed mb-8">
+                {s.detail}
+              </p>
+              <button className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-[#0f172a] hover:text-primary transition-all">
+                Xem chi tiết <ChevronRight className="w-4 h-4" />
+              </button>
             </motion.div>
           ))}
         </div>

@@ -1,83 +1,90 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-import { ShieldCheck, History, Award, Globe } from "lucide-react";
+import { siteContent } from "@/data/site-content";
+import { ShieldCheck, History, Award, Globe, ArrowUpRight, Settings, Layers, Hammer } from "lucide-react";
 
-const features = [
-  {
-    icon: <History className="w-8 h-8 text-primary" />,
-    title: "Di sản 22 năm",
-    description: "Xây dựng niềm tin từ năm 2002 với hàng trăm dự án thành công."
-  },
-  {
-    icon: <ShieldCheck className="w-8 h-8 text-primary" />,
-    title: "Chứng nhận năng lực",
-    description: "Được Cục Đăng Kiểm Việt Nam đánh giá và cấp giấy chứng nhận năng lực."
-  },
-  {
-    icon: <Award className="w-8 h-8 text-primary" />,
-    title: "Chất lượng hàng đầu",
-    description: "Top các công ty đóng tàu tư nhân hàng đầu Việt Nam hiện nay."
-  },
-  {
-    icon: <Globe className="w-8 h-8 text-primary" />,
-    title: "Vươn tầm quốc tế",
-    description: "Đóng mới các loại tàu chuyên dụng phục vụ tuyến vận tải quốc tế."
+const getIcon = (iconName) => {
+  switch(iconName) {
+    case 'Ship': return <Globe className="w-6 h-6" />;
+    case 'Settings': return <Settings className="w-6 h-6" />;
+    case 'Layers': return <Layers className="w-6 h-6" />;
+    case 'Hammer': return <Hammer className="w-6 h-6" />;
+    default: return <History className="w-6 h-6" />;
   }
-];
+};
 
 export function About() {
+  const metrics = siteContent.capacity;
   return (
-    <section id="about" className="py-24 bg-background relative overflow-hidden">
-      <div className="container px-4">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+    <section id="about" className="section-padding bg-[#f8fafc]">
+      <div className="container">
+        <div className="grid lg:grid-cols-2 gap-20 items-center">
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
+            initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.4 }}
           >
-            <h2 className="text-sm font-semibold text-primary uppercase tracking-[0.2em] mb-4">Về chúng tôi</h2>
-            <h3 className="text-4xl md:text-5xl font-bold font-heading mb-8">
-              Khiên Hà - Biểu Tượng Của Ngành <br/> <span className="text-foreground/50">Cơ Khí Đóng Tàu</span>
-            </h3>
-            <p className="text-lg text-foreground/70 mb-8 leading-relaxed">
-              Công ty TNHH thương mại Khiên Hà tự hào là đơn vị tiên phong trong lĩnh vực đóng mới và sửa chữa tàu thủy tại Hải Phòng. 
-              Với đội ngũ lãnh đạo và nhân viên giàu kinh nghiệm, chúng tôi cam kết mang lại những sản phẩm 
-              đáp ứng tiêu chuẩn kỹ thuật khắt khe nhất của ngành hàng hải.
-            </p>
+            <div className="flex items-center gap-2 mb-6">
+               <span className="w-8 h-[2px] bg-primary" />
+               <span className="text-sm font-bold uppercase tracking-widest text-primary">Về chúng tôi</span>
+            </div>
             
-            <div className="grid sm:grid-cols-2 gap-8">
-              {features.map((f, i) => (
-                <div key={i} className="flex flex-col gap-3 p-6 glass-card border-none bg-white/5">
-                  <div className="p-3 rounded-xl bg-primary/10 w-fit">
-                    {f.icon}
+            <h3 className="text-4xl md:text-5xl font-black font-heading mb-8 text-[#0f172a] leading-tight">
+              Biểu Tượng Của Ngành <br/> 
+              <span className="text-primary/40">Cơ Khí Đóng Tàu Miền Bắc</span>
+            </h3>
+            
+            <p className="text-lg text-foreground/60 mb-10 leading-relaxed font-medium">
+              Công ty TNHH thương mại Khiên Hà không ngừng đổi mới quy trình sản xuất, 
+              áp dụng công nghệ CNC Plastma hiện đại để kiến tạo nên những con tàu vững chãi trước sóng gió đại dương.
+            </p>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              {metrics.map((m, i) => (
+                <div key={i} className="group p-6 bg-white rounded-2xl border border-border hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="p-3 rounded-xl bg-primary/5 text-primary group-hover:bg-primary group-hover:text-white transition-all">
+                      {getIcon(m.icon)}
+                    </div>
                   </div>
-                  <h4 className="font-bold text-lg">{f.title}</h4>
-                  <p className="text-sm text-foreground/60">{f.description}</p>
+                  <h4 className="font-bold text-[#0f172a] mb-2">{m.title}</h4>
+                  <p className="text-xs text-foreground/50 leading-normal">{m.detail}</p>
                 </div>
               ))}
             </div>
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 1 }}
+            transition={{ duration: 0.4 }}
             className="relative"
           >
-             <div className="aspect-[4/5] rounded-3xl overflow-hidden glass p-4 border-white/5">
-                <div className="w-full h-full rounded-2xl bg-gradient-to-br from-primary/30 to-secondary/30 relative flex items-center justify-center">
-                   {/* This would be an abstract industrial image or certificate */}
-                   <ShieldCheck className="w-32 h-32 text-primary animate-pulse" />
-                   <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
-                      <span className="text-[15rem] font-bold">KH</span>
+             <div className="aspect-square rounded-[3rem] overflow-hidden border-8 border-white shadow-2xl relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary to-[#38bdf8] opacity-10" />
+                <div className="w-full h-full bg-[#f1f5f9] flex items-center justify-center p-12">
+                   <div className="w-full h-full border-2 border-dashed border-primary/20 rounded-2xl flex flex-col items-center justify-center text-center p-8">
+                      <ShieldCheck className="w-20 h-20 text-primary mb-6" />
+                      <span className="text-2xl font-black text-[#0f172a]">ISO 9001:2015 CERTIFIED</span>
+                      <p className="text-sm text-foreground/40 mt-4 uppercase tracking-widest font-bold">Standard of Quality Management</p>
                    </div>
                 </div>
              </div>
-             <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-primary/20 rounded-full blur-3xl -z-10" />
-             <div className="absolute -top-10 -right-10 w-64 h-64 bg-secondary/20 rounded-full blur-3xl -z-10" />
+             
+             {/* Floating Badge */}
+             <div className="absolute -bottom-10 -right-4 p-8 glass-white rounded-3xl border border-white shadow-2xl flex items-center gap-6">
+                <div className="flex flex-col">
+                   <span className="text-4xl font-black text-primary">22+</span>
+                   <span className="text-xs font-bold text-foreground/40 uppercase">Years of Exp</span>
+                </div>
+                <div className="w-[1px] h-12 bg-border" />
+                <button className="p-4 rounded-full bg-[#0f172a] text-white hover:bg-primary transition-all">
+                   <ArrowUpRight className="w-6 h-6" />
+                </button>
+             </div>
           </motion.div>
         </div>
       </div>

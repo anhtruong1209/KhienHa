@@ -1,72 +1,147 @@
 "use client";
-import React from "react";
-import Image from "next/image";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { ChevronRight, Anchor } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, History, Settings, Award, Anchor, Globe, Ship, Activity } from "lucide-react";
+import { bannerImages, siteContent } from "@/data/site-content";
+import { newsData } from "@/data/news";
 
 export function Hero() {
+  const [current, setCurrent] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [results, setResults] = useState([]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % bannerImages.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleSearch = (e) => {
+    const term = e.target.value.toLowerCase();
+    setSearchTerm(term);
+    
+    if (term.length > 2) {
+      const filteredNews = newsData.filter(n => n.title.toLowerCase().includes(term));
+      const filteredProjects = siteContent.gallery.filter(p => p.title.toLowerCase().includes(term));
+      setResults([...filteredNews, ...filteredProjects]);
+    } else {
+      setResults([]);
+    }
+  };
+
   return (
-    <section id="hero" className="relative w-full h-screen overflow-hidden flex items-center justify-center">
-      {/* Background Image with Overlay */}
-      <div className="absolute inset-0 z-0">
-        <Image 
-          src="/hero.png" 
-          alt="Khiên Hà Shipbuilding" 
-          fill 
-          className="object-cover scale-105"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-background z-10" />
-      </div>
-
-      <div className="container relative z-20 px-4 flex flex-col items-center text-center">
+    <section id="hero" className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden bg-[#000]">
+      {/* Background Slider */}
+      <AnimatePresence mode="wait">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="flex flex-col items-center"
+           key={current}
+           initial={{ opacity: 0 }}
+           animate={{ opacity: 0.5 }}
+           exit={{ opacity: 0 }}
+           transition={{ duration: 1.5 }}
+           className="absolute inset-0 z-0"
         >
-          <div className="flex items-center gap-2 px-3 py-1 mb-6 text-xs font-semibold tracking-widest uppercase glass border-white/20 rounded-full text-primary-foreground/80">
-            <Anchor className="w-3 h-3" /> Since 2002
-          </div>
-          
-          <h1 className="text-5xl md:text-8xl font-bold font-heading mb-6 tracking-tight">
-            Nâng Tầm <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
-              Công Nghệ Đóng Tàu
-            </span>
-          </h1>
-          
-          <p className="max-w-2xl text-lg md:text-xl text-foreground/70 mb-10 leading-relaxed">
-            Hơn 20 năm khẳng định vị thế công ty đóng tàu tư nhân hàng đầu Việt Nam. 
-            Kiến tạo những con tàu vượt đại dương với khát vọng vươn tầm quốc tế.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Button size="lg" className="rounded-full px-8 h-14 text-md shadow-[0_0_20px_rgba(var(--primary),0.3)]">
-              Khám phá năng lực <ChevronRight className="ml-2 w-5 h-5" />
-            </Button>
-            <Button size="lg" variant="outline" className="rounded-full px-8 h-14 text-md glass border-white/20">
-              Dịch vụ của chúng tôi
-            </Button>
-          </div>
+          <img 
+            src={bannerImages[current]} 
+            alt="Khiên Hà Banner" 
+            className="w-full h-full object-cover"
+          />
         </motion.div>
+      </AnimatePresence>
 
-        {/* Floating Stat Card */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-          className="absolute bottom-12 right-12 hidden lg:flex flex-col p-6 glass-card text-left"
-        >
-          <span className="text-3xl font-bold text-primary">20+</span>
-          <span className="text-sm text-foreground/60">Năm Kinh Nghiệm</span>
-        </motion.div>
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-[#0f172a]/20 to-[#0f172a]/80 z-[1]" />
+
+      <div className="container relative z-10 flex flex-col items-center pt-20">
+        <div className="w-full grid lg:grid-cols-12 gap-8 items-center mb-12">
+          <div className="lg:col-span-12 text-center flex flex-col items-center">
+             <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="inline-flex items-center gap-2 px-4 py-2 border border-white/20 rounded-full bg-white/5 backdrop-blur-md text-white/90 text-[10px] font-black uppercase tracking-widest mb-8"
+             >
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse" /> Established Since 2002
+             </motion.div>
+             
+             <h1 className="text-6xl md:text-9xl font-black text-white leading-none tracking-tighter mb-6 drop-shadow-2xl">
+                TIÊN PHONG <br/>
+                <span className="text-primary italic">HÀNG HẢI VIỆT</span>
+             </h1>
+             
+             <p className="max-w-2xl text-[16px] text-white/70 font-medium mb-12 drop-shadow-lg leading-relaxed">
+               Khẳng định vị thế dẫn đầu trong ngành đóng tàu với hơn 22 năm kinh nghiệm 
+               và năng lực vươn tầm đại dương.
+             </p>
+
+             {/* Search Hub */}
+             <div className="w-full max-w-3xl relative">
+               <div className="flex bg-white/95 backdrop-blur-xl p-2 rounded-2xl shadow-2xl border border-white/20">
+                  <div className="flex-1 flex items-center px-6">
+                    <Search className="w-5 h-5 text-primary mr-4" />
+                    <input 
+                      type="text" 
+                      value={searchTerm}
+                      onChange={handleSearch}
+                      placeholder="Tìm kiếm nhanh: tàu hành, ISO, hạ thủy..." 
+                      className="w-full py-4 bg-transparent outline-none font-bold text-[#0f172a] text-sm placeholder:text-[#0f172a]/30"
+                    />
+                  </div>
+                  <button className="bg-[#0f172a] hover:bg-primary text-white font-black px-10 rounded-xl transition-all shadow-xl text-xs uppercase tracking-widest">
+                    TRUY VẤN
+                  </button>
+               </div>
+               
+               {/* Search Results Dropdown */}
+               <AnimatePresence>
+                 {results.length > 0 && (
+                   <motion.div
+                     initial={{ opacity: 0, y: 10 }}
+                     animate={{ opacity: 1, y: 0 }}
+                     exit={{ opacity: 0, y: 10 }}
+                     className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl overflow-hidden z-50 border border-border"
+                   >
+                     <div className="max-h-60 overflow-auto p-2">
+                       {results.map((res, i) => (
+                         <div key={i} className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-xl cursor-pointer transition-colors border-b border-gray-50 last:border-0 text-left">
+                            <img src={res.url || res.image || "/logo.png"} className="w-12 h-12 rounded-lg object-cover" />
+                            <div>
+                               <div className="text-[10px] font-black text-primary uppercase tracking-tighter mb-1">{res.category || "HỆ THỐNG"}</div>
+                               <div className="text-sm font-bold text-[#0f172a] line-clamp-1">{res.title}</div>
+                            </div>
+                         </div>
+                       ))}
+                     </div>
+                   </motion.div>
+                 )}
+               </AnimatePresence>
+             </div>
+          </div>
+        </div>
+
+        {/* Categories Grid - High Density */}
+        <div className="bg-white/95 backdrop-blur-2xl rounded-[3rem] p-4 shadow-2xl border border-white/20 grid grid-cols-3 lg:grid-cols-6 gap-2 w-full max-w-6xl">
+          {[
+            { icon: <History className="w-6 h-6" />, label: "Lịch sử" },
+            { icon: <Settings className="w-6 h-6" />, label: "Năng lực" },
+            { icon: <Award className="w-6 h-6" />, label: "Quy trình" },
+            { icon: <Anchor className="w-6 h-6" />, label: "Mục tiêu" },
+            { icon: <Globe className="w-6 h-6" />, label: "Quốc tế" },
+            { icon: <Ship className="w-6 h-6" />, label: "Đóng mới" },
+          ].map((item, i) => (
+            <button 
+              key={i} 
+              className="group flex flex-col items-center p-6 rounded-3xl hover:bg-[#0f172a] transition-all"
+            >
+              <div className="w-14 h-14 rounded-2xl bg-primary/5 text-primary flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-white transition-all shadow-sm">
+                 {item.icon}
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-tighter text-[#0f172a] group-hover:text-white transition-colors">
+                {item.label}
+              </span>
+            </button>
+          ))}
+        </div>
       </div>
-      
-      {/* Static Visual Element */}
-      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-background to-transparent z-10" />
     </section>
   );
 }

@@ -24,7 +24,6 @@ export function Navbar() {
           </div>
           <div>
             <div className="text-lg font-black tracking-[-0.04em] text-[#0f172a]">KHIÊN HÀ</div>
-            <div className="text-[10px] font-black uppercase tracking-[0.24em] text-primary">Shipbuilding & Repair</div>
           </div>
         </Link>
 
@@ -43,7 +42,7 @@ export function Navbar() {
         <div className="flex items-center gap-3">
           <Link href="/admin">
             <Button variant="outline" className="hidden h-11 rounded-2xl border-slate-200 px-5 font-black sm:inline-flex">
-              Admin Panel
+              Đăng nhập
             </Button>
           </Link>
           <a href="#contact">

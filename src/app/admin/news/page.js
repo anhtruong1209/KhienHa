@@ -149,16 +149,7 @@ export default function NewsManager() {
       <Card variant="none" className="rounded-[22px] shadow-[0_12px_34px_rgba(15,23,42,0.05)]">
         <div className="mb-5 grid gap-4 xl:grid-cols-[1fr_240px]">
           <Input value={search} onChange={(event) => setSearch(event.target.value)} prefix={<SearchOutlined className="text-slate-400" />} placeholder="Tìm theo tiêu đề hoặc nội dung" className="h-10 rounded-xl" />
-          <Select
-            value={categoryFilter}
-            onChange={setCategoryFilter}
-            style={{ width: 220 }}
-            className="h-10"
-            options={NEWS_CATEGORY_FILTER_OPTIONS}
-            placeholder="Chọn chuyên mục"
-            virtual={false}
-            getPopupContainer={(trigger) => trigger.parentNode}
-          />
+            {/* Category filter removed as requested */}
         </div>
 
         <Table rowKey="_id" loading={loading} dataSource={filteredData} pagination={{ pageSize: 8, showSizeChanger: false }} scroll={{ x: 980 }} columns={[

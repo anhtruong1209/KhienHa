@@ -1,112 +1,111 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { History, Settings, Award, Anchor, Globe, Ship, Activity } from "lucide-react";
-import { getSiteContent, getNews } from "@/services/api";
+
+import React, { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Anchor, ArrowRight, Gauge, ShieldCheck, ShipWheel } from "lucide-react";
+import { getSiteContent } from "@/services/api";
 
 export function Hero() {
   const [current, setCurrent] = useState(0);
   const [banners, setBanners] = useState([]);
+  const [hero, setHero] = useState(null);
 
   useEffect(() => {
     async function load() {
       const data = await getSiteContent();
-      if (data) setBanners(data.banners || []);
+      setBanners(data?.banners || []);
+      setHero(data?.hero || null);
     }
+
     load();
-    
-    const timer = setInterval(() => {
-      setBanners(prev => {
-        if (prev.length > 0) {
-           setCurrent((curr) => (curr + 1) % prev.length);
-        }
-        return prev;
-      });
-    }, 5000);
-    return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    if (banners.length <= 1) return undefined;
+
+    const timer = setInterval(() => {
+      setCurrent((value) => (value + 1) % banners.length);
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, [banners]);
+
   return (
-    <section id="hero" className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden bg-[#000]">
-      {/* Background Slider */}
+    <section id="hero" className="relative min-h-screen overflow-hidden bg-[#e9f4ff]">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.18),_transparent_32%),radial-gradient(circle_at_bottom_right,_rgba(15,23,42,0.12),_transparent_28%)]" />
+
       <AnimatePresence mode="wait">
-        <motion.div
-           key={current}
-           initial={{ opacity: 0 }}
-           animate={{ opacity: 0.5 }}
-           exit={{ opacity: 0 }}
-           transition={{ duration: 1.5 }}
-           className="absolute inset-0 z-0 bg-[#0f172a]"
-        >
-          {banners.length > 0 && (
-            <img 
-              src={banners[current]} 
-              alt="Khiên Hà Banner" 
-              className="w-full h-full object-cover"
-            />
-          )}
-        </motion.div>
+        {banners.length > 0 && (
+          <motion.div
+            key={banners[current]}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2 }}
+            className="absolute inset-0"
+          >
+            <img src={banners[current]} alt="Khiên Hà banner" className="h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(255,255,255,0.88),rgba(255,255,255,0.45),rgba(15,23,42,0.65))]" />
+          </motion.div>
+        )}
       </AnimatePresence>
 
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-[#0f172a]/20 to-[#0f172a]/80 z-[1]" />
+      <div className="absolute inset-x-0 top-0 h-28 bg-[linear-gradient(180deg,rgba(255,255,255,0.95),transparent)]" />
 
-      <div className="container relative z-10 flex flex-col items-center pt-20">
-        <div className="w-full text-center flex flex-col items-center">
-             <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="inline-flex items-center gap-2 px-4 py-2 border border-white/20 rounded-full bg-white/5 backdrop-blur-md text-white/90 text-[10px] font-black uppercase tracking-widest mb-8"
-             >
-                <div className="w-2 h-2 bg-primary rounded-full animate-pulse" /> Established Since 2002
-             </motion.div>
-             
-             <h1 className="text-6xl md:text-9xl font-black text-white leading-none tracking-tighter mb-8 drop-shadow-2xl">
-                TIÊN PHONG <br/>
-                <span className="text-primary italic font-heading">HÀNG HẢI VIỆT</span>
-             </h1>
-             
-             <p className="max-w-2xl text-[18px] text-white/70 font-medium mb-12 drop-shadow-lg leading-relaxed">
-               Khẳng định vị thế dẫn đầu trong ngành đóng tàu với hơn 22 năm kinh nghiệm 
-               và năng lực vươn tầm đại dương.
-             </p>
+      <div className="container relative z-10 flex min-h-screen flex-col justify-center py-28">
+        <div className="grid items-end gap-10 lg:grid-cols-[1.15fr_0.85fr]">
+          <div className="max-w-3xl">
+            <div className="mb-6 inline-flex items-center gap-3 rounded-full border border-white/70 bg-white/65 px-4 py-2 text-[11px] font-black uppercase tracking-[0.28em] text-primary shadow-[0_18px_80px_rgba(14,165,233,0.15)] backdrop-blur-xl">
+              <span className="inline-flex h-2 w-2 rounded-full bg-primary shadow-[0_0_18px_rgba(14,165,233,0.8)]" />
+              {hero?.eyebrow || "Shipbuilding Since 2002"}
+            </div>
 
-             <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="flex flex-col sm:flex-row gap-4"
-             >
-               <button className="bg-primary hover:bg-primary/90 text-white font-black px-10 h-14 rounded-2xl transition-all shadow-xl shadow-primary/20 text-xs uppercase tracking-widest">
-                  Khám phá năng lực
-               </button>
-               <button className="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white font-black px-10 h-14 rounded-2xl transition-all text-xs uppercase tracking-widest">
-                  Xem dự án tiêu biểu
-               </button>
-             </motion.div>
-        </div>
-        
-        {/* Categories Grid - High Density */}
-        <div className="bg-white/95 backdrop-blur-2xl rounded-[3rem] p-4 shadow-2xl border border-white/20 grid grid-cols-3 lg:grid-cols-6 gap-2 w-full max-w-6xl mt-12 relative z-20">
-          {[
-            { icon: <History className="w-6 h-6" />, label: "Lịch sử" },
-            { icon: <Settings className="w-6 h-6" />, label: "Năng lực" },
-            { icon: <Award className="w-6 h-6" />, label: "Quy trình" },
-            { icon: <Anchor className="w-6 h-6" />, label: "Mục tiêu" },
-            { icon: <Globe className="w-6 h-6" />, label: "Quốc tế" },
-            { icon: <Ship className="w-6 h-6" />, label: "Đóng mới" },
-          ].map((item, i) => (
-            <button 
-              key={i} 
-              className="group flex flex-col items-center p-6 rounded-3xl hover:bg-[#0f172a] transition-all"
-            >
-              <div className="w-14 h-14 rounded-2xl bg-primary/5 text-primary flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-white transition-all shadow-sm">
-                 {item.icon}
-              </div>
-              <span className="text-[10px] font-black uppercase tracking-tighter text-[#0f172a] group-hover:text-white transition-colors">
-                {item.label}
+            <h1 className="text-5xl font-black uppercase leading-[0.92] tracking-[-0.06em] text-[#0f172a] md:text-7xl xl:text-[6.5rem]">
+              {hero?.titleLine1 || "Năng Lực Đóng Tàu"}
+              <span className="mt-2 block bg-[linear-gradient(135deg,#0f172a,#0ea5e9)] bg-clip-text text-transparent">
+                {hero?.titleLine2 || "Vươn Ra Biển Lớn"}
               </span>
-            </button>
-          ))}
+            </h1>
+
+            <p className="mt-8 max-w-2xl text-base font-medium leading-8 text-[#0f172a]/70 md:text-lg">
+              {hero?.subtitle}
+            </p>
+
+            <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+              <a
+                href={hero?.primaryCtaHref || "#services"}
+                className="inline-flex h-14 items-center justify-center gap-2 rounded-2xl bg-[#0f172a] px-7 text-sm font-black uppercase tracking-[0.22em] text-white shadow-[0_24px_50px_rgba(15,23,42,0.22)] transition-all hover:bg-primary"
+              >
+                {hero?.primaryCtaLabel || "Khám phá năng lực"}
+                <ArrowRight className="h-4 w-4" />
+              </a>
+              <a
+                href={hero?.secondaryCtaHref || "#gallery"}
+                className="inline-flex h-14 items-center justify-center rounded-2xl border border-white/80 bg-white/60 px-7 text-sm font-black uppercase tracking-[0.22em] text-[#0f172a] shadow-[0_24px_50px_rgba(255,255,255,0.45)] backdrop-blur-xl transition-all hover:border-primary/20 hover:text-primary"
+              >
+                {hero?.secondaryCtaLabel || "Xem dự án tiêu biểu"}
+              </a>
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
+            {(hero?.highlights || []).map((item, index) => (
+              <motion.div
+                key={`${item.label}-${index}`}
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.08 }}
+                className="rounded-[2rem] border border-white/80 bg-white/58 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.12)] backdrop-blur-2xl"
+              >
+                <div className="mb-5 inline-flex rounded-2xl bg-primary/10 p-3 text-primary">
+                  {[ShipWheel, Gauge, ShieldCheck][index] ? React.createElement([ShipWheel, Gauge, ShieldCheck][index], { className: "h-5 w-5" }) : <Anchor className="h-5 w-5" />}
+                </div>
+                <div className="text-3xl font-black text-[#0f172a]">{item.label}</div>
+                <div className="mt-2 text-xs font-bold uppercase tracking-[0.18em] text-[#0f172a]/45">{item.value}</div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

@@ -1,15 +1,15 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { Row, Col, Card, Statistic, Typography, Space, List, Tag, Table } from "antd";
-import { 
-  FileTextOutlined, 
-  PictureOutlined, 
-  HistoryOutlined, 
-  ThunderboltOutlined, 
+
+import React, { useEffect, useState } from "react";
+import { Card, Col, Row, Space, Statistic, Table, Tag, Typography } from "antd";
+import {
   DashboardOutlined,
-  CheckCircleOutlined
+  FileImageOutlined,
+  FileTextOutlined,
+  MailOutlined,
+  ThunderboltOutlined,
 } from "@ant-design/icons";
-import { getNews, getSiteContent } from "@/services/api";
+import { getContactMessages, getNews, getSiteContent } from "@/services/api";
 
 const { Title, Text } = Typography;
 
@@ -18,117 +18,106 @@ export default function AdminDashboard() {
     newsCount: 0,
     bannerCount: 0,
     capacityCount: 0,
-    historyCount: 0
+    messageCount: 0,
+    galleryCount: 0,
   });
   const [news, setNews] = useState([]);
 
   useEffect(() => {
     async function load() {
-      const newsData = await getNews();
-      const siteData = await getSiteContent();
-      
+      const [newsData, siteData, messages] = await Promise.all([getNews(), getSiteContent(), getContactMessages()]);
+
       setStats({
         newsCount: newsData?.length || 0,
         bannerCount: siteData?.banners?.length || 0,
         capacityCount: siteData?.capacity?.length || 0,
-        historyCount: siteData?.history?.length || 0
+        messageCount: messages?.length || 0,
+        galleryCount: siteData?.gallery?.length || 0,
       });
       setNews((newsData || []).slice(0, 5));
     }
+
     load();
   }, []);
 
   return (
     <div className="space-y-6">
-      <div className="mb-8">
+      <div className="mb-6">
         <Title level={4} className="!m-0 flex items-center gap-2">
-           <DashboardOutlined className="text-primary" /> Tổng Quan Hệ Thống
+          <DashboardOutlined className="text-primary" /> Tổng quan hệ thống
         </Title>
-        <Text type="secondary" className="text-xs">Theo dõi và quản lý toàn bộ dữ liệu của website Khiên Hà.</Text>
+        <Text type="secondary" className="text-xs">
+          Theo dõi nhanh nội dung landing page, bài viết, gallery và yêu cầu tư vấn gửi từ biểu mẫu liên hệ.
+        </Text>
       </div>
 
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} lg={6}>
-          <Card bordered={false} className="shadow-sm hover:shadow-md transition-shadow">
-            <Statistic 
-              title={<span className="text-[11px] font-bold uppercase text-gray-400">Tin tức hoạt động</span>}
+          <Card bordered={false} className="shadow-sm">
+            <Statistic
+              title={<span className="text-[11px] font-black uppercase text-slate-400">Tin tức</span>}
               value={stats.newsCount}
-              prefix={<FileTextOutlined className="text-blue-500 mr-2" />}
-              valueStyle={{ fontSize: '24px', fontWeight: '900' }}
+              prefix={<FileTextOutlined className="mr-2 text-blue-500" />}
+              valueStyle={{ fontSize: 24, fontWeight: 900 }}
             />
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          <Card bordered={false} className="shadow-sm hover:shadow-md transition-shadow">
-            <Statistic 
-              title={<span className="text-[11px] font-bold uppercase text-gray-400">Banner Slider</span>}
+          <Card bordered={false} className="shadow-sm">
+            <Statistic
+              title={<span className="text-[11px] font-black uppercase text-slate-400">Banner</span>}
               value={stats.bannerCount}
-              prefix={<PictureOutlined className="text-purple-500 mr-2" />}
-              valueStyle={{ fontSize: '24px', fontWeight: '900' }}
+              prefix={<FileImageOutlined className="mr-2 text-cyan-500" />}
+              valueStyle={{ fontSize: 24, fontWeight: 900 }}
             />
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          <Card bordered={false} className="shadow-sm hover:shadow-md transition-shadow">
-            <Statistic 
-              title={<span className="text-[11px] font-bold uppercase text-gray-400">Năng lực cốt lõi</span>}
+          <Card bordered={false} className="shadow-sm">
+            <Statistic
+              title={<span className="text-[11px] font-black uppercase text-slate-400">Năng lực</span>}
               value={stats.capacityCount}
-              prefix={<ThunderboltOutlined className="text-orange-500 mr-2" />}
-              valueStyle={{ fontSize: '24px', fontWeight: '900' }}
+              prefix={<ThunderboltOutlined className="mr-2 text-orange-500" />}
+              valueStyle={{ fontSize: 24, fontWeight: 900 }}
             />
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          <Card bordered={false} className="shadow-sm hover:shadow-md transition-shadow">
-            <Statistic 
-              title={<span className="text-[11px] font-bold uppercase text-gray-400">Trạng thái MongoDB</span>}
-              value="Connected"
-              prefix={<CheckCircleOutlined className="text-green-500 mr-2" />}
-              valueStyle={{ fontSize: '18px', fontWeight: '900', color: '#10b981' }}
+          <Card bordered={false} className="shadow-sm">
+            <Statistic
+              title={<span className="text-[11px] font-black uppercase text-slate-400">Liên hệ mới</span>}
+              value={stats.messageCount}
+              prefix={<MailOutlined className="mr-2 text-emerald-500" />}
+              valueStyle={{ fontSize: 24, fontWeight: 900 }}
             />
           </Card>
         </Col>
       </Row>
 
-      <Row gutter={[16, 16]}>
-        <Col lg={16} xs={24}>
-          <Card 
-            title={<span className="text-xs font-black uppercase">Tin tức mới cập nhật</span>} 
-            bordered={false} 
-            className="shadow-sm"
-            extra={<a href="/admin/news" className="text-[11px] font-bold">Quản lý</a>}
-          >
-            <Table 
-              size="small"
-              pagination={false}
-              dataSource={news}
-              rowKey="id"
-              columns={[
-                { title: 'Tiêu đề', dataIndex: 'title', key: 'title', ellipsis: true },
-                { title: 'Ngày', dataIndex: 'date', key: 'date', width: 120 },
-                { title: 'Loại', dataIndex: 'category', key: 'category', render: (c) => <Tag color="blue" className="text-[10px]">{c}</Tag> }
-              ]}
-            />
-          </Card>
-        </Col>
-        <Col lg={8} xs={24}>
-          <Card 
-             title={<span className="text-xs font-black uppercase">Cột mốc lịch sử</span>} 
-             bordered={false} 
-             className="shadow-sm"
-          >
-             <List
-                size="small"
-                dataSource={Array.from({ length: stats.historyCount })}
-                renderItem={(_, i) => (
-                  <List.Item className="text-xs font-medium">
-                    <Space><HistoryOutlined className="text-gray-300" /> Bản ghi lịch sử #{i+1}</Space>
-                  </List.Item>
-                )}
-             />
-          </Card>
-        </Col>
-      </Row>
+      <Card
+        title={<span className="text-xs font-black uppercase">Tin tức mới cập nhật</span>}
+        bordered={false}
+        className="shadow-sm"
+      >
+        <Table
+          size="small"
+          pagination={false}
+          dataSource={news}
+          rowKey="_id"
+          columns={[
+            { title: "Tiêu đề", dataIndex: "title", key: "title", ellipsis: true },
+            { title: "Ngày", dataIndex: "date", key: "date", width: 120 },
+            {
+              title: "Loại",
+              dataIndex: "category",
+              key: "category",
+              width: 140,
+              render: (category) => <Tag color="blue">{category}</Tag>,
+            },
+          ]}
+        />
+        <div className="mt-4 text-xs text-slate-400">Gallery hiện có {stats.galleryCount} ảnh/dự án được hiển thị ngoài landing page.</div>
+      </Card>
     </div>
   );
 }

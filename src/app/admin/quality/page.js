@@ -7,7 +7,7 @@ import { getSiteContent, updateSiteContent } from "@/services/api";
 const { Title, Text } = Typography;
 
 export default function QualityManager() {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [processImage, setProcessImage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,7 +15,6 @@ export default function QualityManager() {
   const [originalContent, setOriginalContent] = useState({});
 
   const loadData = async () => {
-    setLoading(true);
     const content = await getSiteContent();
     if (content) {
       setOriginalContent(content);
@@ -26,7 +25,25 @@ export default function QualityManager() {
   };
 
   useEffect(() => {
-    loadData();
+    let active = true;
+
+    async function bootstrap() {
+      const content = await getSiteContent();
+      if (!active) return;
+
+      if (content) {
+        setOriginalContent(content);
+        setData(content.quality?.steps || []);
+        setProcessImage(content.quality?.mainImage || "");
+      }
+      setLoading(false);
+    }
+
+    bootstrap();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const handleMainImageUpload = (info) => {

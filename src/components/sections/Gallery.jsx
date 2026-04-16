@@ -1,6 +1,7 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+
+import React, { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Maximize2, X } from "lucide-react";
 import { getSiteContent } from "@/services/api";
 
@@ -11,50 +12,52 @@ export function Gallery() {
   useEffect(() => {
     async function load() {
       const data = await getSiteContent();
-      if (data && data.gallery) {
-        setImages(data.gallery);
-      }
+      setImages(data?.gallery || []);
     }
+
     load();
   }, []);
 
   return (
-    <section id="gallery" className="section-padding bg-white">
+    <section id="gallery" className="section-padding bg-[#eef7ff]">
       <div className="container">
-        <div className="max-w-xl mb-16">
-          <div className="flex items-center gap-2 mb-6">
-             <span className="w-8 h-[2px] bg-primary" />
-             <span className="text-sm font-bold uppercase tracking-widest text-primary">Hình ảnh hoạt động</span>
+        <div className="mb-14 max-w-2xl">
+          <div className="mb-5 inline-flex items-center gap-3 rounded-full bg-white px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-primary shadow-sm">
+            <span className="h-2 w-2 rounded-full bg-primary" />
+            Hình ảnh hoạt động
           </div>
-          <h3 className="text-4xl md:text-5xl font-black text-[#0f172a]">Dự Án <span className="text-primary">Tiêu Biểu</span></h3>
+          <h2 className="text-4xl font-black tracking-[-0.04em] text-[#0f172a] md:text-5xl">
+            Những dự án tiêu biểu tại nhà máy
+          </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {images.map((img, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, scale: 0.95 }}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {images.map((img, index) => (
+            <motion.button
+              key={img.id || index}
+              initial={{ opacity: 0, scale: 0.97 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="group relative aspect-[4/3] rounded-[2rem] overflow-hidden shadow-lg cursor-pointer"
+              transition={{ delay: index * 0.04 }}
               onClick={() => setSelected(img)}
+              className="group relative aspect-[4/3] overflow-hidden rounded-[2rem] border border-white/70 text-left shadow-[0_24px_80px_rgba(15,23,42,0.1)]"
             >
-              <img 
-                src={img.url} 
-                alt={img.title} 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              <img
+                src={img.url}
+                alt={img.title}
+                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-transparent to-transparent opacity-0 group-hover:opacity-90 transition-opacity flex flex-col justify-end p-8">
-                <span className="text-primary text-[10px] font-black uppercase tracking-widest mb-2">{img.category}</span>
-                <h4 className="text-xl font-black text-white mb-4">{img.title}</h4>
-                <div className="flex gap-4">
-                  <div className="p-3 rounded-xl bg-white/10 text-white backdrop-blur-md hover:bg-primary transition-all">
-                    <Maximize2 className="w-4 h-4" />
-                  </div>
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent,rgba(15,23,42,0.78))]" />
+              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-6 p-6">
+                <div>
+                  <div className="text-[10px] font-black uppercase tracking-[0.24em] text-[#7dd3fc]">{img.category}</div>
+                  <h3 className="mt-3 text-xl font-black text-white">{img.title}</h3>
+                </div>
+                <div className="rounded-2xl border border-white/20 bg-white/12 p-3 text-white backdrop-blur-xl">
+                  <Maximize2 className="h-4 w-4" />
                 </div>
               </div>
-            </motion.div>
+            </motion.button>
           ))}
         </div>
       </div>
@@ -65,23 +68,26 @@ export function Gallery() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 md:p-10"
+            className="fixed inset-0 z-[100] bg-[#08111f]/94 p-5"
             onClick={() => setSelected(null)}
           >
-            <button className="absolute top-10 right-10 text-white hover:text-primary transition-colors">
-              <X className="w-10 h-10" />
+            <button className="absolute right-6 top-6 rounded-full border border-white/15 bg-white/10 p-3 text-white backdrop-blur-xl">
+              <X className="h-5 w-5" />
             </button>
-            <motion.img
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              src={selected.url}
-              alt={selected.title}
-              className="max-w-full max-h-full rounded-2xl shadow-2xl object-contain"
-            />
-            <div className="absolute bottom-10 left-10 text-white">
-               <span className="text-primary font-black uppercase tracking-widest text-xs">{selected.category}</span>
-               <h4 className="text-2xl font-black mt-2">{selected.title}</h4>
+
+            <div className="flex h-full items-center justify-center">
+              <div className="grid w-full max-w-6xl gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+                <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/5">
+                  <img src={selected.url} alt={selected.title} className="h-full w-full object-cover" />
+                </div>
+                <div className="rounded-[2rem] border border-white/10 bg-white/8 p-8 text-white backdrop-blur-xl">
+                  <div className="text-[11px] font-black uppercase tracking-[0.24em] text-[#7dd3fc]">{selected.category}</div>
+                  <h3 className="mt-4 text-3xl font-black">{selected.title}</h3>
+                  <p className="mt-6 text-sm leading-7 text-white/70">
+                    Không gian nhà máy, tiến độ thi công và sản phẩm thực tế được cập nhật nhằm phản ánh năng lực vận hành, tổ chức sản xuất và mức độ hoàn thiện của các dự án trọng điểm.
+                  </p>
+                </div>
+              </div>
             </div>
           </motion.div>
         )}

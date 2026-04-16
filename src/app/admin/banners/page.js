@@ -7,7 +7,7 @@ import { getSiteContent, updateSiteContent } from "@/services/api";
 const { Title, Text } = Typography;
 
 export default function BannerManager() {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
@@ -15,7 +15,6 @@ export default function BannerManager() {
   const [originalContent, setOriginalContent] = useState({});
 
   const loadData = async () => {
-    setLoading(true);
     const content = await getSiteContent();
     if (content) {
       setOriginalContent(content);
@@ -30,7 +29,29 @@ export default function BannerManager() {
   };
 
   useEffect(() => {
-    loadData();
+    let active = true;
+
+    async function bootstrap() {
+      const content = await getSiteContent();
+      if (!active) return;
+
+      if (content) {
+        setOriginalContent(content);
+        const banners = (content.banners || []).map((url, index) => ({
+          id: index + 1,
+          url,
+          title: `Banner ${index + 1}`,
+        }));
+        setData(banners);
+      }
+      setLoading(false);
+    }
+
+    bootstrap();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const handleUpload = (info) => {

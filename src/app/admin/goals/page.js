@@ -7,14 +7,13 @@ import { getSiteContent, updateSiteContent } from "@/services/api";
 const { Title, Text } = Typography;
 
 export default function GoalsManager() {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
   const [originalContent, setOriginalContent] = useState({});
 
   const loadData = async () => {
-    setLoading(true);
     const content = await getSiteContent();
     if (content) {
       setOriginalContent(content);
@@ -24,7 +23,24 @@ export default function GoalsManager() {
   };
 
   useEffect(() => {
-    loadData();
+    let active = true;
+
+    async function bootstrap() {
+      const content = await getSiteContent();
+      if (!active) return;
+
+      if (content) {
+        setOriginalContent(content);
+        setData(content.goals || []);
+      }
+      setLoading(false);
+    }
+
+    bootstrap();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const syncToDB = async (currentData) => {

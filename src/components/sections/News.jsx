@@ -1,10 +1,10 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { getNews } from "@/services/api";
-import { Calendar, ArrowRight, Ship } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
+import { ArrowRight, Calendar, Newspaper, Ship } from "lucide-react";
+import { getNews } from "@/services/api";
 
 export function News() {
   const [newsList, setNewsList] = useState([]);
@@ -12,68 +12,79 @@ export function News() {
   useEffect(() => {
     async function load() {
       const data = await getNews();
-      setNewsList(data || []);
+      setNewsList((data || []).slice(0, 6));
     }
+
     load();
   }, []);
 
   return (
-    <section id="news" className="section-padding bg-[#f8fafc]">
+    <section id="news" className="section-padding bg-white">
       <div className="container">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
-          <div>
-            <div className="flex items-center gap-2 mb-6">
-               <span className="w-8 h-[2px] bg-primary" />
-               <span className="text-sm font-bold uppercase tracking-widest text-primary">Media & Resources</span>
+        <div className="mb-14 flex flex-col justify-between gap-8 md:flex-row md:items-end">
+          <div className="max-w-2xl">
+            <div className="mb-5 inline-flex items-center gap-3 rounded-full bg-primary/5 px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-primary">
+              <Newspaper className="h-4 w-4" />
+              Tin tức & cập nhật
             </div>
-            <h3 className="text-4xl md:text-5xl font-black font-heading text-[#0f172a]">Thông Tin <span className="text-primary">Mới Nhất</span></h3>
+            <h2 className="text-4xl font-black tracking-[-0.04em] text-[#0f172a] md:text-5xl">
+              Nhịp vận hành mới nhất từ Khiên Hà
+            </h2>
           </div>
-          <Button variant="ghost" className="text-primary font-bold hover:bg-primary/5 gap-2 px-6 h-12 rounded-xl">
-            Xem tất cả bài viết <ArrowRight className="w-4 h-4" />
-          </Button>
+
+          <Link
+            href="#contact"
+            className="inline-flex h-12 items-center gap-2 rounded-2xl border border-slate-200 px-5 text-[11px] font-black uppercase tracking-[0.22em] text-[#0f172a] transition-colors hover:border-primary hover:text-primary"
+          >
+            Kết nối tư vấn
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {newsList.map((news, i) => (
-            <motion.div
-              key={news.id}
-              initial={{ opacity: 0, y: 10 }}
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {newsList.map((news, index) => (
+            <motion.article
+              key={news._id || news.id}
+              initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.05 }}
-              className="group bg-white rounded-3xl border border-border p-4 hover:shadow-2xl hover:shadow-primary/5 transition-all flex flex-col"
+              transition={{ delay: index * 0.05 }}
+              className="group overflow-hidden rounded-[2.2rem] border border-slate-100 bg-[#f9fbff] shadow-[0_20px_60px_rgba(15,23,42,0.06)]"
             >
-              <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-[#f1f5f9] relative mb-6">
-                 {news.image ? (
-                   <img src={news.image} alt={news.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                 ) : (
-                   <>
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
-                    <div className="w-full h-full flex items-center justify-center">
-                       <Ship className="w-12 h-12 text-primary/10 group-hover:scale-110 transition-transform duration-500" />
-                    </div>
-                   </>
-                 )}
-                 <div className="absolute top-3 left-3 px-2 py-0.5 bg-white/90 rounded-lg text-[9px] font-black text-primary uppercase tracking-tighter">
-                   {news.category || "HÀNG HẢI"}
-                 </div>
+              <div className="relative aspect-[4/3] overflow-hidden">
+                {news.image ? (
+                  <img
+                    src={news.image}
+                    alt={news.title}
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center bg-[linear-gradient(135deg,#0f172a,#0ea5e9)] text-white">
+                    <Ship className="h-14 w-14 opacity-30" />
+                  </div>
+                )}
+                <div className="absolute left-4 top-4 rounded-full border border-white/20 bg-white/15 px-3 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-white backdrop-blur-xl">
+                  {news.category}
+                </div>
               </div>
 
-              <div className="flex flex-col flex-1">
-                <div className="flex items-center gap-2 text-[10px] font-bold text-foreground/30 mb-3 uppercase tracking-widest">
-                  <Calendar className="w-3 h-3 text-primary/40" /> {news.date}
+              <div className="p-6">
+                <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.22em] text-primary/65">
+                  <Calendar className="h-3.5 w-3.5" />
+                  {news.date}
                 </div>
-                <h4 className="text-lg font-black mb-3 text-[#0f172a] group-hover:text-primary transition-colors leading-tight">
-                  {news.title}
-                </h4>
-                <p className="text-xs text-foreground/50 line-clamp-2 mb-6 font-medium leading-relaxed">
-                  {news.content}
-                </p>
-                <Link href={`/news/${news.id}`} className="mt-auto inline-flex items-center gap-2 text-primary font-black text-[10px] uppercase tracking-widest hover:gap-3 transition-all">
-                  CHI TIẾT <ArrowRight className="w-3 h-3" />
+                <h3 className="mt-4 text-2xl font-black tracking-[-0.03em] text-[#0f172a]">{news.title}</h3>
+                <p className="mt-4 line-clamp-3 text-sm leading-7 text-[#0f172a]/58">{news.excerpt || news.content}</p>
+
+                <Link
+                  href={`/news/${news.slug || news.id}`}
+                  className="mt-7 inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.22em] text-primary"
+                >
+                  Xem chi tiết
+                  <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
-            </motion.div>
+            </motion.article>
           ))}
         </div>
       </div>

@@ -2,8 +2,13 @@ import clientPromise from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
+    if (!clientPromise) {
+      return NextResponse.json({ error: "Database URI not configured" }, { status: 500 });
+    }
     const client = await clientPromise;
     const db = client.db("khienha");
     const news = await db.collection("news")
@@ -20,6 +25,7 @@ export async function GET() {
 
 export async function POST(request) {
   try {
+    if (!clientPromise) throw new Error("Database not connected");
     const client = await clientPromise;
     const db = client.db("khienha");
     const body = await request.json();
@@ -38,6 +44,7 @@ export async function POST(request) {
 
 export async function PUT(request) {
   try {
+    if (!clientPromise) throw new Error("Database not connected");
     const client = await clientPromise;
     const db = client.db("khienha");
     const body = await request.json();
@@ -57,6 +64,7 @@ export async function PUT(request) {
 
 export async function DELETE(request) {
   try {
+    if (!clientPromise) throw new Error("Database not connected");
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
     

@@ -52,27 +52,27 @@ export function Contact() {
   }
 
   return (
-    <section id="contact" className="relative overflow-hidden bg-[#eaf6ff] py-24">
+    <section id="contact" className="relative overflow-hidden bg-[#eaf6ff] py-18 md:py-20">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(14,165,233,0.16),_transparent_28%),radial-gradient(circle_at_bottom_left,_rgba(15,23,42,0.12),_transparent_24%)]" />
 
       <div className="container relative z-10">
-        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+        <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="rounded-[2.6rem] border border-white/70 bg-white/68 p-8 shadow-[0_26px_90px_rgba(15,23,42,0.1)] backdrop-blur-2xl md:p-10"
+            className="rounded-[2.1rem] border border-white/70 bg-white/68 p-6 shadow-[0_26px_90px_rgba(15,23,42,0.1)] backdrop-blur-2xl md:p-8"
           >
-            <div className="mb-5 inline-flex items-center gap-3 rounded-full bg-primary/5 px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-primary">
+            <div className="mb-4 inline-flex items-center gap-3 rounded-full bg-primary/5 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-primary">
               <ShieldEllipsis className="h-4 w-4" />
               {contact?.eyebrow || "Liên hệ"}
             </div>
-            <h2 className="text-4xl font-black tracking-[-0.04em] text-[#0f172a]">{contact?.title}</h2>
-            <p className="mt-5 text-sm leading-7 text-[#0f172a]/58">{contact?.description}</p>
+            <h2 className="text-3xl font-black tracking-[-0.04em] text-[#0f172a]">{contact?.title}</h2>
+            <p className="mt-4 text-sm leading-6 text-[#0f172a]/58">{contact?.description}</p>
 
-            <div className="mt-10 space-y-6">
+            <div className="mt-8 space-y-5">
               <div className="flex items-start gap-4">
-                <div className="rounded-2xl bg-primary/10 p-4 text-primary">
+                <div className="rounded-2xl bg-primary/10 p-3 text-primary">
                   <MapPin className="h-5 w-5" />
                 </div>
                 <div>
@@ -82,7 +82,7 @@ export function Contact() {
               </div>
 
               <div className="flex items-start gap-4">
-                <div className="rounded-2xl bg-primary/10 p-4 text-primary">
+                <div className="rounded-2xl bg-primary/10 p-3 text-primary">
                   <Phone className="h-5 w-5" />
                 </div>
                 <div>
@@ -98,7 +98,7 @@ export function Contact() {
               </div>
 
               <div className="flex items-start gap-4">
-                <div className="rounded-2xl bg-primary/10 p-4 text-primary">
+                <div className="rounded-2xl bg-primary/10 p-3 text-primary">
                   <Mail className="h-5 w-5" />
                 </div>
                 <div>
@@ -113,26 +113,26 @@ export function Contact() {
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="rounded-[2.6rem] border border-white/70 bg-white/78 p-8 shadow-[0_26px_90px_rgba(15,23,42,0.1)] backdrop-blur-2xl md:p-10"
+            className="rounded-[2.1rem] border border-white/70 bg-white/78 p-6 shadow-[0_26px_90px_rgba(15,23,42,0.1)] backdrop-blur-2xl md:p-8"
           >
-            <h3 className="text-3xl font-black tracking-[-0.03em] text-[#0f172a]">Gửi yêu cầu tư vấn</h3>
-            <p className="mt-4 text-sm leading-7 text-[#0f172a]/58">
+            <h3 className="text-2xl font-black tracking-[-0.03em] text-[#0f172a]">Gửi yêu cầu tư vấn</h3>
+            <p className="mt-3 text-sm leading-6 text-[#0f172a]/58">
               Mô tả ngắn nhu cầu đóng mới, sửa chữa hoặc đại tu để đội ngũ kỹ thuật của chúng tôi phản hồi nhanh hơn.
             </p>
 
-            <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
+            <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
               <div className="grid gap-4 md:grid-cols-2">
                 <Input
                   value={form.name}
                   onChange={(event) => updateField("name", event.target.value)}
                   placeholder="Họ và tên"
-                  className="h-14 rounded-2xl border-white bg-[#f8fbff]"
+                  className="h-12 rounded-2xl border-white bg-[#f8fbff]"
                 />
                 <Input
                   value={form.phone}
                   onChange={(event) => updateField("phone", event.target.value)}
                   placeholder="Số điện thoại"
-                  className="h-14 rounded-2xl border-white bg-[#f8fbff]"
+                  className="h-12 rounded-2xl border-white bg-[#f8fbff]"
                 />
               </div>
 
@@ -141,20 +141,20 @@ export function Contact() {
                   value={form.email}
                   onChange={(event) => updateField("email", event.target.value)}
                   placeholder="Email"
-                  className="h-14 rounded-2xl border-white bg-[#f8fbff]"
+                  className="h-12 rounded-2xl border-white bg-[#f8fbff]"
                 />
                 <Input
                   value={form.company}
                   onChange={(event) => updateField("company", event.target.value)}
                   placeholder="Tên công ty"
-                  className="h-14 rounded-2xl border-white bg-[#f8fbff]"
+                  className="h-12 rounded-2xl border-white bg-[#f8fbff]"
                 />
               </div>
 
               <textarea
                 value={form.message}
                 onChange={(event) => updateField("message", event.target.value)}
-                className="h-36 w-full rounded-[1.7rem] border border-white bg-[#f8fbff] p-4 text-sm outline-none transition focus:border-primary/40"
+                className="h-32 w-full rounded-[1.5rem] border border-white bg-[#f8fbff] p-4 text-sm outline-none transition focus:border-primary/40"
                 placeholder="Nội dung yêu cầu..."
               />
 
@@ -171,7 +171,7 @@ export function Contact() {
               <Button
                 type="submit"
                 disabled={submitting}
-                className="h-14 w-full rounded-2xl bg-[#0f172a] text-sm font-black uppercase tracking-[0.22em] text-white hover:bg-primary"
+                className="h-12 w-full rounded-2xl bg-[#0f172a] text-[11px] font-black uppercase tracking-[0.18em] text-white hover:bg-primary"
               >
                 {submitting ? "Đang gửi..." : "Gửi yêu cầu"}
                 <Send className="ml-2 h-4 w-4" />

@@ -1,207 +1,81 @@
 export const siteContent = {
   company: {
-    name: "CÔNG TY TNHH TM KHIÊN HÀ",
-    shortName: "KHIÊN HÀ",
-    tagline: "Đối tác đóng mới và sửa chữa tàu chuyên nghiệp tại Hải Phòng",
+    name: "KHIEN HA CO., LTD",
+    shortName: "KHIEN HA",
+    tagline: "Shipbuilding and repair partner in Hai Phong",
     description:
-      "Khiên Hà được thành lập từ năm 2002, chuyên đóng mới và sửa chữa tàu nội địa, tàu biển, sà lan biển và các phương tiện thủy chuyên dụng với năng lực đến 25.000 DWT.",
+      "Khien Ha was established in 2002 and specializes in shipbuilding, repair, sea barges, and specialized watercraft up to 25,000 DWT.",
     establishedYear: "2002",
   },
   hero: {
     eyebrow: "Shipbuilding Since 2002",
-    titleLine1: "Năng Lực Đóng Tàu",
-    titleLine2: "Vươn Ra Biển Lớn",
+    titleLine1: "Nang Luc Dong Tau",
+    titleLine2: "Vuon Ra Bien Lon",
     subtitle:
-      "Kết hợp đội ngũ kỹ thuật dày dạn kinh nghiệm, hạ tầng hơn 5ha và quy trình quản lý chất lượng nghiêm ngặt để tạo nên những công trình hàng hải bền bỉ, an toàn và đúng tiến độ.",
-    primaryCtaLabel: "Khám phá năng lực",
+      "Ket hop doi ngu ky thuat day dan kinh nghiem, ha tang hon 5ha va quy trinh quan ly chat luong nghiem ngat de tao nen nhung cong trinh hang hai ben bi, an toan va dung tien do.",
+    primaryCtaLabel: "Kham pha nang luc",
     primaryCtaHref: "#services",
-    secondaryCtaLabel: "Xem dự án tiêu biểu",
+    secondaryCtaLabel: "Xem du an tieu bieu",
     secondaryCtaHref: "#gallery",
     highlights: [
-      { label: "25.000 DWT", value: "Năng lực đóng mới" },
-      { label: "10 tàu", value: "Sửa chữa đồng thời" },
-      { label: "20+ năm", value: "Kinh nghiệm thực chiến" },
+      { label: "25.000 DWT", value: "Nang luc dong moi" },
+      { label: "10 tau", value: "Sua chua dong thoi" },
+      { label: "20+ nam", value: "Kinh nghiem thuc chien" },
     ],
   },
   about: {
-    eyebrow: "Về chúng tôi",
-    title: "Nhà máy đóng tàu tư nhân hàng đầu khu vực phía Bắc",
-    highlight: "Hạ tầng lớn, kỹ thuật mạnh, kiểm soát chất lượng chặt.",
+    eyebrow: "Ve chung toi",
+    title: "Nha may dong tau tu nhan hang dau khu vuc phia Bac",
+    highlight: "Ha tang lon, ky thuat manh, kiem soat chat luong chat.",
     description:
-      "Khiên Hà đầu tư đồng bộ từ công nghệ cắt CNC, thiết bị nâng hạ trọng tải lớn, hệ thống bắn cát phun sơn đến đội ngũ kỹ sư, thợ lành nghề nhằm bảo đảm hiệu quả thi công cho từng dự án đóng mới và sửa chữa tàu.",
+      "Khien Ha dau tu dong bo tu cong nghe cat CNC, thiet bi nang ha trong tai lon, he thong ban cat phun son den doi ngu ky su va tho lanh nghe nham bao dam hieu qua thi cong cho tung du an.",
     image: "https://khienha.vn/uploads/anh/367316468994953.jpg",
     certificateLabel: "ISO 9001:2015",
-    certificateText: "Hệ thống quản lý chất lượng cho hoạt động đóng mới và sửa chữa tàu thủy.",
+    certificateText: "He thong quan ly chat luong cho hoat dong dong moi va sua chua tau thuy.",
   },
-  history: [
-    {
-      id: 1,
-      year: "2002",
-      title: "Thành lập",
-      content:
-        "Công ty TNHH TM Khiên Hà chính thức hoạt động tại Hải Phòng, định hướng chuyên sâu lĩnh vực đóng mới và sửa chữa phương tiện thủy.",
-    },
-    {
-      id: 2,
-      year: "2007",
-      title: "Mở rộng cơ sở",
-      content:
-        "Doanh nghiệp mở rộng mặt bằng và dây chuyền sản xuất để đáp ứng nhu cầu đóng sửa tàu ngày càng lớn của thị trường.",
-    },
-    {
-      id: 3,
-      year: "2010",
-      title: "Về vị trí hiện tại",
-      content:
-        "Nhà máy chuyển về xã Chiến Thắng, An Lão với quy mô hạ tầng lớn hơn, tối ưu cho đóng tàu trọng tải cao.",
-    },
-    {
-      id: 4,
-      year: "2021",
-      title: "Nâng cấp năng lực",
-      content:
-        "Được đánh giá và cấp chứng nhận năng lực đóng mới tàu đến 25.000 DWT, tạo bước tiến lớn về quy mô sản xuất.",
-    },
-  ],
-  capacity: [
-    {
-      id: 1,
-      category: "Nhân sự",
-      title: "Đội ngũ kỹ thuật và công nhân lành nghề",
-      detail:
-        "Lực lượng kỹ sư, tổ trưởng và công nhân nhiều năm kinh nghiệm, quen thuộc với các hạng mục đóng mới, cải hoán và sửa chữa phương tiện thủy từ nội địa đến quốc tế.",
-      icon: "Users",
-      image: "https://khienha.vn/uploads/anh/233516468994642.jpg",
-    },
-    {
-      id: 2,
-      category: "Hạ tầng",
-      title: "Nhà xưởng và triền tàu quy mô lớn",
-      detail:
-        "Diện tích hơn 5ha, nhà xưởng trên 4.500m2, hệ thống đường triền cứng dài khoảng 300m, đủ điều kiện phục vụ đóng mới tàu có tải trọng lớn.",
-      icon: "Building2",
-      image: "https://khienha.vn/uploads/anh/367316468994953.jpg",
-    },
-    {
-      id: 3,
-      category: "Thiết bị",
-      title: "Cẩu, máy cắt và gia công chính xác",
-      detail:
-        "Trang bị dầm cổng trục 200 tấn, 100 tấn, dàn cẩu trục 60 tấn, 30 tấn cùng hệ thống CNC phục vụ sản xuất kết cấu chính xác và an toàn.",
-      icon: "Cpu",
-      image: "https://khienha.vn/uploads/anh/299816468995344.jpg",
-    },
-    {
-      id: 4,
-      category: "Công nghệ bề mặt",
-      title: "Bắn cát, phun sơn và hoàn thiện đồng bộ",
-      detail:
-        "Hệ thống khí nén khép kín, năng suất cao giúp xử lý bề mặt, sơn phủ và hoàn thiện đạt chuẩn kỹ thuật cho nhiều loại tàu và sà lan biển.",
-      icon: "Wind",
-      image: "https://khienha.vn/uploads/anh/639616469009097.jpg",
-    },
-  ],
-  quality: {
-    title: "Quy trình quản lý chất lượng nhiều lớp",
-    description:
-      "Khiên Hà kiểm soát chất lượng từ khâu tiếp nhận vật tư, gia công, lắp ráp, thử nghiệm đến bàn giao nhằm bảo đảm độ an toàn, độ bền và tiến độ dự án.",
-    image: "https://khienha.vn/uploads/tintuc/1701647416008iso.png",
-    mainImage: "https://khienha.vn/uploads/tintuc/1701647416008iso.png",
-    steps: [
-      {
-        id: 1,
-        step: "Bước 1",
-        title: "Kiểm tra vật tư đầu vào và hồ sơ kỹ thuật trước khi gia công.",
-      },
-      {
-        id: 2,
-        step: "Bước 2",
-        title: "Giám sát từng công đoạn cắt, hàn, lắp ráp, căn chỉnh kết cấu thân tàu.",
-      },
-      {
-        id: 3,
-        step: "Bước 3",
-        title: "Nghiệm thu nội bộ, chạy thử và hoàn thiện hồ sơ bàn giao theo tiêu chuẩn hiện hành.",
-      },
-    ],
-  },
-  goals: [
-    {
-      id: 1,
-      title: "Tầm nhìn 2030",
-      content:
-        "Trở thành đối tác đóng mới và sửa chữa tàu uy tín hàng đầu khu vực miền Bắc, đủ năng lực đáp ứng các dự án ngày càng phức tạp.",
-    },
-    {
-      id: 2,
-      title: "Sứ mệnh",
-      content:
-        "Mang đến những công trình hàng hải an toàn, bền bỉ và hiệu quả kinh tế cho khách hàng trong và ngoài nước.",
-    },
-    {
-      id: 3,
-      title: "Cam kết",
-      content:
-        "Tập trung vào chất lượng, tiến độ, an toàn lao động và dịch vụ hậu mãi minh bạch.",
-    },
-  ],
-  gallery: [
-    {
-      id: 1,
-      url: "https://khienha.vn/uploads/anh/79371608532527Tau 9000T.jpg",
-      title: "Tàu hàng 9.000T",
-      category: "Đóng mới",
-    },
-    {
-      id: 2,
-      url: "https://khienha.vn/uploads/anh/89831647418380Tau du lich.jpg",
-      title: "Tàu du lịch cao cấp",
-      category: "Dự án du lịch",
-    },
-    {
-      id: 3,
-      url: "https://khienha.vn/uploads/anh/92011647418432Tau ca nghe luoi chup.jpg",
-      title: "Tàu cá vỏ thép",
-      category: "Nghề cá",
-    },
-    {
-      id: 4,
-      url: "https://khienha.vn/uploads/anh/233516468994642.jpg",
-      title: "Lắp ráp phân đoạn",
-      category: "Thi công",
-    },
-    {
-      id: 5,
-      url: "https://khienha.vn/uploads/anh/299816468995344.jpg",
-      title: "Xưởng cơ khí",
-      category: "Nhà xưởng",
-    },
-    {
-      id: 6,
-      url: "https://khienha.vn/uploads/anh/639616469009097.jpg",
-      title: "Sà lan biển",
-      category: "Sản phẩm",
-    },
-  ],
   contact: {
-    eyebrow: "Liên hệ",
-    title: "Kết nối với Khiên Hà",
-    description:
-      "Gửi nhu cầu đóng mới, sửa chữa, đại tu hoặc tư vấn kỹ thuật để đội ngũ chúng tôi phản hồi nhanh chóng.",
-    address: "Xã Chiến Thắng, huyện An Lão, Hải Phòng, Việt Nam",
+    eyebrow: "Lien he",
+    title: "Ket noi voi Khien Ha",
+    description: "Gui nhu cau dong moi, sua chua hoac tu van ky thuat de doi ngu chung toi phan hoi nhanh chong.",
+    address: "Xa Chien Thang, huyen An Lao, Hai Phong, Viet Nam",
     phone: "(+84-31) 3903088",
     fax: "(+84-31) 3903088",
     hotline: "0913 598 034",
     email: "khienhadongtau18@gmail.com",
   },
+  history: [
+    { id: 1, year: "2002", title: "Thanh lap", content: "Cong ty TNHH TM Khien Ha chinh thuc hoat dong tai Hai Phong, dinh huong chuyen sau linh vuc dong moi va sua chua phuong tien thuy." },
+    { id: 2, year: "2007", title: "Mo rong co so", content: "Doanh nghiep mo rong mat bang va day chuyen san xuat de dap ung nhu cau dong sua tau ngay cang lon cua thi truong." },
+    { id: 3, year: "2010", title: "Chuyen ve An Lao", content: "Nha may chuyen ve xa Chien Thang, An Lao voi quy mo ha tang lon hon, toi uu cho dong tau trong tai cao." },
+  ],
+  capacity: [
+    { id: 1, category: "Nhan su", title: "Doi ngu ky thuat va cong nhan lanh nghe", detail: "Luc luong ky su, to truong va cong nhan nhieu nam kinh nghiem, quen thuoc voi cac hang muc dong moi, cai hoan va sua chua phuong tien thuy.", icon: "Users", image: "https://khienha.vn/uploads/anh/233516468994642.jpg" },
+    { id: 2, category: "Ha tang", title: "Nha xuong va trien tau quy mo lon", detail: "Dien tich hon 5ha, nha xuong tren 4.500m2, he thong duong trien cung dai khoang 300m, du dieu kien phuc vu dong moi tau co tai trong lon.", icon: "Building2", image: "https://khienha.vn/uploads/anh/367316468994953.jpg" },
+    { id: 3, category: "Thiet bi", title: "Cau, may cat va gia cong chinh xac", detail: "Trang bi dam cong truc 200 tan, 100 tan, dan cau truc 60 tan, 30 tan cung he thong CNC phuc vu san xuat ket cau chinh xac va an toan.", icon: "Cpu", image: "https://khienha.vn/uploads/anh/299816468995344.jpg" },
+  ],
+  quality: {
+    title: "Quy trinh quan ly chat luong nhieu lop",
+    description: "Khiên Hà kiểm soát chất lượng từ tiếp nhận vật tư đến bàn giao nhằm bảo đảm độ bền, an toàn và tiến độ dự án.",
+    image: "https://khienha.vn/uploads/tintuc/1701647416008iso.png",
+    mainImage: "https://khienha.vn/uploads/tintuc/1701647416008iso.png",
+    steps: [
+      { id: 1, step: "Buoc 1", title: "Kiem tra vat tu dau vao va ho so ky thuat truoc khi gia cong." },
+      { id: 2, step: "Buoc 2", title: "Giam sat cong doan cat, tao hinh, lap rap va han than tau." },
+      { id: 3, step: "Buoc 3", title: "Do kiem sai so kich thuoc, kiem tra moi han va hieu chinh." },
+    ],
+  },
+  goals: [
+    { id: 1, title: "Tam nhin 2030", content: "Tro thanh doi tac dong moi va sua chua tau uy tin hang dau khu vuc mien Bac." },
+    { id: 2, title: "Su menh", content: "Mang den nhung cong trinh hang hai an toan, ben bi va hieu qua kinh te." },
+  ],
+  gallery: [
+    { id: 1, url: "https://khienha.vn/uploads/anh/79371608532527Tau 9000T.jpg", title: "Tau hang 9.000T", category: "Dong moi" },
+    { id: 2, url: "https://khienha.vn/uploads/anh/233516468994642.jpg", title: "Lap rap phan doan", category: "Thi cong" },
+    { id: 3, url: "https://khienha.vn/uploads/anh/367316468994953.jpg", title: "Khu trien tau ngoai bai", category: "Ha tang" },
+  ],
   banners: [
     "https://khienha.vn/uploads/anh/367316468994953.jpg",
     "https://khienha.vn/uploads/anh/299816468995344.jpg",
     "https://khienha.vn/uploads/anh/724016468995605.jpg",
-    "https://khienha.vn/uploads/anh/810916469000106.jpg",
-    "https://khienha.vn/uploads/anh/7851646900891Tau%20du%20lich.jpg",
-    "https://khienha.vn/uploads/anh/639616469009097.jpg",
   ],
 };
-
-export const bannerImages = siteContent.banners;

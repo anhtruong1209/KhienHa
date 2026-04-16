@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Maximize2, X } from "lucide-react";
+import { GALLERY_CATEGORY_OPTIONS, resolveGalleryCategoryValue } from "@/data/category-options";
 import { getSiteContent } from "@/services/api";
 
 export function Gallery() {
@@ -19,57 +20,57 @@ export function Gallery() {
     load();
   }, []);
 
-  const categories = Array.from(new Set(images.map((item) => item.category).filter(Boolean)));
-  const filteredImages = images.filter((item) => (activeCategory === "all" ? true : item.category === activeCategory));
+  const categories = GALLERY_CATEGORY_OPTIONS;
+  const filteredImages = images.filter((item) => (activeCategory === "all" ? true : resolveGalleryCategoryValue(item.category) === activeCategory));
 
   return (
     <section id="gallery" className="section-padding bg-[#eef7ff]">
       <div className="container">
-        <div className="mb-10 flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
+        <div className="mb-8 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <div className="max-w-2xl">
-            <div className="mb-5 inline-flex items-center gap-3 rounded-full bg-white px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-primary shadow-sm">
+            <div className="mb-4 inline-flex items-center gap-3 rounded-full bg-white px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-primary shadow-sm">
               <span className="h-2 w-2 rounded-full bg-primary" />
               Hình ảnh hoạt động
             </div>
-            <h2 className="text-4xl font-black tracking-[-0.04em] text-[#0f172a] md:text-5xl">
+            <h2 className="text-3xl font-black tracking-[-0.04em] text-[#0f172a] md:text-4xl">
               Những dự án tiêu biểu tại nhà máy
             </h2>
           </div>
 
-          <div className="max-w-xl text-sm leading-7 text-[#0f172a]/58">
+          <div className="max-w-xl text-sm leading-6 text-[#0f172a]/58">
             Chọn nhóm dự án để lọc nhanh hình ảnh theo từng mảng hoạt động, từ đóng mới đến nhà xưởng và bàn giao.
           </div>
         </div>
 
-        <div className="mb-8 flex flex-wrap gap-3">
+        <div className="mb-6 flex flex-wrap gap-2.5">
           <button
             type="button"
             onClick={() => setActiveCategory("all")}
             className={activeCategory === "all"
-              ? "rounded-full bg-[#0f172a] px-5 py-3 text-[11px] font-black uppercase tracking-[0.22em] text-white"
-              : "rounded-full border border-slate-200 bg-white px-5 py-3 text-[11px] font-black uppercase tracking-[0.22em] text-slate-600 transition-colors hover:border-primary hover:text-primary"}
+              ? "rounded-full bg-[#0f172a] px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.18em] text-white"
+              : "rounded-full border border-slate-200 bg-white px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.18em] text-slate-600 transition-colors hover:border-primary hover:text-primary"}
           >
             Tất cả
           </button>
           {categories.map((category) => (
             <button
-              key={category}
+              key={category.value}
               type="button"
-              onClick={() => setActiveCategory(category)}
-              className={activeCategory === category
-                ? "rounded-full bg-primary px-5 py-3 text-[11px] font-black uppercase tracking-[0.22em] text-white"
-                : "rounded-full border border-slate-200 bg-white px-5 py-3 text-[11px] font-black uppercase tracking-[0.22em] text-slate-600 transition-colors hover:border-primary hover:text-primary"}
+              onClick={() => setActiveCategory(category.value)}
+              className={activeCategory === category.value
+                ? "rounded-full bg-primary px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.18em] text-white"
+                : "rounded-full border border-slate-200 bg-white px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.18em] text-slate-600 transition-colors hover:border-primary hover:text-primary"}
             >
-              {category}
+              {category.label}
             </button>
           ))}
         </div>
 
-        <div className="mb-8 text-sm text-[#0f172a]/58">
+        <div className="mb-6 text-sm text-[#0f172a]/58">
           Đang hiển thị {filteredImages.length} hình ảnh {activeCategory === "all" ? "từ toàn bộ nhà máy" : `thuộc nhóm ${activeCategory}`}.
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
           {filteredImages.map((img, index) => (
             <motion.button
               key={img.id || index}
@@ -78,7 +79,7 @@ export function Gallery() {
               viewport={{ once: true }}
               transition={{ delay: index * 0.04 }}
               onClick={() => setSelected(img)}
-              className="group relative aspect-[4/3] overflow-hidden rounded-[2rem] border border-white/70 text-left shadow-[0_24px_80px_rgba(15,23,42,0.1)]"
+              className="group relative aspect-[4/3] overflow-hidden rounded-[1.7rem] border border-white/70 text-left shadow-[0_24px_80px_rgba(15,23,42,0.1)]"
             >
               <img
                 src={img.url}
@@ -86,12 +87,12 @@ export function Gallery() {
                 className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent,rgba(15,23,42,0.78))]" />
-              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-6 p-6">
+              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5">
                 <div>
-                  <div className="text-[10px] font-black uppercase tracking-[0.24em] text-[#7dd3fc]">{img.category}</div>
-                  <h3 className="mt-3 text-xl font-black text-white">{img.title}</h3>
+                  <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[#7dd3fc]">{img.category}</div>
+                  <h3 className="mt-2 text-lg font-black text-white">{img.title}</h3>
                 </div>
-                <div className="rounded-2xl border border-white/20 bg-white/12 p-3 text-white backdrop-blur-xl">
+                <div className="rounded-2xl border border-white/20 bg-white/12 p-2.5 text-white backdrop-blur-xl">
                   <Maximize2 className="h-4 w-4" />
                 </div>
               </div>
@@ -122,7 +123,8 @@ export function Gallery() {
                   <div className="text-[11px] font-black uppercase tracking-[0.24em] text-[#7dd3fc]">{selected.category}</div>
                   <h3 className="mt-4 text-3xl font-black">{selected.title}</h3>
                   <p className="mt-6 text-sm leading-7 text-white/70">
-                    Không gian nhà máy, tiến độ thi công và sản phẩm thực tế được cập nhật nhằm phản ánh năng lực vận hành, tổ chức sản xuất và mức độ hoàn thiện của các dự án trọng điểm.
+                    Không gian nhà máy, tiến độ thi công và sản phẩm thực tế được cập nhật nhằm phản ánh năng lực vận hành,
+                    tổ chức sản xuất và mức độ hoàn thiện của các dự án trọng điểm.
                   </p>
                 </div>
               </div>

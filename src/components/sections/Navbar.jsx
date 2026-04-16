@@ -17,22 +17,22 @@ const menu = [
 export function Navbar() {
   return (
     <nav className="fixed inset-x-0 top-0 z-50 border-b border-white/70 bg-white/72 backdrop-blur-2xl">
-      <div className="container flex items-center justify-between py-3">
+      <div className="container flex items-center justify-between py-2.5">
         <Link href="/" className="flex items-center gap-3">
-          <div className="overflow-hidden rounded-2xl border border-white/70 bg-white shadow-sm">
-            <img src="/logo.png" alt="Khiên Hà" className="h-12 w-12 object-cover" />
+          <div className="overflow-hidden">
+            <img src="/logo.png" alt="Khiên Hà" className="h-10 w-10 object-contain" />
           </div>
           <div>
-            <div className="text-lg font-black tracking-[-0.04em] text-[#0f172a]">KHIÊN HÀ</div>
+            <div className="text-base font-black tracking-[-0.04em] text-[#0f172a]">KHIÊN HÀ</div>
           </div>
         </Link>
 
-        <div className="hidden items-center gap-8 lg:flex">
+        <div className="hidden items-center gap-6 lg:flex">
           {menu.map((item) => (
             <a
               key={item.label}
               href={item.href}
-              className="text-[12px] font-black uppercase tracking-[0.22em] text-[#0f172a]/58 transition-colors hover:text-primary"
+              className="text-[11px] font-black uppercase tracking-[0.2em] text-[#0f172a]/58 transition-colors hover:text-primary"
             >
               {item.label}
             </a>
@@ -41,12 +41,12 @@ export function Navbar() {
 
         <div className="flex items-center gap-3">
           <Link href="/admin">
-            <Button variant="outline" className="hidden h-11 rounded-2xl border-slate-200 px-5 font-black sm:inline-flex">
+            <Button variant="outline" className="hidden h-10 rounded-2xl border-slate-200 px-4 font-black sm:inline-flex">
               Đăng nhập
             </Button>
           </Link>
           <a href="#contact">
-            <Button className="hidden h-11 rounded-2xl bg-[#0f172a] px-6 font-black text-white hover:bg-primary sm:inline-flex">
+            <Button className="hidden h-10 rounded-2xl bg-[#0f172a] px-5 font-black text-white hover:bg-primary sm:inline-flex">
               Liên hệ ngay
             </Button>
           </a>

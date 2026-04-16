@@ -19,40 +19,30 @@ export function Footer() {
   }, []);
 
   return (
-    <footer className="bg-[#0f172a] py-14 text-white">
+    <footer className="bg-[#0f172a] py-12 text-white">
       <div className="container">
-        <div className="grid gap-10 md:grid-cols-[1.15fr_0.85fr_0.9fr]">
+        <div className="grid gap-8 md:grid-cols-[1.15fr_0.85fr_0.9fr]">
           <div>
             <div className="flex items-center gap-4">
-              <div className="flex h-16 w-16 items-center justify-center rounded-[1.35rem] bg-white shadow-[0_12px_30px_rgba(0,0,0,0.18)]">
-                <img src="/logo.png" alt="Khiên Hà" className="h-12 w-12 object-contain" />
+              <div>
+                <img src="/logo.png" alt="Khiên Hà" className="h-14 w-14 object-contain" />
               </div>
               <div>
-                <div className="text-2xl font-black tracking-[-0.04em]">{company?.shortName || "KHIÊN HÀ"}</div>
-                <div className="text-[11px] font-black uppercase tracking-[0.24em] text-[#7dd3fc]">
-                  {company?.tagline}
-                </div>
+                <div className="text-xl font-black tracking-[-0.04em]">{company?.shortName || "KHIÊN HÀ"}</div>
+                <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[#7dd3fc]">{company?.tagline}</div>
               </div>
             </div>
 
-            <p className="mt-6 max-w-xl text-sm leading-8 text-white/65">{company?.description}</p>
+            <p className="mt-5 max-w-xl text-sm leading-7 text-white/65">{company?.description}</p>
           </div>
 
           <div>
             <div className="text-sm font-black uppercase tracking-[0.24em] text-white/45">Liên kết nhanh</div>
             <div className="mt-5 space-y-3 text-sm text-white/75">
-              <a href="#about" className="block transition-colors hover:text-[#7dd3fc]">
-                Giới thiệu
-              </a>
-              <a href="#services" className="block transition-colors hover:text-[#7dd3fc]">
-                Năng lực hoạt động
-              </a>
-              <a href="#gallery" className="block transition-colors hover:text-[#7dd3fc]">
-                Dự án tiêu biểu
-              </a>
-              <a href="#contact" className="block transition-colors hover:text-[#7dd3fc]">
-                Liên hệ
-              </a>
+              <a href="#about" className="block transition-colors hover:text-[#7dd3fc]">Giới thiệu</a>
+              <a href="#services" className="block transition-colors hover:text-[#7dd3fc]">Năng lực hoạt động</a>
+              <a href="#gallery" className="block transition-colors hover:text-[#7dd3fc]">Dự án tiêu biểu</a>
+              <a href="#contact" className="block transition-colors hover:text-[#7dd3fc]">Liên hệ</a>
             </div>
           </div>
 
@@ -79,8 +69,8 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 border-t border-white/10 pt-6 text-sm text-white/45">
-          © 2026 {company?.name || "CÔNG TY TNHH TM KHIÊN HÀ"}. All rights reserved.
+        <div className="mt-10 border-t border-white/10 pt-5 text-sm text-white/45">
+          © 2026 {company?.name || "KHIEN HA CO., LTD"}. All rights reserved.
         </div>
       </div>
     </footer>

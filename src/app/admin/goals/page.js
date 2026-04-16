@@ -3,7 +3,6 @@
 import React, { startTransition, useEffect, useState } from "react";
 import { DeleteOutlined, EditOutlined, FlagOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Card, Form, Input, Modal, Space, Typography, message } from "antd";
-import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { getSiteContent, updateSiteContent } from "@/services/api";
 
 const { Text, Title } = Typography;
@@ -82,19 +81,10 @@ export default function GoalsManager() {
   async function handleSave() {
     try {
       const values = await form.validateFields();
-      const nextRecord = {
-        id: values.id || Date.now(),
-        title: values.title,
-        content: values.content,
-      };
-
-      const nextData = values.id
-        ? data.map((item) => (item.id === values.id ? nextRecord : item))
-        : [...data, nextRecord];
-
+      const nextRecord = { id: values.id || Date.now(), title: values.title, content: values.content };
+      const nextData = values.id ? data.map((item) => (item.id === values.id ? nextRecord : item)) : [...data, nextRecord];
       const success = await persist(nextData);
       if (!success) return;
-
       setIsModalOpen(false);
       form.resetFields();
     } catch (error) {
@@ -105,80 +95,91 @@ export default function GoalsManager() {
 
   return (
     <div className="space-y-8">
-      <AdminPageHeader
-        eyebrow="Strategic goals"
-        icon={<FlagOutlined />}
-        title="Mục tiêu chiến lược"
-        description="Quản lý các khối tầm nhìn, sứ mệnh và cam kết để phần giới thiệu thương hiệu ngoài frontend có định hướng rõ ràng hơn."
-        actions={[
-          <Button key="create" type="primary" icon={<PlusOutlined />} className="h-11 rounded-2xl px-5 font-semibold" onClick={openCreateModal}>
-            Thêm mục tiêu
-          </Button>,
-        ]}
-      />
-
+      <div style={{ marginTop: "10px" }}>
+      </div>
       <div className="grid gap-4 md:grid-cols-3">
-        <Card bordered={false} className="rounded-[28px] shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+        <Card variant="none" className="rounded-[28px] shadow-[0_18px_50px_rgba(15,23,42,0.06)] bg-white">
           <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Tổng mục tiêu</div>
           <div className="mt-4 text-4xl font-black text-slate-900">{data.length}</div>
         </Card>
-        <Card bordered={false} className="rounded-[28px] shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Thẻ dài nhất</div>
-          <div className="mt-4 text-4xl font-black text-slate-900">{Math.max(...data.map((item) => item.content?.length || 0), 0)}</div>
-          <Text className="mt-2 block text-sm text-slate-500">Số ký tự mô tả lớn nhất hiện có.</Text>
+        <Card variant="none" className="rounded-[28px] shadow-[0_18px_50px_rgba(15,23,42,0.06)] bg-white">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-500">Độ hoàn thiện</div>
+          <div className="mt-4 text-xl font-black text-slate-900 flex items-center gap-2">
+            <div className={`h-2.5 w-2.5 rounded-full ${data.length >= 3 ? 'bg-green-500' : 'bg-orange-400'}`}></div>
+            {data.length >= 3 ? 'Đã tối ưu' : 'Cần thêm mục'}
+          </div>
         </Card>
-        <Card bordered={false} className="rounded-[28px] bg-[#071b2f] text-white shadow-[0_18px_50px_rgba(7,27,47,0.18)]">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-200">Gợi ý hiển thị</div>
-          <div className="mt-4 text-2xl font-black">3 - 5 khối nổi bật</div>
-          <Text className="mt-3 block text-sm leading-7 text-slate-300">Phần ngoài frontend đẹp nhất khi giữ số lượng vừa phải nhưng nội dung súc tích và rõ thông điệp.</Text>
+        <Card variant="none" className="rounded-[28px] bg-slate-900 text-white shadow-[0_18px_50px_rgba(7,27,47,0.18)]">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-200">Gợi ý</div>
+          <div className="mt-4 text-sm leading-relaxed text-slate-300">Nên có từ 3 đến 5 mục tiêu để frontend cân đối.</div>
         </Card>
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-2">
+      <div className="grid gap-6 xl:grid-cols-2">
         {data.map((item, index) => (
-          <Card key={item.id} bordered={false} loading={loading} className="rounded-[30px] shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
+          <Card
+            key={item.id}
+            variant="none"
+            loading={loading}
+            className="group rounded-[32px] bg-white shadow-[0_20px_50px_rgba(15,23,42,0.05)] transition-all hover:shadow-[0_30px_70px_rgba(15,23,42,0.1)]"
+          >
             <div className="flex items-start justify-between gap-4">
-              <div>
-                <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Goal {index + 1}</div>
-                <Title level={4} className="!mb-2 !mt-3 !text-slate-900">
-                  {item.title}
-                </Title>
+              <div className="flex-1">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-600 transition-colors group-hover:bg-cyan-600 group-hover:text-white">
+                  <FlagOutlined className="text-xl" />
+                </div>
+                <div className="mt-4 text-[10px] font-bold uppercase tracking-[0.24em] text-slate-400">Mục tiêu chiến lược {index + 1}</div>
+                <Title level={4} className="!mb-3 !mt-2 !text-slate-900 !font-black !leading-tight">{item.title}</Title>
+                <div className="mb-4 text-sm leading-relaxed text-slate-500">{item.content}</div>
               </div>
-              <Space>
-                <Button type="text" icon={<EditOutlined />} onClick={() => openEditModal(item)} />
-                <Button type="text" danger icon={<DeleteOutlined />} onClick={() => handleDelete(item)} />
-              </Space>
+              <div className="flex flex-col gap-2">
+                <Button
+                  type="text"
+                  shape="circle"
+                  icon={<EditOutlined className="text-slate-400" />}
+                  onClick={() => openEditModal(item)}
+                  className="hover:bg-blue-50"
+                />
+                <Button
+                  type="text"
+                  shape="circle"
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={() => handleDelete(item)}
+                  className="hover:bg-red-50"
+                />
+              </div>
             </div>
-            <Text className="text-sm leading-7 text-slate-500">{item.content}</Text>
+            <div className="mt-2 h-1 w-24 rounded-full bg-slate-50 overflow-hidden">
+              <div className="h-full bg-cyan-400 w-1/3 transition-all group-hover:w-full"></div>
+            </div>
           </Card>
         ))}
       </div>
 
-      {data.length === 0 ? (
-        <Card bordered={false} className="rounded-[30px] border border-dashed border-slate-200 bg-slate-50 shadow-none">
-          <div className="py-12 text-center text-sm text-slate-500">Chưa có mục tiêu chiến lược nào. Hãy tạo mục đầu tiên để phần giới thiệu ngoài frontend đầy đặn hơn.</div>
+      {data.length === 0 && (
+        <Card bordered={false} className="rounded-[32px] border-2 border-dashed border-slate-100 bg-slate-50/50 p-20 text-center shadow-none">
+          <FlagOutlined className="text-4xl text-slate-200 mb-4" />
+          <div className="text-sm font-bold text-slate-400 uppercase tracking-widest">Chưa có mục tiêu nào được thiết lập</div>
         </Card>
-      ) : null}
+      )}
 
-      <Modal
-        title={form.getFieldValue("id") ? "Chỉnh sửa mục tiêu" : "Thêm mục tiêu mới"}
-        open={isModalOpen}
-        onOk={handleSave}
-        onCancel={() => setIsModalOpen(false)}
-        okText="Lưu mục tiêu"
-        cancelText="Hủy"
-        confirmLoading={saving}
-      >
+      <div className="mt-8 flex justify-center border-t border-slate-50 pt-10">
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={openCreateModal}
+          className="h-12 rounded-2xl bg-slate-900 px-10 text-[11px] font-black uppercase tracking-[0.18em] text-white shadow-xl transition-all hover:scale-105 hover:bg-blue-600"
+        >
+          Thêm mục tiêu mới
+        </Button>
+      </div>
+
+      <Modal title={form.getFieldValue("id") ? "Chỉnh sửa mục tiêu" : "Thêm mục tiêu mới"} open={isModalOpen} onOk={handleSave} onCancel={() => setIsModalOpen(false)} okText="Lưu mục tiêu" cancelText="Hủy" confirmLoading={saving}>
         <Form form={form} layout="vertical" className="mt-5">
-          <Form.Item name="id" hidden>
-            <Input />
-          </Form.Item>
-          <Form.Item name="title" label="Tiêu đề" rules={[{ required: true, message: "Vui lòng nhập tiêu đề." }]}>
-            <Input placeholder="Ví dụ: Tầm nhìn 2030" />
-          </Form.Item>
-          <Form.Item name="content" label="Mô tả" rules={[{ required: true, message: "Vui lòng nhập mô tả." }]}>
-            <Input.TextArea rows={5} placeholder="Mô tả mục tiêu, định hướng hoặc cam kết muốn hiển thị trên website." />
-          </Form.Item>
+          <Form.Item name="id" hidden><Input /></Form.Item>
+          <Form.Item name="title" label="Tiêu đề" rules={[{ required: true, message: "Vui lòng nhập tiêu đề." }]}><Input placeholder="Ví dụ: Tầm nhìn 2030" /></Form.Item>
+          <Form.Item name="content" label="Mô tả" rules={[{ required: true, message: "Vui lòng nhập mô tả." }]}><Input.TextArea rows={5} placeholder="Mô tả mục tiêu, định hướng hoặc cam kết muốn hiển thị trên website." /></Form.Item>
         </Form>
       </Modal>
     </div>

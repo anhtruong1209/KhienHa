@@ -1,9 +1,8 @@
 "use client";
 
 import React, { startTransition, useEffect, useState } from "react";
-import { AppstoreOutlined, SaveOutlined } from "@ant-design/icons";
-import { Button, Card, Form, Input, Tag, Typography, Upload, message } from "antd";
-import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import { SaveOutlined } from "@ant-design/icons";
+import { Button, Card, Form, Input, Tag, Typography, message } from "antd";
 import { getSiteContent, updateSiteContent } from "@/services/api";
 
 const { Text, Title } = Typography;
@@ -13,7 +12,6 @@ export default function SiteContentManager() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [content, setContent] = useState({});
-  const [aboutImage, setAboutImage] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -25,7 +23,6 @@ export default function SiteContentManager() {
 
       startTransition(() => {
         setContent(data || {});
-        setAboutImage(data?.about?.image || "");
         form.setFieldsValue({
           companyName: data?.company?.name,
           companyTagline: data?.company?.tagline,
@@ -53,17 +50,6 @@ export default function SiteContentManager() {
     };
   }, [form]);
 
-  function handleUpload(info) {
-    const file = info.file.originFileObj;
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setAboutImage(event.target?.result || "");
-    };
-    reader.readAsDataURL(file);
-  }
-
   async function handleSave() {
     try {
       setSaving(true);
@@ -87,7 +73,7 @@ export default function SiteContentManager() {
           title: values.aboutTitle,
           highlight: values.aboutHighlight,
           description: values.aboutDescription,
-          image: aboutImage || content?.about?.image,
+          image: "",
         },
         contact: {
           ...(content.contact || {}),
@@ -119,22 +105,24 @@ export default function SiteContentManager() {
   }
 
   return (
-    <div className="space-y-8">
-      <AdminPageHeader
-        eyebrow="Homepage content"
-        icon={<AppstoreOutlined />}
-        title="Site content"
-        description="Chỉnh nhanh các khối quan trọng ngoài landing page và xem trước nội dung đang chuẩn bị xuất bản."
-        actions={[
-          <Button key="save" type="primary" icon={<SaveOutlined />} onClick={handleSave} loading={saving} className="h-11 rounded-2xl px-5 font-semibold">
+    <div className="space-y-6">
+      <Card variant="none" className="rounded-[24px] shadow-[0_14px_40px_rgba(15,23,42,0.05)]" style={{ marginTop: "15px", marginBottom: "15px" }}>
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <Text className="text-sm leading-7 text-slate-500">
+              Phần giới thiệu ngoài landing page đã chuyển sang layout không dùng ảnh, nên mục này chỉ còn tiêu đề, highlight và mô tả.
+            </Text>
+          </div>
+
+          <Button type="primary" icon={<SaveOutlined />} onClick={handleSave} loading={saving} className="h-11 rounded-2xl px-5 font-semibold">
             Lưu thay đổi
-          </Button>,
-        ]}
-      />
+          </Button>
+        </div>
+      </Card>
 
       <div className="grid gap-6 2xl:grid-cols-[minmax(0,1.38fr)_minmax(360px,420px)]">
         <Form form={form} layout="vertical" className="grid gap-6">
-          <Card loading={loading} title="Thông tin công ty" bordered={false} className="rounded-[30px] shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
+          <Card loading={loading} title="Thông tin công ty" variant="none" className="rounded-[30px] shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
             <div className="grid gap-4 md:grid-cols-2">
               <Form.Item name="companyName" label="Tên công ty" rules={[{ required: true, message: "Vui lòng nhập tên công ty." }]}>
                 <Input placeholder="CÔNG TY TNHH TM KHIÊN HÀ" />
@@ -145,7 +133,7 @@ export default function SiteContentManager() {
             </div>
           </Card>
 
-          <Card loading={loading} title="Hero section" bordered={false} className="rounded-[30px] shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
+          <Card loading={loading} title="Hero section" variant="none" className="rounded-[30px] shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
             <div className="grid gap-4 md:grid-cols-2">
               <Form.Item name="heroTitleLine1" label="Tiêu đề dòng 1" rules={[{ required: true, message: "Vui lòng nhập tiêu đề." }]}>
                 <Input />
@@ -159,7 +147,11 @@ export default function SiteContentManager() {
             </Form.Item>
           </Card>
 
-          <Card loading={loading} title="Giới thiệu" bordered={false} className="rounded-[30px] shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
+          <Card loading={loading} title="Giới thiệu" variant="none" className="rounded-[30px] shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
+            <div className="mb-4 rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-7 text-slate-500">
+              Section này không còn dùng ảnh giới thiệu. Bạn chỉ cần quản lý phần chữ để landing page hiển thị gọn hơn.
+            </div>
+
             <div className="grid gap-4">
               <Form.Item name="aboutTitle" label="Tiêu đề" rules={[{ required: true, message: "Vui lòng nhập tiêu đề." }]}>
                 <Input />
@@ -170,16 +162,10 @@ export default function SiteContentManager() {
               <Form.Item name="aboutDescription" label="Mô tả">
                 <Input.TextArea rows={6} />
               </Form.Item>
-              <Form.Item label="Ảnh giới thiệu">
-                <Upload showUploadList={false} beforeUpload={() => false} onChange={handleUpload}>
-                  <Button className="rounded-xl">Chọn ảnh mới</Button>
-                </Upload>
-                {aboutImage ? <img src={aboutImage} alt="About" className="mt-4 h-52 w-full rounded-3xl object-cover" /> : null}
-              </Form.Item>
             </div>
           </Card>
 
-          <Card loading={loading} title="Liên hệ" bordered={false} className="rounded-[30px] shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
+          <Card loading={loading} title="Liên hệ" variant="none" className="rounded-[30px] shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
             <Form.Item name="contactTitle" label="Tiêu đề">
               <Input />
             </Form.Item>
@@ -204,13 +190,10 @@ export default function SiteContentManager() {
         </Form>
 
         <div className="space-y-6 2xl:sticky 2xl:top-5 2xl:self-start">
-          <Card bordered={false} className="overflow-hidden rounded-[30px] bg-[#071b2f] text-white shadow-[0_24px_70px_rgba(7,27,47,0.22)]">
+          <Card variant="none" className="overflow-hidden rounded-[30px] bg-[#071b2f] text-white shadow-[0_24px_70px_rgba(7,27,47,0.22)]">
             <div className="mb-5 flex flex-wrap gap-2">
               <Tag color="cyan" variant="filled">
                 Preview
-              </Tag>
-              <Tag color="blue" variant="filled">
-                MySQL local
               </Tag>
             </div>
             <Title level={4} className="!mb-1 !text-white">
@@ -232,7 +215,23 @@ export default function SiteContentManager() {
             </div>
           </Card>
 
-          <Card bordered={false} className="rounded-[30px] shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
+          <Card variant="none" className="rounded-[30px] shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
+            <Text className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Giới thiệu preview</Text>
+            <Title level={4} className="!mb-2 !mt-4 !text-slate-950">
+              {form.getFieldValue("aboutTitle") || content?.about?.title || "Chưa có tiêu đề giới thiệu"}
+            </Title>
+            <div className="text-sm font-semibold text-[#0b6aa2]">
+              {form.getFieldValue("aboutHighlight") || content?.about?.highlight || "Dòng nhấn mạnh sẽ hiển thị ở đây."}
+            </div>
+            <div className="mt-3 text-sm leading-7 text-slate-500">
+              {form.getFieldValue("aboutDescription") || content?.about?.description || "Mô tả giới thiệu sẽ hiển thị ở đây."}
+            </div>
+            <div className="mt-4 rounded-[18px] border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-6 text-slate-500">
+              Khối giới thiệu ngoài landing page hiện chỉ dùng text và các card năng lực, không còn ảnh minh họa.
+            </div>
+          </Card>
+
+          <Card variant="none" className="rounded-[30px] shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
             <Text className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Xem nhanh liên hệ</Text>
             <div className="mt-4 space-y-3 text-sm text-slate-600">
               <div>

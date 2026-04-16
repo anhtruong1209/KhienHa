@@ -1,3 +1,4 @@
+import { normalizeGalleryCategory, normalizeNewsCategory } from "@/data/category-options";
 import { newsData } from "@/data/news";
 import { siteContent as fallbackSiteContent } from "@/data/site-content";
 
@@ -40,6 +41,7 @@ function normalizeSiteContent(data) {
   }));
   merged.gallery = (merged.gallery || []).map((item) => ({
     ...item,
+    category: normalizeGalleryCategory(item.category),
     url: absoluteAssetUrl(item.url),
   }));
   merged.quality.image = absoluteAssetUrl(merged.quality?.image);
@@ -55,7 +57,7 @@ function normalizeNews(data) {
     slug: item.slug || `${item.id ?? index + 1}`,
     title: item.title,
     date: item.date,
-    category: item.category || "Tin hoạt động",
+    category: normalizeNewsCategory(item.category),
     excerpt: item.excerpt || item.content,
     content: item.content || item.excerpt || "",
     image: absoluteAssetUrl(item.image || item.image_path),
@@ -140,7 +142,7 @@ export async function getNewsItem(identifier) {
 
 export async function submitContact(payload) {
   if (!hasApi) {
-    return { success: true, message: "Đã nhận yêu cầu tư vấn." };
+    return { success: true, message: "\u0110\u00e3 nh\u1eadn y\u00eau c\u1ea7u t\u01b0 v\u1ea5n." };
   }
 
   const result = await request("/api/public/contact", {

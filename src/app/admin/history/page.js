@@ -1,12 +1,11 @@
 "use client";
 
 import React, { startTransition, useEffect, useState } from "react";
-import { DeleteOutlined, EditOutlined, HistoryOutlined, PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Card, Form, Input, Modal, Space, Table, Typography, message } from "antd";
-import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { getSiteContent, updateSiteContent } from "@/services/api";
 
-const { Text, Title } = Typography;
+const { Text } = Typography;
 
 function sortHistory(items) {
   return [...items].sort((left, right) => Number(left.year || 0) - Number(right.year || 0));
@@ -113,86 +112,92 @@ export default function HistoryManager() {
 
   return (
     <div className="space-y-8">
-      <AdminPageHeader
-        eyebrow="Company timeline"
-        icon={<HistoryOutlined />}
-        title="Lịch sử phát triển"
-        description="Quản lý các cột mốc doanh nghiệp để hiển thị phần giới thiệu trên website theo đúng dòng thời gian."
-        actions={[
-          <Button key="create" type="primary" icon={<PlusOutlined />} className="h-11 rounded-2xl px-5 font-semibold" onClick={openCreateModal}>
-            Thêm cột mốc
-          </Button>,
-        ]}
-      />
-
+      <div style={{ marginTop: "10px" }}>
+      </div>
       <div className="grid gap-4 md:grid-cols-3">
-        <Card bordered={false} className="rounded-[28px] shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+        <Card variant="none" className="rounded-[28px] shadow-[0_18px_50px_rgba(15,23,42,0.06)] bg-white">
           <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Tổng cột mốc</div>
           <div className="mt-4 text-4xl font-black text-slate-900">{data.length}</div>
         </Card>
-        <Card bordered={false} className="rounded-[28px] shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+        <Card variant="none" className="rounded-[28px] shadow-[0_18px_50px_rgba(15,23,42,0.06)] bg-white">
           <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Khởi đầu</div>
           <div className="mt-4 text-4xl font-black text-slate-900">{firstYear}</div>
         </Card>
-        <Card bordered={false} className="rounded-[28px] bg-[#071b2f] text-white shadow-[0_18px_50px_rgba(7,27,47,0.18)]">
+        <Card variant="none" className="rounded-[28px] bg-slate-900 text-white shadow-[0_18px_50px_rgba(7,27,47,0.18)]">
           <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-200">Mốc gần nhất</div>
           <div className="mt-4 text-4xl font-black">{latestYear}</div>
-          <Text className="mt-3 block text-sm leading-7 text-slate-300">Timeline được sắp theo năm để frontend hiển thị ổn định và dễ đọc hơn.</Text>
         </Card>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_380px]">
-        <Card bordered={false} className="rounded-[30px] shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,1.45fr)_380px]">
+        <Card
+          variant="none"
+          className="rounded-[32px] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.06)]"
+          title={<span className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">Dòng thời gian phát triển</span>}
+        >
           <Table
             rowKey="id"
             loading={loading}
             dataSource={data}
             pagination={{ pageSize: 8, showSizeChanger: false }}
+            className="history-table"
             columns={[
               {
                 title: "Năm",
                 dataIndex: "year",
                 key: "year",
-                width: 110,
-                render: (value) => <span className="font-bold text-slate-900">{value}</span>,
+                width: 100,
+                render: (value) => <span className="text-sm font-black text-slate-900">{value}</span>,
               },
               {
-                title: "Nội dung",
+                title: "Chi tiết cột mốc",
                 key: "content",
                 render: (_, record) => (
-                  <div>
-                    <div className="font-semibold text-slate-900">{record.title}</div>
-                    <div className="mt-1 text-sm leading-7 text-slate-500">{record.content}</div>
+                  <div className="py-1">
+                    <div className="text-sm font-bold text-slate-800">{record.title}</div>
+                    <div className="mt-1 text-xs leading-relaxed text-slate-500">{record.content}</div>
                   </div>
                 ),
               },
               {
                 title: "Thao tác",
                 key: "action",
-                width: 140,
+                width: 110,
+                align: "right",
                 render: (_, record) => (
                   <Space>
-                    <Button type="text" icon={<EditOutlined />} onClick={() => openEditModal(record)} />
-                    <Button type="text" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record)} />
+                    <Button type="text" shape="circle" icon={<EditOutlined className="text-slate-400" />} onClick={() => openEditModal(record)} className="hover:bg-blue-50" />
+                    <Button type="text" shape="circle" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record)} className="hover:bg-red-50" />
                   </Space>
                 ),
               },
             ]}
           />
+
+          <div className="mt-8 flex justify-center border-t border-slate-50 pt-8">
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={openCreateModal}
+              className="h-12 rounded-2xl bg-[#0f172a] px-8 text-[11px] font-black uppercase tracking-[0.18em] text-white shadow-[0_20px_40px_rgba(15,23,42,0.15)] transition-all hover:scale-105 hover:bg-blue-600"
+            >
+              Thêm cột mốc mới
+            </Button>
+          </div>
         </Card>
 
-        <Card bordered={false} className="rounded-[30px] bg-gradient-to-br from-slate-950 to-slate-800 text-white shadow-[0_20px_60px_rgba(15,23,42,0.16)]">
-          <Text className="text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-200">Timeline preview</Text>
-          <div className="mt-6 space-y-5">
+        <Card variant="none" className="rounded-[32px] bg-gradient-to-br from-[#0f172a] to-[#1e293b] text-white shadow-[0_30px_70px_rgba(15,23,42,0.2)]">
+          <Text className="text-[10px] font-bold uppercase tracking-[0.24em] text-cyan-300">Timeline preview</Text>
+          <div className="mt-8 space-y-6">
             {data.map((item, index) => (
-              <div key={item.id} className="relative pl-8">
-                {index < data.length - 1 ? <div className="absolute left-[10px] top-7 h-[calc(100%+18px)] w-px bg-white/15" /> : null}
-                <div className="absolute left-0 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-cyan-300 text-[10px] font-black text-slate-950">
+              <div key={item.id} className="relative pl-10">
+                {index < data.length - 1 ? <div className="absolute left-[11px] top-6 h-[calc(100%+24px)] w-0.5 bg-white/10" /> : null}
+                <div className="absolute left-0 top-1 flex h-6 w-6 items-center justify-center rounded-lg bg-cyan-400/20 text-[10px] font-black text-cyan-300 ring-1 ring-cyan-400/30">
                   {index + 1}
                 </div>
-                <div className="text-sm font-semibold text-cyan-200">{item.year}</div>
-                <div className="mt-1 font-semibold text-white">{item.title}</div>
-                <div className="mt-2 text-sm leading-7 text-slate-300">{item.content}</div>
+                <div className="text-[11px] font-black uppercase tracking-wider text-cyan-400/80">{item.year}</div>
+                <div className="mt-1 text-sm font-bold text-white">{item.title}</div>
+                <div className="mt-2 text-xs leading-relaxed text-slate-400 line-clamp-2">{item.content}</div>
               </div>
             ))}
           </div>

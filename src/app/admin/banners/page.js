@@ -1,9 +1,8 @@
 "use client";
 
-import React, { startTransition, useEffect, useState } from "react";
+import React, { startTransition, useEffect, useMemo, useState } from "react";
 import { DeleteOutlined, EditOutlined, PictureOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Card, Form, Image, Input, Modal, Space, Table, Typography, Upload, message } from "antd";
-import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import { Button, Card, Flex, Form, Image, Input, Modal, Table, Typography, message } from "antd";
 import { getSiteContent, updateSiteContent } from "@/services/api";
 
 const { Text, Title } = Typography;
@@ -22,6 +21,7 @@ export default function BannerManager() {
   const [content, setContent] = useState({});
   const [data, setData] = useState([]);
   const [previewId, setPreviewId] = useState(null);
+  const [editingId, setEditingId] = useState(null);
   const [imageUrl, setImageUrl] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
@@ -50,34 +50,51 @@ export default function BannerManager() {
     };
   }, []);
 
-  const previewItem = data.find((item) => item.id === previewId) || data[0] || null;
+  const previewItem = useMemo(() => {
+    const current = data.find((item) => item.id === previewId) || data[0] || null;
+    if (!current) return null;
+    if (isModalOpen && editingId === current.id && imageUrl) {
+      return { ...current, url: imageUrl, title: form.getFieldValue("title") || current.title };
+    }
+    return current;
+  }, [data, previewId, isModalOpen, editingId, imageUrl, form]);
 
   function openCreateModal() {
     form.resetFields();
+    setEditingId(null);
     setImageUrl("");
     setIsModalOpen(true);
   }
 
   function openEditModal(record) {
     form.setFieldsValue(record);
+    setEditingId(record.id);
     setImageUrl(record.url);
+    setPreviewId(record.id);
     setIsModalOpen(true);
   }
 
-  function handleUpload(info) {
-    const file = info.file.originFileObj;
+  function closeModal() {
+    setIsModalOpen(false);
+    setEditingId(null);
+    setImageUrl("");
+    form.resetFields();
+  }
+
+  function handleUpload(event) {
+    const file = event.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (event) => {
-      const nextImage = event.target?.result || "";
+    reader.onload = (loadEvent) => {
+      const nextImage = loadEvent.target?.result || "";
       setImageUrl(nextImage);
       form.setFieldsValue({ url: nextImage });
     };
     reader.readAsDataURL(file);
   }
 
-  async function persist(nextRows) {
+  async function persist(nextRows, nextPreviewId = nextRows[0]?.id || null) {
     setSaving(true);
     const payload = {
       ...content,
@@ -94,7 +111,7 @@ export default function BannerManager() {
     startTransition(() => {
       setContent(payload);
       setData(nextRows);
-      setPreviewId(nextRows[0]?.id || null);
+      setPreviewId(nextPreviewId);
     });
     message.success("Đã cập nhật banner trang chủ.");
     setSaving(false);
@@ -111,7 +128,7 @@ export default function BannerManager() {
         const nextRows = data
           .filter((item) => item.id !== record.id)
           .map((item, index) => ({ ...item, id: index + 1, title: item.title || `Banner ${index + 1}` }));
-        await persist(nextRows);
+        await persist(nextRows, nextRows[0]?.id || null);
       },
     });
   }
@@ -129,13 +146,10 @@ export default function BannerManager() {
         ? data.map((item) => (item.id === values.id ? nextRow : item))
         : [...data, nextRow];
 
-      const success = await persist(nextRows);
+      const success = await persist(nextRows, nextRow.id);
       if (!success) return;
 
-      setIsModalOpen(false);
-      setImageUrl("");
-      form.resetFields();
-      setPreviewId(nextRow.id);
+      closeModal();
     } catch (error) {
       console.error(error);
       message.error("Vui lòng kiểm tra lại thông tin banner.");
@@ -147,36 +161,29 @@ export default function BannerManager() {
 
   return (
     <div className="space-y-8">
-      <AdminPageHeader
-        eyebrow="Homepage slider"
-        icon={<PictureOutlined />}
-        title="Banner trang chủ"
-        description="Quản lý slider ngoài landing page, thay ảnh nhanh và xem trước thứ tự hiển thị ngay trong màn hình admin."
-        actions={[
-          <Button key="create" type="primary" icon={<PlusOutlined />} className="h-11 rounded-2xl px-5 font-semibold" onClick={openCreateModal}>
-            Thêm banner
-          </Button>,
-        ]}
-      />
-
+      <div style={{ marginTop: "10px" }}>
+      </div>
       <div className="grid gap-4 md:grid-cols-3">
-        <Card bordered={false} className="rounded-[28px] shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+        <Card variant="none" className="rounded-[28px] shadow-[0_18px_50px_rgba(15,23,42,0.06)] bg-white">
           <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Tổng số slide</div>
           <div className="mt-4 text-4xl font-black text-slate-900">{totalCount}</div>
         </Card>
-        <Card bordered={false} className="rounded-[28px] shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+        <Card variant="none" className="rounded-[28px] shadow-[0_18px_50px_rgba(15,23,42,0.06)] bg-white">
           <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Sẵn sàng hiển thị</div>
           <div className="mt-4 text-4xl font-black text-slate-900">{readyCount}</div>
         </Card>
-        <Card bordered={false} className="rounded-[28px] bg-[#071b2f] text-white shadow-[0_18px_50px_rgba(7,27,47,0.18)]">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-200">Nguồn dữ liệu</div>
-          <div className="mt-4 text-2xl font-black">Laravel API + MySQL</div>
-          <Text className="mt-3 block text-sm leading-7 text-slate-300">Thứ tự trong bảng là thứ tự xuất hiện trên slider trang chủ.</Text>
+        <Card variant="none" className="rounded-[28px] bg-slate-900 text-white shadow-[0_18px_50px_rgba(7,27,47,0.18)]">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-200">Thứ tự</div>
+          <div className="mt-4 text-sm leading-relaxed text-slate-300">Dòng đầu tiên trong bảng sẽ là slide đầu tiên hiển thị ngoài trang chủ.</div>
         </Card>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.6fr)_380px]">
-        <Card bordered={false} className="rounded-[30px] shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,1.6fr)_380px]">
+        <Card
+          variant="none"
+          className="rounded-[32px] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.06)]"
+          title={<span className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">Quản lý slide trang chủ</span>}
+        >
           <Table
             rowKey="id"
             loading={loading}
@@ -185,69 +192,94 @@ export default function BannerManager() {
             onRow={(record) => ({
               onClick: () => setPreviewId(record.id),
             })}
+            className="banner-table mt-2"
             columns={[
               {
                 title: "Ảnh",
                 dataIndex: "url",
                 key: "url",
-                width: 150,
-                render: (value) => <Image src={value} alt="Banner" width={104} height={64} className="rounded-2xl object-cover" />,
+                width: 140,
+                render: (value) => <Image src={value} alt="Banner" width={100} height={60} className="rounded-xl object-cover ring-1 ring-slate-100" />,
               },
               {
-                title: "Tiêu đề",
+                title: "Thông tin banner",
                 dataIndex: "title",
                 key: "title",
                 render: (_, record) => (
-                  <div>
-                    <div className="font-semibold text-slate-900">{record.title}</div>
-                    <div className="mt-1 text-xs text-slate-500">{record.url?.startsWith("data:") ? "Ảnh mới chưa publish" : "Đang hiển thị từ dữ liệu đã lưu"}</div>
+                  <div className="py-1">
+                    <div className="text-sm font-bold text-slate-800">{record.title}</div>
+                    <div className="mt-1 flex items-center gap-2">
+                      <div className="h-1.5 w-1.5 rounded-full bg-green-500"></div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        Đã lưu
+                      </span>
+                    </div>
                   </div>
                 ),
               },
               {
                 title: "Thao tác",
                 key: "action",
-                width: 140,
+                width: 110,
+                align: "right",
                 render: (_, record) => (
-                  <Space>
-                    <Button type="text" icon={<EditOutlined />} onClick={() => openEditModal(record)} />
-                    <Button type="text" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record)} />
-                  </Space>
+                  <Flex gap={8}>
+                    <Button type="text" shape="circle" icon={<EditOutlined className="text-slate-400" />} onClick={() => openEditModal(record)} className="hover:bg-blue-50" />
+                    <Button type="text" shape="circle" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record)} className="hover:bg-red-50" />
+                  </Flex>
                 ),
               },
             ]}
           />
+
+          <div className="mt-10 flex flex-col items-center border-t border-slate-50 pt-8">
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={openCreateModal}
+              className="h-12 rounded-2xl bg-slate-900 px-8 text-[11px] font-black uppercase tracking-[0.18em] text-white shadow-xl transition-all hover:scale-105 hover:bg-blue-600"
+            >
+              Thêm banner mới
+            </Button>
+            <p className="mt-4 text-[10px] font-medium text-slate-400 uppercase tracking-widest">
+              Slide nên có kích thước 1920x800px để hiển thị đẹp nhất
+            </p>
+          </div>
         </Card>
 
-        <Card bordered={false} className="overflow-hidden rounded-[30px] shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
-          <Text className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Xem trước banner</Text>
+        <Card bordered={false} className="sticky top-8 overflow-hidden rounded-[32px] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
+          <div className="mb-6 flex items-center gap-2">
+            <PictureOutlined className="text-slate-400" />
+            <Text className="text-[10px] font-bold uppercase tracking-[0.24em] text-slate-400">Xem trước Banner</Text>
+          </div>
           {previewItem ? (
-            <div className="mt-4 space-y-4">
-              <div className="overflow-hidden rounded-[28px] bg-slate-100">
-                <Image src={previewItem.url} alt={previewItem.title} preview={false} className="h-[260px] w-full object-cover" />
+            <div className="space-y-6">
+              <div className="overflow-hidden rounded-[28px] bg-slate-50 p-3 ring-1 ring-slate-100">
+                <Image src={previewItem.url} alt={previewItem.title} preview={true} className="h-[240px] w-full rounded-[20px] object-cover shadow-sm" />
               </div>
               <div>
-                <Title level={5} className="!mb-1 !text-slate-900">
-                  {previewItem.title}
-                </Title>
-                <Text className="text-sm leading-7 text-slate-500">
-                  Banner được chọn sẽ giữ nguyên tỷ lệ ảnh đang lưu. Nên ưu tiên ảnh ngang chất lượng cao để slider hiển thị đều và ít vỡ hình.
-                </Text>
+                <div className="text-xl font-bold text-slate-900">{previewItem.title}</div>
+                <div className="mt-4 rounded-2xl bg-blue-50/50 p-5 ring-1 ring-blue-100/50">
+                  <div className="text-xs font-bold uppercase tracking-widest text-blue-600">Tip hiển thị</div>
+                  <p className="mt-3 text-xs leading-relaxed text-slate-600">
+                    Phần kịch bản chữ ngoài Landing page sẽ tự động đè lên ảnh này. Hãy chọn ảnh có độ tương phản tốt để chữ dễ đọc hơn.
+                  </p>
+                </div>
               </div>
             </div>
           ) : (
-            <div className="mt-4 rounded-[24px] border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-500">
-              Chưa có banner nào trong hệ thống.
+            <div className="mt-4 rounded-[32px] border border-dashed border-slate-200 bg-slate-50 p-12 text-center text-sm text-slate-400">
+              Chọn một banner để xem chi tiết
             </div>
           )}
         </Card>
       </div>
 
       <Modal
-        title={form.getFieldValue("id") ? "Chỉnh sửa banner" : "Thêm banner mới"}
+        title={editingId ? "Chỉnh sửa banner" : "Thêm banner mới"}
         open={isModalOpen}
         onOk={handleSave}
-        onCancel={() => setIsModalOpen(false)}
+        onCancel={closeModal}
         okText="Lưu banner"
         cancelText="Hủy"
         confirmLoading={saving}
@@ -261,22 +293,18 @@ export default function BannerManager() {
             <Input placeholder="Ví dụ: Banner giới thiệu nhà máy" />
           </Form.Item>
           <Form.Item label="Ảnh banner">
-            <Upload listType="picture-card" maxCount={1} beforeUpload={() => false} onChange={handleUpload} showUploadList={false}>
-              {imageUrl ? (
-                <Image preview={false} src={imageUrl} alt="Preview" className="h-full w-full object-cover" />
-              ) : (
-                <div className="flex flex-col items-center">
-                  <PlusOutlined />
-                  <div className="mt-2 text-xs">Tải ảnh lên</div>
-                </div>
-              )}
-            </Upload>
+            <Input type="file" accept="image/*" onChange={handleUpload} className="rounded-xl" />
+            {imageUrl ? (
+              <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+                <Image src={imageUrl} alt="Preview" preview={false} className="h-[180px] w-full object-cover" />
+              </div>
+            ) : null}
           </Form.Item>
           <Form.Item name="url" hidden rules={[{ required: true, message: "Vui lòng chọn ảnh banner." }]}>
             <Input />
           </Form.Item>
           <div className="rounded-2xl bg-slate-50 p-4 text-sm leading-7 text-slate-500">
-            Ảnh mới sẽ được gửi về backend Laravel để lưu trên máy local, sau đó frontend sẽ đọc lại từ API.
+            Ảnh mới sẽ được gửi về backend và lưu ngay trong payload hiện tại. Nếu đang sửa một banner, preview bên phải sẽ đổi ngay khi bạn chọn file mới.
           </div>
         </Form>
       </Modal>

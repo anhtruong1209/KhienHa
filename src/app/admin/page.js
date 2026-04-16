@@ -10,7 +10,6 @@ import {
   SafetyCertificateOutlined,
   ThunderboltOutlined,
 } from "@ant-design/icons";
-import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { getNews, getSiteContent } from "@/services/api";
 
 const { Text, Title } = Typography;
@@ -63,7 +62,6 @@ export default function AdminDashboard() {
       key: "news",
       title: "Tin tức hiển thị",
       value: stats.newsCount,
-      note: "Bài viết đang lấy từ backend",
       icon: <FileTextOutlined className="text-2xl text-sky-700" />,
       accent: "from-sky-50 to-white",
     },
@@ -71,7 +69,6 @@ export default function AdminDashboard() {
       key: "banners",
       title: "Banner trang chủ",
       value: stats.bannerCount,
-      note: "Ảnh slider hiện có",
       icon: <FileImageOutlined className="text-2xl text-cyan-700" />,
       accent: "from-cyan-50 to-white",
     },
@@ -79,15 +76,13 @@ export default function AdminDashboard() {
       key: "quality",
       title: "Bước chất lượng",
       value: stats.qualityStepCount,
-      note: "Các bước trong section quy trình",
       icon: <SafetyCertificateOutlined className="text-2xl text-emerald-700" />,
       accent: "from-emerald-50 to-white",
     },
     {
       key: "history",
-      title: "Cột mốc phát triển",
+      title: "Phát triển",
       value: stats.historyCount,
-      note: "Timeline doanh nghiệp",
       icon: <HistoryOutlined className="text-2xl text-amber-600" />,
       accent: "from-amber-50 to-white",
     },
@@ -97,31 +92,24 @@ export default function AdminDashboard() {
     {
       label: "Năng lực hoạt động",
       value: stats.capacityCount,
-      note: "Các khối hiển thị trong section Services",
       icon: <ThunderboltOutlined className="text-[#0b6aa2]" />,
     },
     {
       label: "Gallery dự án",
       value: stats.galleryCount,
-      note: "Ảnh công trình, sản phẩm và nhà xưởng",
       icon: <FileImageOutlined className="text-[#0b6aa2]" />,
     },
     {
       label: "Mục tiêu chiến lược",
       value: stats.goalCount,
-      note: "Tầm nhìn, sứ mệnh và cam kết",
       icon: <DashboardOutlined className="text-[#0b6aa2]" />,
     },
   ];
 
   return (
     <div className="space-y-8">
-      <AdminPageHeader
-        eyebrow="Admin overview"
-        icon={<DashboardOutlined />}
-        title="Tổng quan vận hành"
-        description="Theo dõi nhanh các khối nội dung quan trọng của website đang lấy từ Laravel API và MySQL local."
-      />
+      <div style={{ marginTop: "10px" }}>
+      </div>
 
       <Row gutter={[18, 18]}>
         {overviewCards.map((item) => (
@@ -131,7 +119,6 @@ export default function AdminDashboard() {
                 <div>
                   <Text className="text-[12px] font-medium uppercase tracking-[0.14em] text-slate-500">{item.title}</Text>
                   <div className="mt-4 text-[34px] font-black leading-none text-slate-900">{item.value}</div>
-                  <Text className="mt-3 block text-sm text-slate-600">{item.note}</Text>
                 </div>
                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-sm">{item.icon}</div>
               </div>
@@ -146,7 +133,6 @@ export default function AdminDashboard() {
             bordered={false}
             className="rounded-[30px] shadow-[0_20px_60px_rgba(15,23,42,0.06)]"
             title={<span className="text-[12px] font-medium uppercase tracking-[0.14em] text-slate-500">Tin tức cập nhật gần đây</span>}
-            extra={<span className="text-xs text-slate-500">Frontend hiện có {stats.bannerCount} banner và {stats.galleryCount} ảnh gallery</span>}
           >
             <Table
               size="middle"
@@ -192,10 +178,6 @@ export default function AdminDashboard() {
           >
             <div className="space-y-4">
               <div className="rounded-[24px] bg-[#0b6aa2] px-5 py-4 text-white">
-                <Text className="block text-[12px] !text-sky-100">Nguồn dữ liệu</Text>
-                <Title level={4} className="!mb-1 !mt-2 !text-white">
-                  MySQL local + API
-                </Title>
                 <Text className="text-sm !text-sky-100">Dashboard chỉ còn các nhóm nội dung đang dùng thực tế, bỏ phần khách hàng theo yêu cầu của bạn.</Text>
               </div>
 
@@ -207,7 +189,6 @@ export default function AdminDashboard() {
                       <div className="font-semibold text-slate-900">{item.label}</div>
                       <div className="text-xl font-black text-slate-900">{item.value}</div>
                     </div>
-                    <div className="mt-1 text-sm leading-6 text-slate-500">{item.note}</div>
                   </div>
                 </div>
               ))}

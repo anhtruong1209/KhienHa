@@ -132,7 +132,7 @@ export default function SiteContentManager() {
         ]}
       />
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_360px]">
+      <div className="grid gap-6 2xl:grid-cols-[minmax(0,1.38fr)_minmax(360px,420px)]">
         <Form form={form} layout="vertical" className="grid gap-6">
           <Card loading={loading} title="Thông tin công ty" bordered={false} className="rounded-[30px] shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
             <div className="grid gap-4 md:grid-cols-2">
@@ -203,7 +203,7 @@ export default function SiteContentManager() {
           </Card>
         </Form>
 
-        <div className="space-y-6 xl:sticky xl:top-6 xl:self-start">
+        <div className="space-y-6 2xl:sticky 2xl:top-5 2xl:self-start">
           <Card bordered={false} className="overflow-hidden rounded-[30px] bg-[#071b2f] text-white shadow-[0_24px_70px_rgba(7,27,47,0.22)]">
             <div className="mb-5 flex flex-wrap gap-2">
               <Tag color="cyan" variant="filled">
@@ -222,7 +222,7 @@ export default function SiteContentManager() {
 
             <div className="mt-6 rounded-[24px] bg-white/8 p-4">
               <Text className="text-[11px] uppercase tracking-[0.24em] text-cyan-200">Hero preview</Text>
-              <div className="mt-3 text-2xl font-black leading-tight text-white">
+              <div className="mt-3 text-[28px] font-black leading-tight text-white">
                 <div>{form.getFieldValue("heroTitleLine1") || content?.hero?.titleLine1 || "Tiêu đề hero dòng 1"}</div>
                 <div className="text-cyan-200">{form.getFieldValue("heroTitleLine2") || content?.hero?.titleLine2 || "Tiêu đề hero dòng 2"}</div>
               </div>

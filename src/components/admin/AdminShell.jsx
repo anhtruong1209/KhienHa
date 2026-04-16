@@ -16,7 +16,7 @@ import {
   ThunderboltOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Avatar, Button, ConfigProvider, Drawer, Layout, Menu, Space, Tag, Typography } from "antd";
+import { Avatar, Button, ConfigProvider, Drawer, Layout, Menu, Tag, Typography } from "antd";
 import { usePathname } from "next/navigation";
 
 const { Header, Sider, Content } = Layout;
@@ -48,23 +48,44 @@ function SidebarMenu({ pathname, onNavigate }) {
       mode="inline"
       selectedKeys={[pathname]}
       className="border-none bg-transparent"
-      items={navItems.map((item) => {
-        const active = pathname === item.key;
-
-        return {
-          key: item.key,
-          icon: <span className={active ? "text-[#0b6aa2]" : "text-slate-400"}>{item.icon}</span>,
-          label: (
-            <Link href={item.key} prefetch className="block py-1" onClick={onNavigate}>
-              <div className="flex flex-col">
-                <span className={active ? "text-[14px] font-semibold text-[#0b6aa2]" : "text-[14px] font-semibold text-slate-800"}>{item.label}</span>
-                <span className="text-[12px] leading-5 text-slate-500">{item.hint}</span>
-              </div>
-            </Link>
-          ),
-        };
-      })}
+      items={navItems.map((item) => ({
+        key: item.key,
+        icon: <span className="text-base">{item.icon}</span>,
+        label: (
+          <Link href={item.key} prefetch className="block py-1" onClick={onNavigate}>
+            <span className="text-[14px] font-semibold">{item.label}</span>
+          </Link>
+        ),
+      }))}
     />
+  );
+}
+
+function SidebarCard() {
+  return (
+    <div className="rounded-[26px] bg-gradient-to-br from-[#0b6aa2] via-[#0f5f8c] to-[#1b2a41] p-5 text-white shadow-[0_18px_50px_rgba(11,106,162,0.22)]">
+      <div className="flex items-center gap-4">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-sm">
+          <img src="/logo.png" alt="Khiên Hà" className="h-10 w-10 object-contain" />
+        </div>
+        <div>
+          <Title level={5} className="!mb-1 !text-white">
+            Khiên Hà CMS
+          </Title>
+          <Text className="text-[13px] text-sky-100">Quản trị nội dung nội bộ</Text>
+        </div>
+      </div>
+
+      <div className="mt-5 rounded-[20px] bg-white/12 px-4 py-3 backdrop-blur">
+        <Text className="block text-[11px] font-medium uppercase tracking-[0.16em] text-cyan-100">Kết nối dữ liệu</Text>
+        <div className="mt-2 flex items-center justify-between">
+          <Text className="text-sm font-semibold !text-white">MySQL local</Text>
+          <Tag color="cyan" variant="filled" className="!mr-0 rounded-full px-3 text-[11px] font-medium">
+            Online
+          </Tag>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -94,49 +115,27 @@ export default function AdminShell({ children }) {
           },
           Menu: {
             itemBg: "transparent",
-            itemColor: "#475569",
+            itemColor: "#334155",
             itemHoverColor: "#0f172a",
             itemHoverBg: "#eff6fb",
-            itemSelectedBg: "#e4f0f8",
+            itemSelectedBg: "#e3f0f8",
             itemSelectedColor: "#0b6aa2",
-            itemBorderRadius: 18,
-            itemMarginBlock: 5,
-            itemHeight: 58,
+            itemBorderRadius: 16,
+            itemMarginBlock: 6,
+            itemHeight: 46,
           },
         },
       }}
     >
-      <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(11,106,162,0.10),_transparent_32%),linear-gradient(180deg,_#f8fbff_0%,_#f2f5f9_100%)]">
+      <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(11,106,162,0.10),_transparent_30%),linear-gradient(180deg,_#f8fbff_0%,_#f2f5f9_100%)]">
         <Layout className="min-h-screen bg-transparent">
-          <Sider width={306} breakpoint="xl" collapsedWidth={0} trigger={null} className="hidden bg-transparent px-5 py-5 xl:block">
+          <Sider width={280} breakpoint="xl" collapsedWidth={0} trigger={null} className="hidden bg-transparent px-5 py-5 xl:block">
             <div className="flex h-full flex-col gap-5 rounded-[30px] border border-slate-200 bg-white/95 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
-              <div className="rounded-[26px] bg-gradient-to-br from-[#0b6aa2] via-[#0f5f8c] to-[#1b2a41] p-5 text-white shadow-[0_18px_50px_rgba(11,106,162,0.22)]">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-sm">
-                    <img src="/logo.png" alt="Khiên Hà" className="h-10 w-10 object-contain" />
-                  </div>
-                  <div>
-                    <Title level={5} className="!mb-1 !text-white">
-                      Khiên Hà CMS
-                    </Title>
-                    <Text className="text-[13px] text-sky-100">Quản trị nội dung nội bộ</Text>
-                  </div>
-                </div>
-
-                <div className="mt-5 rounded-[20px] bg-white/12 px-4 py-3 backdrop-blur">
-                  <Text className="block text-[11px] font-medium uppercase tracking-[0.16em] text-cyan-100">Kết nối dữ liệu</Text>
-                  <div className="mt-2 flex items-center justify-between">
-                    <Text className="text-sm font-semibold !text-white">MySQL local</Text>
-                    <Tag color="cyan" variant="filled" className="!mr-0 rounded-full px-3 text-[11px] font-medium">
-                      Online
-                    </Tag>
-                  </div>
-                </div>
-              </div>
+              <SidebarCard />
 
               <div className="flex-1 rounded-[26px] border border-slate-200 bg-slate-50/85 p-3">
                 <Text className="px-3 text-[11px] font-medium uppercase tracking-[0.16em] text-slate-500">Điều hướng</Text>
-                <div className="mt-2">
+                <div className="mt-3">
                   <SidebarMenu pathname={pathname} />
                 </div>
               </div>
@@ -144,10 +143,10 @@ export default function AdminShell({ children }) {
               <div className="rounded-[24px] border border-slate-200 bg-[#f4f8fb] p-5">
                 <Text className="block text-[11px] font-medium uppercase tracking-[0.16em] text-slate-500">Trạng thái</Text>
                 <Title level={5} className="!mb-1 !mt-3 !text-slate-900">
-                  Điều hướng gọn hơn
+                  Giao diện đã gọn lại
                 </Title>
                 <Text className="text-[13px] leading-6 text-slate-600">
-                  Sidebar đã bỏ phần khách hàng và tăng tương phản để nhìn rõ hơn khi thao tác lâu trên màn hình lớn.
+                  Sidebar ngắn hơn, nội dung được mở rộng ra để các form và bảng không còn bị bó hẹp.
                 </Text>
               </div>
             </div>
@@ -195,10 +194,8 @@ export default function AdminShell({ children }) {
               </div>
             </Header>
 
-            <Content className="px-4 pb-8 pt-4 lg:px-6 xl:px-8">
-              <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-[0_20px_60px_rgba(15,23,42,0.06)] lg:p-6">
-                {children}
-              </div>
+            <Content className="px-4 pb-8 pt-5 lg:px-6 xl:px-8">
+              {children}
             </Content>
           </Layout>
         </Layout>
@@ -207,7 +204,7 @@ export default function AdminShell({ children }) {
           placement="left"
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
-          width={320}
+          width={310}
           className="xl:hidden"
           styles={{
             body: {
@@ -219,26 +216,19 @@ export default function AdminShell({ children }) {
             },
           }}
         >
-          <div className="flex h-full flex-col p-5">
-            <div className="rounded-[24px] bg-gradient-to-br from-[#0b6aa2] via-[#0f5f8c] to-[#1b2a41] p-5 text-white">
-              <Title level={5} className="!mb-1 !text-white">
-                Khiên Hà CMS
-              </Title>
-              <Text className="text-[13px] text-sky-100">Quản trị nội dung trên MySQL local</Text>
-            </div>
-            <div className="mt-5 flex-1 rounded-[24px] border border-slate-200 bg-white p-3">
+          <div className="flex h-full flex-col gap-5 p-5">
+            <SidebarCard />
+            <div className="flex-1 rounded-[24px] border border-slate-200 bg-white p-3">
               <SidebarMenu pathname={pathname} onNavigate={() => setDrawerOpen(false)} />
             </div>
-            <Space direction="vertical" className="mt-5 w-full">
-              <Button
-                block
-                icon={<GlobalOutlined />}
-                className="h-11 rounded-2xl border-slate-200 bg-white text-slate-900 hover:!border-[#0b6aa2] hover:!text-[#0b6aa2]"
-                onClick={() => window.open("/", "_blank", "noopener,noreferrer")}
-              >
-                Xem website
-              </Button>
-            </Space>
+            <Button
+              block
+              icon={<GlobalOutlined />}
+              className="h-11 rounded-2xl border-slate-200 bg-white text-slate-900 hover:!border-[#0b6aa2] hover:!text-[#0b6aa2]"
+              onClick={() => window.open("/", "_blank", "noopener,noreferrer")}
+            >
+              Xem website
+            </Button>
           </div>
         </Drawer>
       </div>

@@ -8,6 +8,7 @@ import { getSiteContent } from "@/services/api";
 export function Gallery() {
   const [selected, setSelected] = useState(null);
   const [images, setImages] = useState([]);
+  const [activeCategory, setActiveCategory] = useState("all");
 
   useEffect(() => {
     async function load() {
@@ -18,21 +19,58 @@ export function Gallery() {
     load();
   }, []);
 
+  const categories = Array.from(new Set(images.map((item) => item.category).filter(Boolean)));
+  const filteredImages = images.filter((item) => (activeCategory === "all" ? true : item.category === activeCategory));
+
   return (
     <section id="gallery" className="section-padding bg-[#eef7ff]">
       <div className="container">
-        <div className="mb-14 max-w-2xl">
-          <div className="mb-5 inline-flex items-center gap-3 rounded-full bg-white px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-primary shadow-sm">
-            <span className="h-2 w-2 rounded-full bg-primary" />
-            Hình ảnh hoạt động
+        <div className="mb-10 flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
+          <div className="max-w-2xl">
+            <div className="mb-5 inline-flex items-center gap-3 rounded-full bg-white px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-primary shadow-sm">
+              <span className="h-2 w-2 rounded-full bg-primary" />
+              Hình ảnh hoạt động
+            </div>
+            <h2 className="text-4xl font-black tracking-[-0.04em] text-[#0f172a] md:text-5xl">
+              Những dự án tiêu biểu tại nhà máy
+            </h2>
           </div>
-          <h2 className="text-4xl font-black tracking-[-0.04em] text-[#0f172a] md:text-5xl">
-            Những dự án tiêu biểu tại nhà máy
-          </h2>
+
+          <div className="max-w-xl text-sm leading-7 text-[#0f172a]/58">
+            Chọn nhóm dự án để lọc nhanh hình ảnh theo từng mảng hoạt động, từ đóng mới đến nhà xưởng và bàn giao.
+          </div>
+        </div>
+
+        <div className="mb-8 flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={() => setActiveCategory("all")}
+            className={activeCategory === "all"
+              ? "rounded-full bg-[#0f172a] px-5 py-3 text-[11px] font-black uppercase tracking-[0.22em] text-white"
+              : "rounded-full border border-slate-200 bg-white px-5 py-3 text-[11px] font-black uppercase tracking-[0.22em] text-slate-600 transition-colors hover:border-primary hover:text-primary"}
+          >
+            Tất cả
+          </button>
+          {categories.map((category) => (
+            <button
+              key={category}
+              type="button"
+              onClick={() => setActiveCategory(category)}
+              className={activeCategory === category
+                ? "rounded-full bg-primary px-5 py-3 text-[11px] font-black uppercase tracking-[0.22em] text-white"
+                : "rounded-full border border-slate-200 bg-white px-5 py-3 text-[11px] font-black uppercase tracking-[0.22em] text-slate-600 transition-colors hover:border-primary hover:text-primary"}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+
+        <div className="mb-8 text-sm text-[#0f172a]/58">
+          Đang hiển thị {filteredImages.length} hình ảnh {activeCategory === "all" ? "từ toàn bộ nhà máy" : `thuộc nhóm ${activeCategory}`}.
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {images.map((img, index) => (
+          {filteredImages.map((img, index) => (
             <motion.button
               key={img.id || index}
               initial={{ opacity: 0, scale: 0.97 }}

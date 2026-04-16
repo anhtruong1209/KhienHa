@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Anchor, Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
 import { getSiteContent } from "@/services/api";
 
 export function Footer() {
@@ -21,11 +21,11 @@ export function Footer() {
   return (
     <footer className="bg-[#0f172a] py-14 text-white">
       <div className="container">
-        <div className="grid gap-10 md:grid-cols-[1.1fr_0.9fr_0.9fr]">
+        <div className="grid gap-10 md:grid-cols-[1.15fr_0.85fr_0.9fr]">
           <div>
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-white/10 p-3">
-                <Anchor className="h-6 w-6 text-[#7dd3fc]" />
+            <div className="flex items-center gap-4">
+              <div className="flex h-16 w-16 items-center justify-center rounded-[1.35rem] bg-white shadow-[0_12px_30px_rgba(0,0,0,0.18)]">
+                <img src="/logo.png" alt="Khiên Hà" className="h-12 w-12 object-contain" />
               </div>
               <div>
                 <div className="text-2xl font-black tracking-[-0.04em]">{company?.shortName || "KHIÊN HÀ"}</div>
@@ -35,7 +35,7 @@ export function Footer() {
               </div>
             </div>
 
-            <p className="mt-6 max-w-xl text-sm leading-7 text-white/65">{company?.description}</p>
+            <p className="mt-6 max-w-xl text-sm leading-8 text-white/65">{company?.description}</p>
           </div>
 
           <div>
@@ -60,11 +60,11 @@ export function Footer() {
             <div className="text-sm font-black uppercase tracking-[0.24em] text-white/45">Thông tin liên hệ</div>
             <div className="mt-5 space-y-4 text-sm text-white/75">
               <div className="flex items-start gap-3">
-                <MapPin className="mt-1 h-4 w-4 text-[#7dd3fc]" />
+                <MapPin className="mt-1 h-4 w-4 shrink-0 text-[#7dd3fc]" />
                 <span>{contact?.address}</span>
               </div>
               <div className="flex items-start gap-3">
-                <Phone className="mt-1 h-4 w-4 text-[#7dd3fc]" />
+                <Phone className="mt-1 h-4 w-4 shrink-0 text-[#7dd3fc]" />
                 <span>
                   {contact?.phone}
                   <br />
@@ -72,7 +72,7 @@ export function Footer() {
                 </span>
               </div>
               <div className="flex items-start gap-3">
-                <Mail className="mt-1 h-4 w-4 text-[#7dd3fc]" />
+                <Mail className="mt-1 h-4 w-4 shrink-0 text-[#7dd3fc]" />
                 <span>{contact?.email}</span>
               </div>
             </div>

@@ -2,9 +2,6 @@
 
 namespace App\Support;
 
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-
 class MediaAssetService
 {
     public static function persistImage(?string $value, string $directory): ?string
@@ -16,24 +13,9 @@ class MediaAssetService
         if (! str_starts_with($value, 'data:image')) {
             return $value;
         }
-
-        [$metadata, $encoded] = explode(',', $value, 2);
-
-        if (! preg_match('/data:image\/(?P<extension>[^;]+);base64/', $metadata, $matches)) {
-            return $value;
-        }
-
-        $extension = strtolower($matches['extension']);
-        $binary = base64_decode($encoded, true);
-
-        if ($binary === false) {
-            return $value;
-        }
-
-        $path = trim($directory, '/').'/'.Str::uuid().'.'.$extension;
-        Storage::disk('public')->put($path, $binary);
-
-        return '/storage/'.$path;
+        
+        // The project now stores uploaded images directly as base64 in the database.
+        return $value;
     }
 
     public static function toPublicUrl(?string $value): ?string

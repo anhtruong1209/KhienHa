@@ -8,20 +8,26 @@ import { getNews } from "@/services/api";
 
 export function News() {
   const [newsList, setNewsList] = useState([]);
+  const [activeCategory, setActiveCategory] = useState("all");
 
   useEffect(() => {
     async function load() {
       const data = await getNews();
-      setNewsList((data || []).slice(0, 6));
+      setNewsList(data || []);
     }
 
     load();
   }, []);
 
+  const categories = Array.from(new Set(newsList.map((item) => item.category).filter(Boolean)));
+  const filteredNews = newsList
+    .filter((item) => (activeCategory === "all" ? true : item.category === activeCategory))
+    .slice(0, 6);
+
   return (
     <section id="news" className="section-padding bg-white">
       <div className="container">
-        <div className="mb-14 flex flex-col justify-between gap-8 md:flex-row md:items-end">
+        <div className="mb-10 flex flex-col justify-between gap-8 md:flex-row md:items-end">
           <div className="max-w-2xl">
             <div className="mb-5 inline-flex items-center gap-3 rounded-full bg-primary/5 px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-primary">
               <Newspaper className="h-4 w-4" />
@@ -41,8 +47,36 @@ export function News() {
           </Link>
         </div>
 
+        <div className="mb-8 flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={() => setActiveCategory("all")}
+            className={activeCategory === "all"
+              ? "rounded-full bg-[#0f172a] px-5 py-3 text-[11px] font-black uppercase tracking-[0.22em] text-white"
+              : "rounded-full border border-slate-200 bg-white px-5 py-3 text-[11px] font-black uppercase tracking-[0.22em] text-slate-600 transition-colors hover:border-primary hover:text-primary"}
+          >
+            Tất cả
+          </button>
+          {categories.map((category) => (
+            <button
+              key={category}
+              type="button"
+              onClick={() => setActiveCategory(category)}
+              className={activeCategory === category
+                ? "rounded-full bg-primary px-5 py-3 text-[11px] font-black uppercase tracking-[0.22em] text-white"
+                : "rounded-full border border-slate-200 bg-white px-5 py-3 text-[11px] font-black uppercase tracking-[0.22em] text-slate-600 transition-colors hover:border-primary hover:text-primary"}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+
+        <div className="mb-8 text-sm text-[#0f172a]/58">
+          Đang hiển thị {filteredNews.length} tin {activeCategory === "all" ? "mới nhất từ toàn bộ chuyên mục" : `thuộc chuyên mục ${activeCategory}`}.
+        </div>
+
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {newsList.map((news, index) => (
+          {filteredNews.map((news, index) => (
             <motion.article
               key={news._id || news.id}
               initial={{ opacity: 0, y: 18 }}

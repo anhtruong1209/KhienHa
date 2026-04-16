@@ -71,7 +71,10 @@ function SidebarMenu({ pathname, onNavigate }) {
 export default function AdminShell({ children }) {
   const pathname = normalizePath(usePathname());
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const activeItem = navItems.find((item) => item.key === pathname) || navItems[0];
+  const activeItem = navItems.find((item) => item.key === pathname) || {
+    label: "Mục ẩn",
+    hint: "Trang này không còn xuất hiện trong điều hướng chính.",
+  };
 
   return (
     <ConfigProvider

@@ -1,0 +1,111 @@
+<?php
+
+namespace App\Support;
+
+class DefaultNews
+{
+    public static function make(): array
+    {
+        return [
+            [
+                'title' => 'Hạ thủy tàu dầu Phú Đạt 16',
+                'slug' => 'ha-thuy-tau-dau-phu-dat-16',
+                'category' => 'Hạ thủy',
+                'excerpt' => 'Dự án đóng mới tàu dầu Phú Đạt 16 hoàn thành đúng tiến độ, khẳng định năng lực thi công của nhà máy Khiên Hà.',
+                'content' => "Khiên Hà hoàn tất công tác đóng mới và hạ thủy tàu dầu Phú Đạt 16 với tiến độ chặt chẽ, quy trình nghiệm thu nghiêm ngặt và sự phối hợp đồng bộ giữa các bộ phận kỹ thuật, sản xuất và an toàn.\n\nDự án cho thấy năng lực triển khai các dòng tàu chuyên dụng có yêu cầu kỹ thuật cao, đồng thời tiếp tục củng cố vị thế của doanh nghiệp trong mảng đóng mới tàu vận tải chuyên biệt.",
+                'image_path' => 'https://khienha.vn/uploads/anh/79371608532527Tau 9000T.jpg',
+                'published_at' => '2026-04-12 08:00:00',
+                'is_featured' => true,
+                'is_published' => true,
+            ],
+            [
+                'title' => 'Bàn giao tàu hàng 9.000 DWT',
+                'slug' => 'ban-giao-tau-hang-9000-dwt',
+                'category' => 'Bàn giao',
+                'excerpt' => 'Nhà máy bàn giao tàu hàng 9.000 DWT cho đối tác vận tải biển sau giai đoạn chạy thử và nghiệm thu.',
+                'content' => "Sau giai đoạn kiểm tra kỹ thuật, chạy thử và hoàn thiện hồ sơ bàn giao, Khiên Hà đã bàn giao thành công tàu hàng 9.000 DWT cho đối tác vận tải biển.\n\nDự án tiếp tục khẳng định thế mạnh của doanh nghiệp ở phân khúc tàu hàng trọng tải lớn phục vụ logistics đường biển nội địa.",
+                'image_path' => 'https://khienha.vn/uploads/anh/299816468995344.jpg',
+                'published_at' => '2026-04-05 09:30:00',
+                'is_featured' => false,
+                'is_published' => true,
+            ],
+            [
+                'title' => 'Nâng cấp dây chuyền bắn cát và phun sơn',
+                'slug' => 'nang-cap-day-chuyen-ban-cat-va-phun-son',
+                'category' => 'Đầu tư',
+                'excerpt' => 'Nhà máy tăng cường thiết bị và năng lực hoàn thiện bề mặt nhằm bảo đảm chất lượng thi công trong mùa cao điểm.',
+                'content' => "Khiên Hà tiếp tục đầu tư cho hệ thống khí nén, cụm bắn cát và dây chuyền phun sơn để tối ưu hiệu quả hoàn thiện bề mặt tàu, sà lan và kết cấu thép.\n\nViệc nâng cấp hạ tầng giúp rút ngắn thời gian thi công, ổn định chất lượng lớp phủ và tăng tính chủ động cho các dự án lớn trong năm 2026.",
+                'image_path' => 'https://khienha.vn/uploads/anh/639616469009097.jpg',
+                'published_at' => '2026-03-28 10:00:00',
+                'is_featured' => false,
+                'is_published' => true,
+            ],
+            [
+                'title' => 'Hoàn thiện sửa chữa định kỳ đội sà lan ven biển quý II',
+                'slug' => 'hoan-thien-sua-chua-dinh-ky-doi-sa-lan-ven-bien-quy-ii',
+                'category' => 'Sửa chữa',
+                'excerpt' => 'Nhà máy hoàn tất chuỗi công việc sửa chữa định kỳ cho nhiều sà lan biển, bảo đảm tiến độ khai thác của khách hàng.',
+                'content' => "Đội kỹ thuật Khiên Hà đã triển khai đồng bộ các hạng mục kiểm tra vỏ, gia cường kết cấu, đại tu máy phụ và hoàn thiện lớp phủ bảo vệ cho nhiều sà lan biển trong đợt sửa chữa quý II.\n\nViệc tổ chức thi công theo cụm hạng mục và phân chia dây chuyền giúp rút ngắn thời gian nằm bến, đồng thời bảo đảm từng phương tiện được nghiệm thu đúng tiêu chuẩn kỹ thuật trước khi bàn giao.",
+                'image_path' => 'https://khienha.vn/uploads/anh/233516468994642.jpg',
+                'published_at' => '2026-03-20 14:00:00',
+                'is_featured' => false,
+                'is_published' => true,
+            ],
+            [
+                'title' => 'Khiên Hà tiếp nhận dự án cải hoán tàu dịch vụ cảng',
+                'slug' => 'khien-ha-tiep-nhan-du-an-cai-hoan-tau-dich-vu-cang',
+                'category' => 'Cải hoán',
+                'excerpt' => 'Dự án cải hoán tàu dịch vụ cảng mở rộng thêm năng lực thi công cho phân khúc phương tiện chuyên dụng.',
+                'content' => "Dự án bao gồm cải tạo boong công tác, nâng cấp hệ thống điện, bổ sung trang thiết bị cứu sinh và tái cấu hình không gian làm việc cho tàu dịch vụ cảng.\n\nĐây là nhóm phương tiện đòi hỏi tiến độ chặt chẽ và mức độ phối hợp kỹ thuật cao giữa phần thân vỏ, máy và hệ thống phụ trợ, phù hợp với năng lực triển khai thực tế của nhà máy.",
+                'image_path' => 'https://khienha.vn/uploads/anh/724016468995605.jpg',
+                'published_at' => '2026-03-12 09:00:00',
+                'is_featured' => false,
+                'is_published' => true,
+            ],
+            [
+                'title' => 'Bàn giao hạng mục đại tu máy chính cho tàu hàng tuyến Bắc Nam',
+                'slug' => 'ban-giao-hang-muc-dai-tu-may-chinh-cho-tau-hang-tuyen-bac-nam',
+                'category' => 'Đại tu',
+                'excerpt' => 'Các hạng mục đại tu máy chính, kiểm tra trục và căn chỉnh thiết bị động lực đã hoàn thành đúng kế hoạch.',
+                'content' => "Sau giai đoạn tháo kiểm, gia công phục hồi và chạy thử có tải, hạng mục đại tu máy chính cho tàu hàng tuyến Bắc Nam đã được nghiệm thu và đưa vào khai thác trở lại.\n\nViệc kiểm soát tốt dung sai kỹ thuật và hồ sơ nghiệm thu là yếu tố then chốt giúp dự án bảo đảm chất lượng và thời gian bàn giao.",
+                'image_path' => 'https://khienha.vn/uploads/anh/810916469000106.jpg',
+                'published_at' => '2026-03-06 08:30:00',
+                'is_featured' => false,
+                'is_published' => true,
+            ],
+            [
+                'title' => 'Mở rộng khu vực lắp ráp phân đoạn phục vụ dự án trọng tải lớn',
+                'slug' => 'mo-rong-khu-vuc-lap-rap-phan-doan-phuc-vu-du-an-trong-tai-lon',
+                'category' => 'Hạ tầng',
+                'excerpt' => 'Nhà máy tiếp tục nâng cấp mặt bằng và khu vực lắp ráp để đáp ứng các dự án đóng mới có quy mô ngày càng cao.',
+                'content' => "Việc mở rộng khu lắp ráp phân đoạn giúp tăng năng lực tổ chức thi công song song cho nhiều cụm kết cấu lớn, giảm thời gian chờ giữa các công đoạn và tăng khả năng kiểm soát tiến độ tổng thể.\n\nĐây là hạng mục đầu tư nền tảng nhằm chuẩn bị cho các dự án đóng mới và cải hoán có yêu cầu kỹ thuật cao trong giai đoạn tới.",
+                'image_path' => 'https://khienha.vn/uploads/anh/367316468994953.jpg',
+                'published_at' => '2026-02-24 10:15:00',
+                'is_featured' => true,
+                'is_published' => true,
+            ],
+            [
+                'title' => 'Đội kỹ thuật hoàn tất kiểm tra chống ăn mòn cho tàu công trình',
+                'slug' => 'doi-ky-thuat-hoan-tat-kiem-tra-chong-an-mon-cho-tau-cong-trinh',
+                'category' => 'Bề mặt',
+                'excerpt' => 'Hệ thống bắn cát và sơn phủ được triển khai đồng bộ cho tàu công trình trước mùa khai thác cao điểm.',
+                'content' => "Các hạng mục xử lý bề mặt, sơn phủ và kiểm tra độ dày lớp bảo vệ đã được hoàn thành cho tàu công trình theo đúng quy trình chất lượng nội bộ.\n\nKết quả giúp tăng độ bền khai thác, giảm rủi ro ăn mòn và nâng cao khả năng vận hành liên tục cho phương tiện trong mùa cao điểm.",
+                'image_path' => 'https://khienha.vn/uploads/anh/639616469009097.jpg',
+                'published_at' => '2026-02-16 15:10:00',
+                'is_featured' => false,
+                'is_published' => true,
+            ],
+            [
+                'title' => 'Hoàn thành kiểm tra chạy thử hệ thống điện cho tàu du lịch cao cấp',
+                'slug' => 'hoan-thanh-kiem-tra-chay-thu-he-thong-dien-cho-tau-du-lich-cao-cap',
+                'category' => 'Nghiệm thu',
+                'excerpt' => 'Tàu du lịch cao cấp hoàn thành giai đoạn thử tải và kiểm tra hệ thống điện, sẵn sàng bước vào bàn giao.',
+                'content' => "Dự án tàu du lịch cao cấp đã hoàn tất công đoạn kiểm tra chạy thử hệ thống điện, thiết bị điều hướng và các hạng mục nội thất kỹ thuật.\n\nNhà máy tiếp tục hoàn thiện hồ sơ bàn giao và các bước nghiệm thu cuối cùng để đưa phương tiện vào khai thác theo kế hoạch của chủ đầu tư.",
+                'image_path' => 'https://khienha.vn/uploads/anh/89831647418380Tau du lich.jpg',
+                'published_at' => '2026-02-08 11:20:00',
+                'is_featured' => false,
+                'is_published' => true,
+            ],
+        ];
+    }
+}

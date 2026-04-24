@@ -1,0 +1,17 @@
+[Unit]
+Description=Khien Ha Frontend
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/var/www/khienha/backend/FE
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=HOSTNAME=127.0.0.1
+ExecStart=/usr/bin/node /var/www/khienha/backend/FE/server.js
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -111,37 +111,35 @@ export default function QualityManager() {
   }
 
   return (
-    <div className="space-y-8">
-      <div style={{ marginTop: "10px" }}>
-      </div>
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+    <div className="space-y-4">
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
         {/* Sơ đồ quy trình Section */}
         <Card
           variant="none"
-          className="overflow-hidden rounded-[32px] bg-white shadow-[0_30px_70px_rgba(15,23,42,0.08)] transition-all hover:shadow-[0_40px_80px_rgba(15,23,42,0.12)]"
+          className="overflow-hidden rounded-2xl bg-white shadow-[0_4px_14px_rgba(15,23,42,0.06)]"
           title={
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
-                <SafetyCertificateOutlined className="text-xl" />
+            <div className="flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                <SafetyCertificateOutlined className="text-sm" />
               </div>
               <div>
-                <div className="text-base font-bold text-slate-800">Sơ đồ quy trình</div>
-                <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Quality Workflow</div>
+                <div className="text-sm font-bold text-slate-800">Sơ đồ quy trình</div>
+                <div className="text-[10px] font-medium uppercase tracking-wide text-slate-400">Quality Workflow</div>
               </div>
             </div>
           }
         >
           <div className="relative group">
             {processImage ? (
-              <div className="relative mt-2 overflow-hidden rounded-[24px] bg-slate-50 p-4 ring-1 ring-slate-100 transition-all group-hover:ring-blue-100">
+              <div className="relative mt-2 overflow-hidden rounded-xl bg-slate-50 p-3 ring-1 ring-slate-100 transition-all group-hover:ring-blue-100">
                 <Image
                   src={processImage}
                   alt="Quy trình chất lượng"
                   preview={true}
-                  className="max-h-[650px] w-full rounded-2xl object-contain shadow-sm"
+                  className="max-h-[380px] w-full rounded-xl object-contain shadow-sm"
                 />
-                <div className="absolute inset-x-0 bottom-6 flex justify-center opacity-0 transition-opacity group-hover:opacity-100">
-                  <label className="flex h-10 cursor-pointer items-center gap-2 rounded-full bg-white/90 px-5 text-sm font-bold text-slate-900 shadow-xl backdrop-blur-md transition-all hover:bg-white hover:scale-105">
+                <div className="absolute inset-x-0 bottom-5 flex justify-center opacity-0 transition-opacity group-hover:opacity-100">
+                  <label className="flex h-9 cursor-pointer items-center gap-2 rounded-full bg-white/90 px-4 text-xs font-bold text-slate-900 shadow-lg backdrop-blur-md transition-all hover:bg-white hover:scale-105">
                     <UploadOutlined />
                     <span>Thay đổi sơ đồ</span>
                     <input type="file" accept="image/*" onChange={handleUpload} className="hidden" />
@@ -149,13 +147,13 @@ export default function QualityManager() {
                 </div>
               </div>
             ) : (
-              <label className="mt-2 flex min-h-[400px] cursor-pointer flex-col items-center justify-center rounded-[32px] border-2 border-dashed border-slate-200 bg-slate-50/50 transition-all hover:border-blue-400 hover:bg-blue-50/30">
-                <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-white shadow-md">
-                  <UploadOutlined className="text-2xl text-blue-500" />
+              <label className="mt-2 flex min-h-[220px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 transition-all hover:border-blue-400 hover:bg-blue-50/30">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-md">
+                  <UploadOutlined className="text-xl text-blue-500" />
                 </div>
-                <div className="mt-6 text-center">
-                  <div className="text-lg font-bold text-slate-800">Chưa có sơ đồ quy trình</div>
-                  <div className="mt-2 text-sm text-slate-400">Kéo thả hoặc nhấp để tải ảnh lên</div>
+                <div className="mt-4 text-center">
+                  <div className="text-sm font-bold text-slate-800">Chưa có sơ đồ quy trình</div>
+                  <div className="mt-1 text-xs text-slate-400">Kéo thả hoặc nhấp để tải ảnh lên</div>
                 </div>
                 <input type="file" accept="image/*" onChange={handleUpload} className="hidden" />
               </label>
@@ -163,12 +161,12 @@ export default function QualityManager() {
           </div>
 
           {processImage && (
-            <div className="mt-8 flex items-center justify-between rounded-2xl bg-slate-50 p-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-green-50 text-green-600">
+            <div className="mt-4 flex items-center justify-between rounded-xl bg-slate-50 px-3 py-2.5">
+              <div className="flex items-center gap-2">
+                <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-green-50 text-green-600">
                   <PlusOutlined className="text-xs" />
                 </div>
-                <span className="text-xs font-semibold text-slate-500">Sơ đồ hiện tại đang được hiển thị ở trang chủ</span>
+                <span className="text-xs font-medium text-slate-500">Sơ đồ hiện tại đang được hiển thị ở trang chủ</span>
               </div>
               <label className="cursor-pointer text-[11px] font-bold uppercase tracking-widest text-blue-600 hover:text-blue-700">
                 Tải ảnh mới
@@ -181,15 +179,15 @@ export default function QualityManager() {
         {/* Các bước kiểm soát Section */}
         <Card
           variant="none"
-          className="flex flex-col rounded-[32px] bg-white shadow-[0_30px_70px_rgba(15,23,42,0.08)] transition-all hover:shadow-[0_40px_80px_rgba(15,23,42,0.12)]"
+          className="flex flex-col rounded-2xl bg-white shadow-[0_4px_14px_rgba(15,23,42,0.06)]"
           title={
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-600">
-                <EditOutlined className="text-xl" />
+            <div className="flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-cyan-50 text-cyan-600">
+                <EditOutlined className="text-sm" />
               </div>
               <div>
-                <div className="text-base font-bold text-slate-800">Các bước kiểm soát</div>
-                <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Control Steps</div>
+                <div className="text-sm font-bold text-slate-800">Các bước kiểm soát</div>
+                <div className="text-[10px] font-medium uppercase tracking-wide text-slate-400">Control Steps</div>
               </div>
             </div>
           }
@@ -251,16 +249,16 @@ export default function QualityManager() {
             ]}
           />
 
-          <div className="mt-10 flex flex-col items-center border-t border-slate-50 pt-8">
+          <div className="mt-5 flex flex-col items-center border-t border-slate-50 pt-5">
             <Button
               type="primary"
               icon={<PlusOutlined />}
               onClick={openCreateModal}
-              className="h-12 rounded-2xl bg-[#0f172a] px-8 text-[11px] font-black uppercase tracking-[0.18em] text-white shadow-[0_20px_40px_rgba(15,23,42,0.2)] transition-all hover:scale-105 hover:bg-cyan-600"
+              className="h-9 rounded-xl bg-[#0f172a] px-6 text-[11px] font-bold uppercase tracking-[0.16em] text-white shadow-md hover:bg-cyan-600"
             >
               Thêm bước kiểm soát mới
             </Button>
-            <p className="mt-4 text-[10px] font-medium text-slate-400 uppercase tracking-widest">
+            <p className="mt-3 text-[10px] font-medium text-slate-400 uppercase tracking-widest">
               Tối đa 6-8 bước để giao diện frontend cân đối nhất
             </p>
           </div>

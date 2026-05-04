@@ -136,24 +136,21 @@ export default function NewsManager() {
   const publishedCount = data.filter((item) => item.is_published).length;
 
   return (
-    <div className="space-y-6">
-
-      <div style={{ marginTop: "10px" }}>
-      </div>
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card variant="none" className="rounded-[20px] shadow-[0_10px_30px_rgba(15,23,42,0.05)]"><div className="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500">Tổng số bài viết</div><div className="mt-3 text-[34px] font-bold text-slate-950">{data.length}</div></Card>
-        <Card variant="none" className="rounded-[20px] shadow-[0_10px_30px_rgba(15,23,42,0.05)]"><div className="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500">Bài nổi bật</div><div className="mt-3 text-[34px] font-bold text-slate-950">{featuredCount}</div></Card>
-        <Card variant="none" className="rounded-[20px] shadow-[0_10px_30px_rgba(15,23,42,0.05)]"><div className="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500">Đang công khai</div><div className="mt-3 text-[34px] font-bold text-slate-950">{publishedCount}</div></Card>
+    <div className="space-y-4">
+      <div className="grid gap-3 md:grid-cols-3">
+        <Card variant="none" className="rounded-2xl shadow-[0_4px_14px_rgba(15,23,42,0.05)]"><div className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500">Tổng số bài viết</div><div className="mt-2 text-2xl font-bold text-slate-950">{data.length}</div></Card>
+        <Card variant="none" className="rounded-2xl shadow-[0_4px_14px_rgba(15,23,42,0.05)]"><div className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500">Bài nổi bật</div><div className="mt-2 text-2xl font-bold text-slate-950">{featuredCount}</div></Card>
+        <Card variant="none" className="rounded-2xl shadow-[0_4px_14px_rgba(15,23,42,0.05)]"><div className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500">Đang công khai</div><div className="mt-2 text-2xl font-bold text-slate-950">{publishedCount}</div></Card>
       </div>
 
-      <Card variant="none" className="rounded-[22px] shadow-[0_12px_34px_rgba(15,23,42,0.05)]">
+      <Card variant="none" className="rounded-2xl shadow-[0_4px_14px_rgba(15,23,42,0.05)]">
         <div className="mb-5 grid gap-4 xl:grid-cols-[1fr_240px]">
-          <Input value={search} onChange={(event) => setSearch(event.target.value)} prefix={<SearchOutlined className="text-slate-400" />} placeholder="Tìm theo tiêu đề hoặc nội dung" className="h-10 rounded-xl" />
+          <Input value={search} onChange={(event) => setSearch(event.target.value)} prefix={<SearchOutlined className="text-slate-400" />} placeholder="Tìm theo tiêu đề hoặc nội dung" className="h-9 rounded-xl" />
             {/* Category filter removed as requested */}
         </div>
 
         <Table rowKey="_id" loading={loading} dataSource={filteredData} pagination={{ pageSize: 8, showSizeChanger: false }} scroll={{ x: 980 }} columns={[
-          { title: "Ảnh bìa", dataIndex: "image", key: "image", width: 120, render: (value) => <Image src={value} alt="Ảnh bài viết" preview={false} width={76} height={56} className="rounded-xl object-cover" /> },
+          { title: "Ảnh bìa", dataIndex: "image", key: "image", width: 100, render: (value) => <Image src={value} alt="Ảnh bài viết" preview={false} width={64} height={44} className="rounded-lg object-cover" /> },
           { title: "Bài viết", key: "title", render: (_, record) => <div className="min-w-[260px]"><div className="font-semibold text-slate-900">{record.title}</div><div className="mt-1 line-clamp-2 text-xs leading-6 text-slate-500">{record.excerpt || record.content}</div></div> },
           { title: "Chuyên mục", dataIndex: "category", key: "category", width: 150, render: (value) => <Tag color="blue">{value}</Tag> },
           { title: "Trạng thái", key: "status", width: 170, render: (_, record) => <Flex vertical gap={6}><Tag color={record.is_published ? "green" : "default"}>{record.is_published ? "Đang hiển thị" : "Bản nháp"}</Tag>{record.is_featured ? <Tag color="gold">Nổi bật</Tag> : null}</Flex> },
@@ -161,12 +158,12 @@ export default function NewsManager() {
           { title: "Thao tác", key: "action", width: 140, render: (_, record) => <Flex gap={8}><Button type="text" icon={<EditOutlined />} onClick={() => openEditModal(record)} /><Button type="text" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record)} /></Flex> },
         ]} />
 
-        <div className="mt-8 flex justify-center">
+        <div className="mt-5 flex justify-center border-t border-slate-50 pt-5">
           <Button
             type="primary"
             icon={<PlusOutlined />}
             onClick={openCreateModal}
-            className="h-12 rounded-[22px] bg-slate-900 border-none px-10 font-black shadow-lg hover:!bg-blue-600 uppercase tracking-widest text-[11px]"
+            className="h-9 rounded-xl bg-slate-900 border-none px-7 font-bold shadow-md hover:!bg-blue-600 uppercase tracking-widest text-[11px]"
           >
             Đăng tin mới
           </Button>

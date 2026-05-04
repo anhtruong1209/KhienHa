@@ -62,28 +62,28 @@ export default function AdminDashboard() {
       key: "news",
       title: "Tin tức hiển thị",
       value: stats.newsCount,
-      icon: <FileTextOutlined className="text-2xl text-sky-700" />,
+      icon: <FileTextOutlined className="text-base text-sky-700" />,
       accent: "from-sky-50 to-white",
     },
     {
       key: "banners",
       title: "Banner trang chủ",
       value: stats.bannerCount,
-      icon: <FileImageOutlined className="text-2xl text-cyan-700" />,
+      icon: <FileImageOutlined className="text-base text-cyan-700" />,
       accent: "from-cyan-50 to-white",
     },
     {
       key: "quality",
       title: "Bước chất lượng",
       value: stats.qualityStepCount,
-      icon: <SafetyCertificateOutlined className="text-2xl text-emerald-700" />,
+      icon: <SafetyCertificateOutlined className="text-base text-emerald-700" />,
       accent: "from-emerald-50 to-white",
     },
     {
       key: "history",
       title: "Phát triển",
       value: stats.historyCount,
-      icon: <HistoryOutlined className="text-2xl text-amber-600" />,
+      icon: <HistoryOutlined className="text-base text-amber-600" />,
       accent: "from-amber-50 to-white",
     },
   ];
@@ -107,32 +107,29 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="space-y-8">
-      <div style={{ marginTop: "10px" }}>
-      </div>
-
-      <Row gutter={[18, 18]}>
+    <div className="space-y-4">
+      <Row gutter={[14, 14]}>
         {overviewCards.map((item) => (
           <Col key={item.key} xs={24} md={12} xl={6}>
-            <Card bordered={false} loading={loading} className={`rounded-[28px] bg-gradient-to-br ${item.accent} shadow-[0_18px_50px_rgba(15,23,42,0.06)]`}>
-              <div className="flex items-start justify-between gap-4">
+            <Card bordered={false} loading={loading} className={`rounded-2xl bg-gradient-to-br ${item.accent} shadow-[0_6px_20px_rgba(15,23,42,0.05)]`}>
+              <div className="flex items-start justify-between gap-3">
                 <div>
-                  <Text className="text-[12px] font-medium uppercase tracking-[0.14em] text-slate-500">{item.title}</Text>
-                  <div className="mt-4 text-[34px] font-black leading-none text-slate-900">{item.value}</div>
+                  <Text className="text-[11px] font-medium uppercase tracking-[0.12em] text-slate-500">{item.title}</Text>
+                  <div className="mt-2 text-2xl font-bold leading-none text-slate-900">{item.value}</div>
                 </div>
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-sm">{item.icon}</div>
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white shadow-sm">{item.icon}</div>
               </div>
             </Card>
           </Col>
         ))}
       </Row>
 
-      <Row gutter={[18, 18]}>
+      <Row gutter={[14, 14]}>
         <Col xs={24} xl={15}>
           <Card
             bordered={false}
-            className="rounded-[30px] shadow-[0_20px_60px_rgba(15,23,42,0.06)]"
-            title={<span className="text-[12px] font-medium uppercase tracking-[0.14em] text-slate-500">Tin tức cập nhật gần đây</span>}
+            className="rounded-2xl shadow-[0_6px_20px_rgba(15,23,42,0.05)]"
+            title={<span className="text-[11px] font-medium uppercase tracking-[0.12em] text-slate-500">Tin tức cập nhật gần đây</span>}
           >
             <Table
               size="middle"
@@ -173,21 +170,21 @@ export default function AdminDashboard() {
         <Col xs={24} xl={9}>
           <Card
             bordered={false}
-            className="rounded-[30px] shadow-[0_20px_60px_rgba(15,23,42,0.06)]"
-            title={<span className="text-[12px] font-medium uppercase tracking-[0.14em] text-slate-500">Tình trạng nội dung website</span>}
+            className="rounded-2xl shadow-[0_6px_20px_rgba(15,23,42,0.05)]"
+            title={<span className="text-[11px] font-medium uppercase tracking-[0.12em] text-slate-500">Tình trạng nội dung website</span>}
           >
-            <div className="space-y-4">
-              <div className="rounded-[24px] bg-[#0b6aa2] px-5 py-4 text-white">
-                <Text className="text-sm !text-sky-100">Dashboard chỉ còn các nhóm nội dung đang dùng thực tế, bỏ phần khách hàng theo yêu cầu của bạn.</Text>
+            <div className="space-y-3">
+              <div className="rounded-xl bg-[#0b6aa2] px-4 py-3 text-white">
+                <Text className="text-xs !text-sky-100">Dashboard chỉ còn các nhóm nội dung đang dùng thực tế, bỏ phần khách hàng theo yêu cầu của bạn.</Text>
               </div>
 
               {contentSummary.map((item) => (
-                <div key={item.label} className="flex items-start gap-4 rounded-[22px] border border-slate-100 bg-slate-50 p-4">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white shadow-sm">{item.icon}</div>
+                <div key={item.label} className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2.5">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white shadow-sm">{item.icon}</div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between gap-3">
-                      <div className="font-semibold text-slate-900">{item.label}</div>
-                      <div className="text-xl font-black text-slate-900">{item.value}</div>
+                      <div className="text-sm font-medium text-slate-900">{item.label}</div>
+                      <div className="text-base font-bold text-slate-900">{item.value}</div>
                     </div>
                   </div>
                 </div>

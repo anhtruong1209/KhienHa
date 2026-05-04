@@ -111,29 +111,27 @@ export default function HistoryManager() {
   const latestYear = data[data.length - 1]?.year || "-";
 
   return (
-    <div className="space-y-8">
-      <div style={{ marginTop: "10px" }}>
-      </div>
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card variant="none" className="rounded-[28px] shadow-[0_18px_50px_rgba(15,23,42,0.06)] bg-white">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Tổng cột mốc</div>
-          <div className="mt-4 text-4xl font-black text-slate-900">{data.length}</div>
+    <div className="space-y-4">
+      <div className="grid gap-3 md:grid-cols-3">
+        <Card variant="none" className="rounded-2xl shadow-[0_4px_14px_rgba(15,23,42,0.05)] bg-white">
+          <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">Tổng cột mốc</div>
+          <div className="mt-2 text-2xl font-bold text-slate-900">{data.length}</div>
         </Card>
-        <Card variant="none" className="rounded-[28px] shadow-[0_18px_50px_rgba(15,23,42,0.06)] bg-white">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Khởi đầu</div>
-          <div className="mt-4 text-4xl font-black text-slate-900">{firstYear}</div>
+        <Card variant="none" className="rounded-2xl shadow-[0_4px_14px_rgba(15,23,42,0.05)] bg-white">
+          <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">Khởi đầu</div>
+          <div className="mt-2 text-2xl font-bold text-slate-900">{firstYear}</div>
         </Card>
-        <Card variant="none" className="rounded-[28px] bg-slate-900 text-white shadow-[0_18px_50px_rgba(7,27,47,0.18)]">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-200">Mốc gần nhất</div>
-          <div className="mt-4 text-4xl font-black">{latestYear}</div>
+        <Card variant="none" className="rounded-2xl bg-slate-900 text-white shadow-[0_6px_20px_rgba(7,27,47,0.14)]">
+          <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-cyan-200">Mốc gần nhất</div>
+          <div className="mt-2 text-2xl font-bold">{latestYear}</div>
         </Card>
       </div>
 
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,1.45fr)_380px]">
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.45fr)_340px]">
         <Card
           variant="none"
-          className="rounded-[32px] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.06)]"
-          title={<span className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">Dòng thời gian phát triển</span>}
+          className="rounded-2xl bg-white shadow-[0_4px_14px_rgba(15,23,42,0.05)]"
+          title={<span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">Dòng thời gian phát triển</span>}
         >
           <Table
             rowKey="id"
@@ -174,21 +172,21 @@ export default function HistoryManager() {
             ]}
           />
 
-          <div className="mt-8 flex justify-center border-t border-slate-50 pt-8">
+          <div className="mt-5 flex justify-center border-t border-slate-50 pt-5">
             <Button
               type="primary"
               icon={<PlusOutlined />}
               onClick={openCreateModal}
-              className="h-12 rounded-2xl bg-[#0f172a] px-8 text-[11px] font-black uppercase tracking-[0.18em] text-white shadow-[0_20px_40px_rgba(15,23,42,0.15)] transition-all hover:scale-105 hover:bg-blue-600"
+              className="h-9 rounded-xl bg-[#0f172a] px-6 text-[11px] font-bold uppercase tracking-[0.16em] text-white shadow-md hover:bg-blue-600"
             >
               Thêm cột mốc mới
             </Button>
           </div>
         </Card>
 
-        <Card variant="none" className="rounded-[32px] bg-gradient-to-br from-[#0f172a] to-[#1e293b] text-white shadow-[0_30px_70px_rgba(15,23,42,0.2)]">
-          <Text className="text-[10px] font-bold uppercase tracking-[0.24em] text-cyan-300">Timeline preview</Text>
-          <div className="mt-8 space-y-6">
+        <Card variant="none" className="rounded-2xl bg-gradient-to-br from-[#0f172a] to-[#1e293b] text-white shadow-[0_10px_30px_rgba(15,23,42,0.18)]">
+          <Text className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-300">Timeline preview</Text>
+          <div className="mt-4 space-y-4">
             {data.map((item, index) => (
               <div key={item.id} className="relative pl-10">
                 {index < data.length - 1 ? <div className="absolute left-[11px] top-6 h-[calc(100%+24px)] w-0.5 bg-white/10" /> : null}

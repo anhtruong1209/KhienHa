@@ -160,29 +160,27 @@ export default function BannerManager() {
   const readyCount = data.filter((item) => item.url).length;
 
   return (
-    <div className="space-y-8">
-      <div style={{ marginTop: "10px" }}>
-      </div>
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card variant="none" className="rounded-[28px] shadow-[0_18px_50px_rgba(15,23,42,0.06)] bg-white">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Tổng số slide</div>
-          <div className="mt-4 text-4xl font-black text-slate-900">{totalCount}</div>
+    <div className="space-y-4">
+      <div className="grid gap-3 md:grid-cols-3">
+        <Card variant="none" className="rounded-2xl shadow-[0_4px_14px_rgba(15,23,42,0.05)] bg-white">
+          <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">Tổng số slide</div>
+          <div className="mt-2 text-2xl font-bold text-slate-900">{totalCount}</div>
         </Card>
-        <Card variant="none" className="rounded-[28px] shadow-[0_18px_50px_rgba(15,23,42,0.06)] bg-white">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Sẵn sàng hiển thị</div>
-          <div className="mt-4 text-4xl font-black text-slate-900">{readyCount}</div>
+        <Card variant="none" className="rounded-2xl shadow-[0_4px_14px_rgba(15,23,42,0.05)] bg-white">
+          <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">Sẵn sàng hiển thị</div>
+          <div className="mt-2 text-2xl font-bold text-slate-900">{readyCount}</div>
         </Card>
-        <Card variant="none" className="rounded-[28px] bg-slate-900 text-white shadow-[0_18px_50px_rgba(7,27,47,0.18)]">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-200">Thứ tự</div>
-          <div className="mt-4 text-sm leading-relaxed text-slate-300">Dòng đầu tiên trong bảng sẽ là slide đầu tiên hiển thị ngoài trang chủ.</div>
+        <Card variant="none" className="rounded-2xl bg-slate-900 text-white shadow-[0_6px_20px_rgba(7,27,47,0.14)]">
+          <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-cyan-200">Thứ tự</div>
+          <div className="mt-2 text-xs leading-5 text-slate-300">Dòng đầu tiên trong bảng sẽ là slide đầu tiên hiển thị ngoài trang chủ.</div>
         </Card>
       </div>
 
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,1.6fr)_380px]">
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.6fr)_340px]">
         <Card
           variant="none"
-          className="rounded-[32px] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.06)]"
-          title={<span className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">Quản lý slide trang chủ</span>}
+          className="rounded-2xl bg-white shadow-[0_4px_14px_rgba(15,23,42,0.05)]"
+          title={<span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">Quản lý slide trang chủ</span>}
         >
           <Table
             rowKey="id"
@@ -199,7 +197,7 @@ export default function BannerManager() {
                 dataIndex: "url",
                 key: "url",
                 width: 140,
-                render: (value) => <Image src={value} alt="Banner" width={100} height={60} className="rounded-xl object-cover ring-1 ring-slate-100" />,
+                render: (value) => <Image src={value} alt="Banner" width={72} height={44} className="rounded-lg object-cover ring-1 ring-slate-100" />,
               },
               {
                 title: "Thông tin banner",
@@ -232,43 +230,43 @@ export default function BannerManager() {
             ]}
           />
 
-          <div className="mt-10 flex flex-col items-center border-t border-slate-50 pt-8">
+          <div className="mt-5 flex flex-col items-center border-t border-slate-50 pt-5">
             <Button
               type="primary"
               icon={<PlusOutlined />}
               onClick={openCreateModal}
-              className="h-12 rounded-2xl bg-slate-900 px-8 text-[11px] font-black uppercase tracking-[0.18em] text-white shadow-xl transition-all hover:scale-105 hover:bg-blue-600"
+              className="h-9 rounded-xl bg-slate-900 px-6 text-[11px] font-bold uppercase tracking-[0.16em] text-white shadow-md hover:bg-blue-600"
             >
               Thêm banner mới
             </Button>
-            <p className="mt-4 text-[10px] font-medium text-slate-400 uppercase tracking-widest">
+            <p className="mt-3 text-[10px] font-medium text-slate-400 uppercase tracking-widest">
               Slide nên có kích thước 1920x800px để hiển thị đẹp nhất
             </p>
           </div>
         </Card>
 
-        <Card bordered={false} className="sticky top-8 overflow-hidden rounded-[32px] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
-          <div className="mb-6 flex items-center gap-2">
+        <Card bordered={false} className="sticky top-4 overflow-hidden rounded-2xl bg-white shadow-[0_4px_14px_rgba(15,23,42,0.05)]">
+          <div className="mb-4 flex items-center gap-2">
             <PictureOutlined className="text-slate-400" />
-            <Text className="text-[10px] font-bold uppercase tracking-[0.24em] text-slate-400">Xem trước Banner</Text>
+            <Text className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Xem trước Banner</Text>
           </div>
           {previewItem ? (
-            <div className="space-y-6">
-              <div className="overflow-hidden rounded-[28px] bg-slate-50 p-3 ring-1 ring-slate-100">
-                <Image src={previewItem.url} alt={previewItem.title} preview={true} className="h-[240px] w-full rounded-[20px] object-cover shadow-sm" />
+            <div className="space-y-4">
+              <div className="overflow-hidden rounded-xl bg-slate-50 p-2 ring-1 ring-slate-100">
+                <Image src={previewItem.url} alt={previewItem.title} preview={true} className="h-[160px] w-full rounded-lg object-cover shadow-sm" />
               </div>
               <div>
-                <div className="text-xl font-bold text-slate-900">{previewItem.title}</div>
-                <div className="mt-4 rounded-2xl bg-blue-50/50 p-5 ring-1 ring-blue-100/50">
+                <div className="text-base font-bold text-slate-900">{previewItem.title}</div>
+                <div className="mt-3 rounded-xl bg-blue-50/50 p-4 ring-1 ring-blue-100/50">
                   <div className="text-xs font-bold uppercase tracking-widest text-blue-600">Tip hiển thị</div>
-                  <p className="mt-3 text-xs leading-relaxed text-slate-600">
+                  <p className="mt-2 text-xs leading-relaxed text-slate-600">
                     Phần kịch bản chữ ngoài Landing page sẽ tự động đè lên ảnh này. Hãy chọn ảnh có độ tương phản tốt để chữ dễ đọc hơn.
                   </p>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="mt-4 rounded-[32px] border border-dashed border-slate-200 bg-slate-50 p-12 text-center text-sm text-slate-400">
+            <div className="mt-4 rounded-xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-400">
               Chọn một banner để xem chi tiết
             </div>
           )}

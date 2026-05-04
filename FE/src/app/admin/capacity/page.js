@@ -152,40 +152,38 @@ export default function CapacityManager() {
   }
 
   return (
-    <div className="space-y-8">
-      <div style={{ marginTop: "10px" }}>
-      </div>
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card variant="none" className="rounded-[28px] shadow-[0_18px_50px_rgba(15,23,42,0.06)] bg-white">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Tổng hạng mục</div>
-          <div className="mt-4 text-4xl font-black text-slate-900">{data.length}</div>
+    <div className="space-y-4">
+      <div className="grid gap-3 md:grid-cols-3">
+        <Card variant="none" className="rounded-2xl shadow-[0_4px_14px_rgba(15,23,42,0.05)] bg-white">
+          <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">Tổng hạng mục</div>
+          <div className="mt-2 text-2xl font-bold text-slate-900">{data.length}</div>
         </Card>
-        <Card variant="none" className="rounded-[28px] shadow-[0_18px_50px_rgba(15,23,42,0.06)] bg-white">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Nhóm nội dung</div>
-          <div className="mt-4 text-4xl font-black text-slate-900">{categoryCount}</div>
+        <Card variant="none" className="rounded-2xl shadow-[0_4px_14px_rgba(15,23,42,0.05)] bg-white">
+          <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">Nhóm nội dung</div>
+          <div className="mt-2 text-2xl font-bold text-slate-900">{categoryCount}</div>
         </Card>
-        <Card variant="none" className="rounded-[28px] bg-slate-900 text-white shadow-[0_18px_50px_rgba(7,27,47,0.18)]">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-200">Trạng thái</div>
-          <div className="mt-4 text-2xl font-black text-white flex items-center gap-2">
+        <Card variant="none" className="rounded-2xl bg-slate-900 text-white shadow-[0_6px_20px_rgba(7,27,47,0.14)]">
+          <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-cyan-200">Trạng thái</div>
+          <div className="mt-2 text-base font-bold text-white flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-green-400 animate-pulse"></div>
             Đang hiển thị
           </div>
         </Card>
       </div>
 
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,1.6fr)_380px]">
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.6fr)_340px]">
         <Card
           variant="none"
-          className="rounded-[32px] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.06)]"
-          title={<span className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">Danh sách năng lực cốt lõi</span>}
+          className="rounded-2xl bg-white shadow-[0_4px_14px_rgba(15,23,42,0.05)]"
+          title={<span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">Danh sách năng lực cốt lõi</span>}
         >
-          <div className="mb-6">
+          <div className="mb-4">
             <Input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               prefix={<SearchOutlined className="text-slate-400" />}
               placeholder="Tìm theo nhóm, tiêu đề hoặc mô tả..."
-              className="h-12 rounded-2xl bg-slate-50 border-none px-5"
+              className="h-9 rounded-xl bg-slate-50 border-none px-4"
             />
           </div>
           <Table
@@ -228,24 +226,24 @@ export default function CapacityManager() {
             ]}
           />
 
-          <div className="mt-10 flex flex-col items-center border-t border-slate-50 pt-8">
+          <div className="mt-5 flex flex-col items-center border-t border-slate-50 pt-5">
             <Button
               type="primary"
               icon={<PlusOutlined />}
               onClick={openCreateModal}
-              className="h-12 rounded-2xl bg-slate-900 px-8 text-[11px] font-black uppercase tracking-[0.18em] text-white shadow-xl transition-all hover:scale-105 hover:bg-blue-600"
+              className="h-9 rounded-xl bg-slate-900 px-6 text-[11px] font-bold uppercase tracking-[0.16em] text-white shadow-md hover:bg-blue-600"
             >
               Thêm năng lực mới
             </Button>
-            <p className="mt-4 text-[10px] font-medium text-slate-400 uppercase tracking-widest text-center">
+            <p className="mt-3 text-[10px] font-medium text-slate-400 uppercase tracking-widest text-center">
               Nhấn vào dòng trong bảng để xem preview chi tiết bên phải
             </p>
           </div>
         </Card>
 
-        <Card variant="none" className="sticky top-8 overflow-hidden rounded-[32px] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
-          <div className="mb-6 flex items-center justify-between">
-            <Text className="text-[10px] font-bold uppercase tracking-[0.24em] text-slate-400">Preview chi tiết</Text>
+        <Card variant="none" className="sticky top-4 overflow-hidden rounded-2xl bg-white shadow-[0_4px_14px_rgba(15,23,42,0.05)]">
+          <div className="mb-4 flex items-center justify-between">
+            <Text className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Preview chi tiết</Text>
             {selectedItem && (
               <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-orange-50 text-orange-500">
                 <ThunderboltOutlined />
@@ -253,21 +251,21 @@ export default function CapacityManager() {
             )}
           </div>
           {selectedItem ? (
-            <div className="space-y-6">
-              <div className="overflow-hidden rounded-[28px] bg-slate-50 p-3 ring-1 ring-slate-100">
-                <Image src={selectedItem.image} alt={selectedItem.title} preview={true} className="h-[240px] w-full rounded-[20px] object-cover shadow-sm" />
+            <div className="space-y-4">
+              <div className="overflow-hidden rounded-xl bg-slate-50 p-2 ring-1 ring-slate-100">
+                <Image src={selectedItem.image} alt={selectedItem.title} preview={true} className="h-[150px] w-full rounded-lg object-cover shadow-sm" />
               </div>
               <div>
-                <div className="inline-block rounded-full bg-blue-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-blue-600">
+                <div className="inline-block rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-blue-600">
                   {selectedItem.category}
                 </div>
-                <div className="mt-4 text-xl font-bold leading-tight text-slate-900">{selectedItem.title}</div>
-                <div className="mt-4 text-sm leading-relaxed text-slate-500">{selectedItem.detail}</div>
+                <div className="mt-2 text-base font-bold leading-tight text-slate-900">{selectedItem.title}</div>
+                <div className="mt-2 text-xs leading-relaxed text-slate-500">{selectedItem.detail}</div>
               </div>
-              <div className="rounded-2xl bg-slate-50 p-5">
-                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-lg bg-white flex items-center justify-center shadow-sm text-slate-400">
-                    <PlusOutlined style={{ fontSize: '12px' }} />
+              <div className="rounded-xl bg-slate-50 p-3">
+                <div className="flex items-center gap-2">
+                  <div className="h-7 w-7 rounded-lg bg-white flex items-center justify-center shadow-sm text-slate-400">
+                    <PlusOutlined style={{ fontSize: '11px' }} />
                   </div>
                   <div>
                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Icon đại diện</div>
@@ -276,7 +274,7 @@ export default function CapacityManager() {
                 </div>
               </div>
             </div>
-          ) : <div className="mt-4 rounded-[24px] border border-dashed border-slate-200 bg-slate-50 p-10 text-center text-sm text-slate-400">Chọn một mục để xem trước</div>}
+          ) : <div className="mt-4 rounded-xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-400">Chọn một mục để xem trước</div>}
         </Card>
       </div>
 

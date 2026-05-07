@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { BadgeCheck, Building2, Play, ShieldCheck, Sparkles } from "lucide-react";
+import { BadgeCheck, Building2, ChevronLeft, ChevronRight, Pause, Play, ShieldCheck, Sparkles } from "lucide-react";
 import { getSiteContent } from "@/services/api";
 
 function cleanYouTubeId(value) {
@@ -35,9 +35,70 @@ function getYouTubeId(url) {
   return null;
 }
 
+function getAboutVideoItems(about) {
+  const rawUrls = [
+    ...(Array.isArray(about?.videoUrls) ? about.videoUrls : []),
+    about?.videoUrl,
+  ];
+  const urls = Array.from(new Set(rawUrls.map((url) => `${url || ""}`.trim()).filter(Boolean)));
+
+  return urls
+    .map((url) => ({ url, id: getYouTubeId(url) }))
+    .filter((item) => item.id)
+    .map((item, index) => ({ ...item, label: `Video ${index + 1}` }));
+}
+
+function ensureYouTubeApi() {
+  if (typeof window === "undefined") return Promise.resolve(null);
+  if (window.YT?.Player) return Promise.resolve(window.YT);
+  if (window.__khienHaYouTubeApiPromise) return window.__khienHaYouTubeApiPromise;
+
+  window.__khienHaYouTubeApiPromise = new Promise((resolve) => {
+    const previousReady = window.onYouTubeIframeAPIReady;
+
+    window.onYouTubeIframeAPIReady = () => {
+      if (typeof previousReady === "function") previousReady();
+      resolve(window.YT);
+    };
+
+    if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
+      const script = document.createElement("script");
+      script.src = "https://www.youtube.com/iframe_api";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  });
+
+  return window.__khienHaYouTubeApiPromise;
+}
+
+function buildYouTubeEmbedUrl(videoId) {
+  const params = new URLSearchParams({
+    rel: "0",
+    modestbranding: "1",
+    playsinline: "1",
+    enablejsapi: "1",
+    iv_load_policy: "3",
+    controls: "0",
+    disablekb: "1",
+    fs: "0",
+  });
+
+  if (typeof window !== "undefined") {
+    params.set("origin", window.location.origin);
+  }
+
+  return `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`;
+}
+
 export function About() {
   const [about, setAbout] = useState(null);
   const [capabilities, setCapabilities] = useState([]);
+  const [youtubeState, setYoutubeState] = useState("idle");
+  const [activeVideoIndex, setActiveVideoIndex] = useState(0);
+  const iframeRef = useRef(null);
+  const playerRef = useRef(null);
+  const progressTimerRef = useRef(null);
 
   useEffect(() => {
     async function load() {
@@ -48,10 +109,100 @@ export function About() {
     load();
   }, []);
 
-  const videoId = getYouTubeId(about?.videoUrl);
-  const videoEmbedUrl = videoId
-    ? `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&playsinline=1`
-    : null;
+  const videoItems = getAboutVideoItems(about);
+  const safeActiveVideoIndex = videoItems.length > 0 ? Math.min(activeVideoIndex, videoItems.length - 1) : 0;
+  const activeVideo = videoItems[safeActiveVideoIndex] || null;
+  const videoEmbedUrl = activeVideo?.id ? buildYouTubeEmbedUrl(activeVideo.id) : null;
+  const shouldShieldVideo = Boolean(videoEmbedUrl) && youtubeState !== "playing";
+
+  useEffect(() => {
+    if (!videoEmbedUrl || !iframeRef.current) return;
+
+    let cancelled = false;
+    let player = null;
+    clearInterval(progressTimerRef.current);
+    progressTimerRef.current = null;
+
+    ensureYouTubeApi().then((YT) => {
+      if (cancelled || !YT?.Player || !iframeRef.current) return;
+
+      player = new YT.Player(iframeRef.current, {
+        events: {
+          onReady: () => {
+            progressTimerRef.current = setInterval(() => {
+              if (!playerRef.current?.getDuration || !playerRef.current?.getCurrentTime) return;
+
+              const duration = Number(playerRef.current.getDuration()) || 0;
+              const currentTime = Number(playerRef.current.getCurrentTime()) || 0;
+              const playerState = playerRef.current.getPlayerState?.();
+
+              if (duration > 0 && playerState === YT.PlayerState.PLAYING && duration - currentTime <= 2.2) {
+                playerRef.current.pauseVideo?.();
+                playerRef.current.seekTo?.(0, true);
+                setYoutubeState("ended");
+              }
+            }, 350);
+          },
+          onStateChange: (event) => {
+            if (event.data === YT.PlayerState.PLAYING || event.data === YT.PlayerState.BUFFERING) {
+              setYoutubeState("playing");
+              return;
+            }
+
+            if (event.data === YT.PlayerState.PAUSED) {
+              setYoutubeState("paused");
+              return;
+            }
+
+            if (event.data === YT.PlayerState.ENDED) {
+              playerRef.current?.seekTo?.(0, true);
+              setYoutubeState("ended");
+            }
+          },
+        },
+      });
+      playerRef.current = player;
+    });
+
+    return () => {
+      cancelled = true;
+      clearInterval(progressTimerRef.current);
+      progressTimerRef.current = null;
+      if (playerRef.current === player) {
+        playerRef.current = null;
+      }
+    };
+  }, [videoEmbedUrl]);
+
+  function selectVideo(index) {
+    clearInterval(progressTimerRef.current);
+    progressTimerRef.current = null;
+    playerRef.current = null;
+    setActiveVideoIndex(index);
+    setYoutubeState("idle");
+  }
+
+  function stepVideo(direction) {
+    if (videoItems.length <= 1) return;
+    selectVideo((safeActiveVideoIndex + direction + videoItems.length) % videoItems.length);
+  }
+
+  function handleResumeVideo(event) {
+    event.stopPropagation();
+
+    if (youtubeState === "ended") {
+      playerRef.current?.seekTo?.(0, true);
+    }
+
+    playerRef.current?.playVideo?.();
+    setYoutubeState("playing");
+  }
+
+  function handlePauseVideo(event) {
+    event.stopPropagation();
+    playerRef.current?.pauseVideo?.();
+    setYoutubeState("paused");
+  }
 
   return (
     <section id="about" className="section-padding overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#f6f9fc_100%)]">
@@ -120,27 +271,90 @@ export function About() {
                 Video giới thiệu
               </div>
               <span className="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.18em] text-white/78">
-                Khiên Hà
+                {videoItems.length > 1 ? `${safeActiveVideoIndex + 1}/${videoItems.length}` : "Khiên Hà"}
               </span>
             </div>
 
-            <div className="aspect-video overflow-hidden rounded-[1.5rem] bg-slate-950">
+            <div className="relative aspect-video overflow-hidden rounded-[1.5rem] bg-slate-950">
               {videoEmbedUrl ? (
-                <iframe
-                  src={videoEmbedUrl}
-                  title="Video giới thiệu Khiên Hà"
-                  className="h-full w-full"
-                  loading="lazy"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allowFullScreen
-                />
+                <>
+                  <iframe
+                    key={activeVideo.id}
+                    ref={iframeRef}
+                    src={videoEmbedUrl}
+                    title={`${activeVideo.label} giới thiệu Khiên Hà`}
+                    className="h-full w-full pointer-events-none"
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                  />
+                  {/* Block YouTube "More videos" overlay at bottom-right */}
+                  <div className="absolute bottom-0 right-0 z-10 h-14 w-200 bg-slate-950" />
+                  {shouldShieldVideo ? (
+                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#020817]/92 px-6 text-center">
+                      <button
+                        type="button"
+                        onClick={handleResumeVideo}
+                        className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/12 px-5 py-3 text-sm font-black uppercase tracking-[0.16em] text-white shadow-[0_18px_55px_rgba(0,0,0,0.3)] backdrop-blur-xl transition-colors hover:bg-white/18"
+                      >
+                        <Play className="h-4 w-4 fill-current" />
+                        {youtubeState === "ended" ? "Phát lại video" : youtubeState === "paused" ? "Tiếp tục xem" : "Phát video"}
+                      </button>
+                    </div>
+                  ) : null}
+                  {youtubeState === "playing" ? (
+                    <button
+                      type="button"
+                      onClick={handlePauseVideo}
+                      className="absolute bottom-4 left-4 z-10 inline-flex items-center gap-2 rounded-full border border-white/15 bg-[#020817]/70 px-4 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-white shadow-[0_12px_34px_rgba(0,0,0,0.28)] backdrop-blur-xl transition-colors hover:bg-[#020817]/86"
+                    >
+                      <Pause className="h-3.5 w-3.5 fill-current" />
+                      Tạm dừng
+                    </button>
+                  ) : null}
+                </>
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(135deg,#071b2f,#0b6aa2)] px-6 text-center text-sm font-semibold leading-7 text-white/78">
                   Video giới thiệu sẽ hiển thị tại đây khi có link YouTube.
                 </div>
               )}
             </div>
+
+            {videoItems.length > 1 ? (
+              <div className="mt-3 grid grid-cols-[40px_minmax(0,1fr)_40px] items-center gap-2">
+                <button
+                  type="button"
+                  aria-label="Video trước"
+                  onClick={() => stepVideo(-1)}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/8 text-white transition-colors hover:bg-white/15"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <div className="flex min-w-0 gap-2 overflow-x-auto pb-1">
+                  {videoItems.map((item, index) => (
+                    <button
+                      key={`${item.id}-${index}`}
+                      type="button"
+                      onClick={() => selectVideo(index)}
+                      className={`h-10 shrink-0 rounded-full border px-4 text-[10px] font-black uppercase tracking-[0.16em] transition-colors ${index === safeActiveVideoIndex
+                          ? "border-cyan-200 bg-cyan-200 text-[#071b2f]"
+                          : "border-white/10 bg-white/8 text-white/72 hover:bg-white/15 hover:text-white"
+                        }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  aria-label="Video sau"
+                  onClick={() => stepVideo(1)}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/8 text-white transition-colors hover:bg-white/15"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            ) : null}
           </motion.div>
         </div>
 

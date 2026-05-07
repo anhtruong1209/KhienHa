@@ -8,6 +8,7 @@ use App\Support\DefaultSiteContent;
 use App\Support\MediaAssetService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class AdminSiteContentController extends Controller
 {
@@ -41,6 +42,17 @@ class AdminSiteContentController extends Controller
             ->values()
             ->all();
 
+        $payload['about'] = $payload['about'] ?? [];
+        $aboutVideoUrls = collect(data_get($payload, 'about.videoUrls', []))
+            ->push(data_get($payload, 'about.videoUrl'))
+            ->map(fn ($url) => is_string($url) ? trim($url) : '')
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        $payload['about']['videoUrls'] = $aboutVideoUrls;
+        $payload['about']['videoUrl'] = $aboutVideoUrls[0] ?? '';
         $payload['about']['image'] = MediaAssetService::persistImage(
             data_get($payload, 'about.image'),
             'uploads/about'
@@ -67,7 +79,23 @@ class AdminSiteContentController extends Controller
 
         $payload['gallery'] = collect($payload['gallery'] ?? [])
             ->map(function (array $item): array {
-                $item['url'] = MediaAssetService::persistImage($item['url'] ?? null, 'uploads/gallery');
+                $coverImage = MediaAssetService::persistImage($item['url'] ?? null, 'uploads/gallery');
+                $images = collect($item['images'] ?? [])
+                    ->filter()
+                    ->map(fn ($image) => MediaAssetService::persistImage($image, 'uploads/gallery'))
+                    ->filter()
+                    ->values()
+                    ->all();
+
+                if ($coverImage && ! in_array($coverImage, $images, true)) {
+                    array_unshift($images, $coverImage);
+                }
+
+                $item['images'] = $images;
+                $item['url'] = $images[0] ?? $coverImage;
+                $item['slug'] = Str::slug($item['slug'] ?? $item['title'] ?? 'gallery') ?: 'gallery';
+                $item['category'] = $item['category'] ?? 'Thư viện';
+                $item['categorySlug'] = Str::slug($item['category']) ?: 'thu-vien';
 
                 return $item;
             })

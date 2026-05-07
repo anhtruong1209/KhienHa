@@ -37,6 +37,8 @@ class DefaultSiteContent
                 'image' => 'https://khienha.vn/uploads/anh/367316468994953.jpg',
                 'certificateLabel' => 'ISO 9001:2015',
                 'certificateText' => 'Hệ thống quản lý chất lượng cho hoạt động đóng mới và sửa chữa tàu thủy.',
+                'videoUrl' => '',
+                'videoUrls' => [],
             ],
             'contact' => [
                 'eyebrow' => 'Liên hệ',

@@ -1,17 +1,51 @@
 "use client";
 
 import React, { startTransition, useDeferredValue, useEffect, useMemo, useState } from "react";
-import { DeleteOutlined, EditOutlined, FileImageOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import { Button, Card, Flex, Form, Image, Input, Modal, Select, Space, Table, Tag, Typography, message } from "antd";
-import { getSiteContent, updateSiteContent } from "@/services/api";
-import {
-  GALLERY_CATEGORY_FILTER_OPTIONS,
-  GALLERY_CATEGORY_OPTIONS,
-  getGalleryCategoryLabel,
-  resolveGalleryCategoryValue,
-} from "@/data/category-options";
+import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { Button, Card, Flex, Form, Input, Modal, Table, Typography, message } from "antd";
+import { getSiteContent, updateSiteContent, uploadImage } from "@/services/api";
 
 const { Text, Title } = Typography;
+
+function getGalleryImages(item) {
+  if (!item) return [];
+
+  const images = Array.isArray(item.images) ? item.images : [];
+  return Array.from(new Set([item.url, ...images].filter((url) => typeof url === "string" && url.trim() !== "")));
+}
+
+function slugify(value) {
+  return (value || "")
+    .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\u0111/g, "d")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    || "gallery";
+}
+
+function buildUniqueSlug(title, items, currentId) {
+  const baseSlug = slugify(title);
+  const usedSlugs = new Set(
+    items
+      .filter((item) => `${item.id}` !== `${currentId || ""}`)
+      .map((item) => item.slug)
+      .filter(Boolean)
+  );
+
+  if (!usedSlugs.has(baseSlug)) return baseSlug;
+
+  let index = 2;
+  let nextSlug = `${baseSlug}-${index}`;
+  while (usedSlugs.has(nextSlug)) {
+    index += 1;
+    nextSlug = `${baseSlug}-${index}`;
+  }
+
+  return nextSlug;
+}
 
 export default function GalleryManager() {
   const [loading, setLoading] = useState(true);
@@ -19,10 +53,10 @@ export default function GalleryManager() {
   const [content, setContent] = useState({});
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("all");
   const [selectedId, setSelectedId] = useState(null);
   const [editingId, setEditingId] = useState(null);
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageUrls, setImageUrls] = useState([]);
+  const [uploading, setUploading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
   const deferredSearch = useDeferredValue(search);
@@ -51,11 +85,9 @@ export default function GalleryManager() {
     };
   }, []);
 
-  const categoryOptions = GALLERY_CATEGORY_FILTER_OPTIONS;
-
   const filteredData = data.filter((item) => {
     const keyword = deferredSearch.trim().toLowerCase();
-    const matchesSearch = keyword.length === 0 || [item.title, item.category, item.url].some((value) => value?.toLowerCase().includes(keyword));
+    const matchesSearch = keyword.length === 0 || [item.title, item.slug, item.url].some((value) => value?.toLowerCase().includes(keyword));
     return matchesSearch;
   });
 
@@ -63,33 +95,39 @@ export default function GalleryManager() {
     const current = filteredData.find((item) => item.id === selectedId) || filteredData[0] || null;
     if (!current) return null;
     if (isModalOpen && editingId === current.id) {
+      const modalImages = imageUrls.length > 0 ? imageUrls : getGalleryImages(current);
+
       return {
         ...current,
-        url: imageUrl || current.url,
+        url: modalImages[0] || current.url,
+        images: modalImages,
         title: form.getFieldValue("title") || current.title,
-        category: getGalleryCategoryLabel(form.getFieldValue("category") || current.category),
+        slug: buildUniqueSlug(form.getFieldValue("title") || current.title, data, current.id),
       };
     }
     return current;
-  }, [filteredData, selectedId, isModalOpen, editingId, imageUrl, form]);
+  }, [filteredData, selectedId, isModalOpen, editingId, imageUrls, form, data]);
 
-  const categoryCount = new Set(data.map((item) => item.category)).size;
+  const groupCount = data.length;
+  const totalImageCount = data.reduce((count, item) => count + getGalleryImages(item).length, 0);
+  const selectedItemImages = getGalleryImages(selectedItem);
 
   function openCreateModal() {
     form.resetFields();
-    form.setFieldsValue({ category: GALLERY_CATEGORY_OPTIONS[0].value });
     setEditingId(null);
-    setImageUrl("");
+    setImageUrls([]);
     setIsModalOpen(true);
   }
 
   function openEditModal(record) {
+    const images = getGalleryImages(record);
+
     form.setFieldsValue({
       ...record,
-      category: resolveGalleryCategoryValue(record.category),
+      url: images[0] || record.url,
     });
     setEditingId(record.id);
-    setImageUrl(record.url);
+    setImageUrls(images);
     setSelectedId(record.id);
     setIsModalOpen(true);
   }
@@ -97,21 +135,41 @@ export default function GalleryManager() {
   function closeModal() {
     setIsModalOpen(false);
     setEditingId(null);
-    setImageUrl("");
+    setImageUrls([]);
+    setUploading(false);
     form.resetFields();
   }
 
-  function handleUpload(event) {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  async function handleUpload(event) {
+    const input = event.currentTarget;
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
 
-    const reader = new FileReader();
-    reader.onload = (loadEvent) => {
-      const nextImage = loadEvent.target?.result || "";
-      setImageUrl(nextImage);
-      form.setFieldsValue({ url: nextImage });
-    };
-    reader.readAsDataURL(file);
+    try {
+      setUploading(true);
+      const uploadedImages = (await Promise.all(files.map((file) => uploadImage(file, "uploads/gallery"))))
+        .filter((url) => typeof url === "string" && url.trim() !== "");
+
+      if (uploadedImages.length === 0) {
+        message.error("Không upload được ảnh. Vui lòng thử lại với ảnh nhỏ hơn 10MB.");
+        return;
+      }
+
+      const nextImages = Array.from(new Set([...imageUrls, ...uploadedImages]));
+      setImageUrls(nextImages);
+      form.setFieldsValue({ url: nextImages[0] || "" });
+      message.success(`Đã upload ${uploadedImages.length} ảnh.`);
+    } finally {
+      setUploading(false);
+      if (input) input.value = "";
+    }
+  }
+
+  function removeImage(imageIndex) {
+    const nextImages = imageUrls.filter((_, index) => index !== imageIndex);
+
+    setImageUrls(nextImages);
+    form.setFieldsValue({ url: nextImages[0] || "" });
   }
 
   async function persist(nextData, nextSelectedId = nextData[0]?.id || null) {
@@ -150,11 +208,20 @@ export default function GalleryManager() {
   async function handleSave() {
     try {
       const values = await form.validateFields();
+      const nextImages = Array.from(new Set(imageUrls.filter(Boolean)));
+
+      if (nextImages.length === 0) {
+        message.error("Vui lòng chọn ít nhất một ảnh gallery.");
+        return;
+      }
+
       const nextRecord = {
         id: values.id || Date.now(),
         title: values.title,
-        category: getGalleryCategoryLabel(values.category),
-        url: values.url,
+        slug: buildUniqueSlug(values.title, data, values.id),
+        category: data.find((item) => `${item.id}` === `${values.id || ""}`)?.category || "Thư viện",
+        url: nextImages[0],
+        images: nextImages,
       };
 
       const nextData = values.id
@@ -176,11 +243,11 @@ export default function GalleryManager() {
       <div className="grid gap-3 md:grid-cols-3">
         <Card variant="none" className="rounded-2xl shadow-[0_4px_14px_rgba(15,23,42,0.05)] bg-white">
           <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">Tổng ảnh</div>
-          <div className="mt-2 text-2xl font-bold text-slate-900">{data.length}</div>
+          <div className="mt-2 text-2xl font-bold text-slate-900">{totalImageCount}</div>
         </Card>
         <Card bordered={false} className="rounded-2xl shadow-[0_4px_14px_rgba(15,23,42,0.05)] bg-white">
-          <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">Danh mục</div>
-          <div className="mt-2 text-2xl font-bold text-slate-900">{categoryCount}</div>
+          <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">Nhóm ảnh</div>
+          <div className="mt-2 text-2xl font-bold text-slate-900">{groupCount}</div>
         </Card>
         <Card variant="none" className="rounded-2xl bg-slate-900 text-white shadow-[0_6px_20px_rgba(7,27,47,0.14)]">
           <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-cyan-200">Hiển thị</div>
@@ -199,7 +266,7 @@ export default function GalleryManager() {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               prefix={<SearchOutlined className="text-slate-400" />}
-              placeholder="Tìm theo tiêu đề, danh mục..."
+              placeholder="Tìm theo tiêu đề, slug..."
               className="h-9 flex-1 rounded-xl bg-slate-50 border-none px-4"
             />
             {/* Category filter removed as requested */}
@@ -218,7 +285,20 @@ export default function GalleryManager() {
                 dataIndex: "url",
                 key: "url",
                 width: 100,
-                render: (value) => <Image src={value} alt="Gallery" width={64} height={42} className="rounded-xl object-cover ring-1 ring-slate-100 shadow-sm" />
+                render: (_, record) => {
+                  const recordImages = getGalleryImages(record);
+
+                  return (
+                    <div className="relative w-fit">
+                      <img src={recordImages[0]} alt="Gallery" className="h-[42px] w-16 rounded-xl object-cover shadow-sm ring-1 ring-slate-100" />
+                      {recordImages.length > 1 ? (
+                        <span className="absolute -right-2 -top-2 rounded-full bg-slate-900 px-1.5 py-0.5 text-[9px] font-bold text-white">
+                          {recordImages.length}
+                        </span>
+                      ) : null}
+                    </div>
+                  );
+                }
               },
               {
                 title: "Thông tin công trình",
@@ -228,7 +308,7 @@ export default function GalleryManager() {
                     <div className="text-sm font-bold text-slate-800">{record.title}</div>
                     <div className="mt-1 flex items-center gap-2">
                       <span className="h-1 w-1 rounded-full bg-blue-500"></span>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{record.category}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{record.slug || slugify(record.title)}</span>
                     </div>
                   </div>
                 )
@@ -255,7 +335,7 @@ export default function GalleryManager() {
               onClick={openCreateModal}
               className="h-9 rounded-xl bg-slate-900 px-6 text-[11px] font-bold uppercase tracking-[0.16em] text-white shadow-md hover:bg-blue-600"
             >
-              Thêm ảnh vào thư viện
+              Thêm nhiều ảnh vào thư viện
             </Button>
             <p className="mt-3 text-[10px] font-medium text-slate-400 uppercase tracking-widest">
               Nên dùng ảnh tỷ lệ 3:2 hoặc 16:9 để hiển thị tốt nhất
@@ -270,16 +350,25 @@ export default function GalleryManager() {
           {selectedItem ? (
             <div className="space-y-4">
               <div className="relative group overflow-hidden rounded-xl bg-slate-50 p-2 ring-1 ring-slate-100">
-                <Image src={selectedItem.url} alt={selectedItem.title} preview={true} className="h-[160px] w-full rounded-lg object-cover shadow-sm transition-transform duration-500 group-hover:scale-105" />
+                <img src={selectedItemImages[0] || selectedItem.url} alt={selectedItem.title} className="h-[160px] w-full rounded-lg object-cover shadow-sm transition-transform duration-500 group-hover:scale-105" />
               </div>
               <div>
                 <div className="inline-block rounded-lg bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                  {selectedItem.category}
+                  {selectedItem.slug || slugify(selectedItem.title)}
                 </div>
                 <Title level={5} className="!mt-3 !mb-1 !text-slate-900 !font-bold">{selectedItem.title}</Title>
+                {selectedItemImages.length > 1 ? (
+                  <div className="mt-3 grid grid-cols-4 gap-2">
+                    {selectedItemImages.slice(0, 8).map((imageUrl, imageIndex) => (
+                      <div key={`${imageUrl}-${imageIndex}`} className="aspect-[4/3] overflow-hidden rounded-lg bg-slate-100">
+                        <img src={imageUrl} alt={`${selectedItem.title} ${imageIndex + 1}`} className="h-full w-full object-cover" />
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
                 <div className="mt-3 rounded-xl bg-slate-50 p-3">
                   <p className="text-xs leading-relaxed text-slate-500 italic">
-                    "Hình ảnh này sẽ được đưa vào slider/gallery chính của website, thu hút khách hàng bằng chất lượng công trình thực tế."
+                    Hình ảnh này sẽ được đưa vào slider/gallery chính của website, thu hút khách hàng bằng chất lượng công trình thực tế.
                   </p>
                 </div>
               </div>
@@ -288,18 +377,44 @@ export default function GalleryManager() {
         </Card>
       </div>
 
-      <Modal title={editingId ? "Chỉnh sửa ảnh gallery" : "Thêm ảnh mới"} open={isModalOpen} onOk={handleSave} onCancel={closeModal} okText="Lưu ảnh" cancelText="Hủy" confirmLoading={saving}>
+      <Modal title={editingId ? "Chỉnh sửa nhóm ảnh gallery" : "Thêm nhóm ảnh mới"} open={isModalOpen} onOk={handleSave} onCancel={closeModal} okText="Lưu ảnh" cancelText="Hủy" confirmLoading={saving || uploading}>
         <Form form={form} layout="vertical" className="mt-5">
           <Form.Item name="id" hidden><Input /></Form.Item>
           <Form.Item name="title" label="Tiêu đề" rules={[{ required: true, message: "Vui lòng nhập tiêu đề ảnh." }]}><Input placeholder="Ví dụ: Tàu hàng 9.000T" /></Form.Item>
-          <Form.Item name="category" label="Danh mục" rules={[{ required: true, message: "Vui lòng chọn danh mục." }]}>
-            <Select options={GALLERY_CATEGORY_OPTIONS} />
+          <Form.Item shouldUpdate noStyle>
+            {() => (
+              <div className="mb-4 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs leading-6 text-slate-500">
+                Slug tự tạo: <span className="font-bold text-slate-800">{buildUniqueSlug(form.getFieldValue("title"), data, form.getFieldValue("id"))}</span>
+              </div>
+            )}
           </Form.Item>
-          <Form.Item label="Ảnh gallery">
-            <Input type="file" accept="image/*" onChange={handleUpload} className="rounded-xl" />
-            {imageUrl ? <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50"><Image preview={false} src={imageUrl} alt="Preview" className="h-[180px] w-full object-cover" /></div> : null}
+          <Form.Item label="Ảnh gallery" extra="Có thể chọn nhiều file ảnh cùng lúc; ảnh đầu tiên sẽ làm cover.">
+            <Input type="file" accept="image/*" multiple onChange={handleUpload} disabled={uploading} className="rounded-xl" />
+            {imageUrls.length > 0 ? (
+              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {imageUrls.map((imageUrl, imageIndex) => (
+                  <div key={`${imageUrl}-${imageIndex}`} className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+                    <img src={imageUrl} alt={`Preview ${imageIndex + 1}`} className="h-[120px] w-full object-cover" />
+                    <Button
+                      type="primary"
+                      danger
+                      size="small"
+                      shape="circle"
+                      icon={<DeleteOutlined />}
+                      onClick={() => removeImage(imageIndex)}
+                      className="absolute right-2 top-2 opacity-95"
+                    />
+                    {imageIndex === 0 ? (
+                      <span className="absolute bottom-2 left-2 rounded-full bg-slate-900/80 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white">
+                        Cover
+                      </span>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            ) : null}
           </Form.Item>
-          <Form.Item name="url" hidden rules={[{ required: true, message: "Vui lòng chọn ảnh." }]}><Input /></Form.Item>
+          <Form.Item name="url" hidden><Input /></Form.Item>
         </Form>
       </Modal>
     </div >

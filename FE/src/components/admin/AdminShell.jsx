@@ -261,7 +261,7 @@ export default function AdminShell({ children }) {
               </div>
             </Header>
 
-            <Content className="px-3 pb-6 pt-3 lg:px-4">
+            <Content className="px-3 pb-6 pt-5 lg:px-4">
               <div className="mx-auto w-full max-w-[1560px]">{children}</div>
             </Content>
           </Layout>

@@ -3,11 +3,39 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Maximize2, X } from "lucide-react";
-import { GALLERY_CATEGORY_OPTIONS, resolveGalleryCategoryValue } from "@/data/category-options";
 import { getSiteContent } from "@/services/api";
+
+function getGalleryImages(item) {
+  if (!item) return [];
+
+  const images = Array.isArray(item.images) ? item.images : [];
+  return Array.from(new Set([item.url, ...images].filter(Boolean)));
+}
+
+function slugify(value) {
+  return (value || "")
+    .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\u0111/g, "d")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    || "gallery";
+}
+
+function getGalleryCategory(item) {
+  const label = item?.category || "Thư viện";
+
+  return {
+    label,
+    value: item?.categorySlug || slugify(label),
+  };
+}
 
 export function Gallery() {
   const [selected, setSelected] = useState(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [images, setImages] = useState([]);
   const [activeCategory, setActiveCategory] = useState("all");
 
@@ -20,8 +48,19 @@ export function Gallery() {
     load();
   }, []);
 
-  const categories = GALLERY_CATEGORY_OPTIONS;
-  const filteredImages = images.filter((item) => (activeCategory === "all" ? true : resolveGalleryCategoryValue(item.category) === activeCategory));
+  const categories = Array.from(
+    images.reduce((map, item) => {
+      const category = getGalleryCategory(item);
+      if (!map.has(category.value)) {
+        map.set(category.value, category);
+      }
+      return map;
+    }, new Map()).values()
+  );
+  const filteredImages = images.filter((item) => (activeCategory === "all" ? true : getGalleryCategory(item).value === activeCategory));
+  const activeCategoryLabel = categories.find((category) => category.value === activeCategory)?.label || activeCategory;
+  const selectedImages = getGalleryImages(selected);
+  const selectedImageUrl = selectedImages[selectedImageIndex] || selected?.url;
 
   return (
     <section id="gallery" className="relative overflow-hidden bg-[#eef8ff] py-18 text-[#0f172a] md:py-24">
@@ -74,39 +113,52 @@ export function Gallery() {
         </div>
 
         <div className="mb-6 text-sm text-[#0f172a]/58">
-          Đang hiển thị {filteredImages.length} hình ảnh {activeCategory === "all" ? "từ toàn bộ nhà máy" : `thuộc nhóm ${activeCategory}`}.
+          Đang hiển thị {filteredImages.length} hình ảnh {activeCategory === "all" ? "từ toàn bộ nhà máy" : `thuộc nhóm ${activeCategoryLabel}`}.
         </div>
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
-          {filteredImages.map((img, index) => (
-            <motion.button
-              key={img.id || index}
-              initial={{ opacity: 0, scale: 0.97 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.04 }}
-              onClick={() => setSelected(img)}
-              className={`group relative aspect-[4/3] overflow-hidden rounded-[1.6rem] border border-white/80 bg-white/72 text-left shadow-[0_24px_80px_rgba(14,116,144,0.14)] backdrop-blur-xl ${
-                index === 0 ? "md:col-span-2 md:row-span-2" : ""
-              }`}
-            >
-              <img
-                src={img.url}
-                alt={img.title}
-                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,17,31,0.02),rgba(6,17,31,0.66))]" />
-              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5">
-                <div>
-                  <div className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100">{img.category}</div>
-                  <h3 className="mt-2 text-lg font-black leading-tight text-white md:text-xl">{img.title}</h3>
+          {filteredImages.map((img, index) => {
+            const itemImages = getGalleryImages(img);
+            const coverImage = itemImages[0] || img.url;
+
+            return (
+              <motion.button
+                key={img.id || index}
+                initial={{ opacity: 0, scale: 0.97 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.04 }}
+                onClick={() => {
+                  setSelected(img);
+                  setSelectedImageIndex(0);
+                }}
+                className={`group relative aspect-[4/3] overflow-hidden rounded-[1.6rem] border border-white/80 bg-white/72 text-left shadow-[0_24px_80px_rgba(14,116,144,0.14)] backdrop-blur-xl ${
+                  index === 0 ? "md:col-span-2 md:row-span-2" : ""
+                }`}
+              >
+                <img
+                  src={coverImage}
+                  alt={img.title}
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,17,31,0.02),rgba(6,17,31,0.66))]" />
+                {itemImages.length > 1 ? (
+                  <div className="absolute right-4 top-4 rounded-full border border-white/20 bg-[#020817]/58 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-white backdrop-blur-xl">
+                    {itemImages.length} ảnh
+                  </div>
+                ) : null}
+                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5">
+                  <div>
+                <div className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100">{getGalleryCategory(img).label}</div>
+                    <h3 className="mt-2 text-lg font-black leading-tight text-white md:text-xl">{img.title}</h3>
+                  </div>
+                  <div className="rounded-2xl border border-white/18 bg-white/14 p-2.5 text-white backdrop-blur-xl">
+                    <Maximize2 className="h-4 w-4" />
+                  </div>
                 </div>
-                <div className="rounded-2xl border border-white/18 bg-white/14 p-2.5 text-white backdrop-blur-xl">
-                  <Maximize2 className="h-4 w-4" />
-                </div>
-              </div>
-            </motion.button>
-          ))}
+              </motion.button>
+            );
+          })}
         </div>
       </div>
 
@@ -120,6 +172,11 @@ export function Gallery() {
             onClick={() => setSelected(null)}
           >
             <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                setSelected(null);
+              }}
               className="absolute right-6 top-6 rounded-full border border-white/15 bg-white/10 p-3 text-white backdrop-blur-xl"
               aria-label="Đóng hình ảnh"
             >
@@ -127,13 +184,29 @@ export function Gallery() {
             </button>
 
             <div className="flex h-full items-center justify-center">
-              <div className="grid w-full max-w-[1600px] gap-6 lg:grid-cols-[1.35fr_0.65fr]">
+              <div className="grid w-full max-w-[1600px] gap-6 lg:grid-cols-[1.35fr_0.65fr]" onClick={(event) => event.stopPropagation()}>
                 <div className="overflow-hidden rounded-[2rem] border border-white/12 bg-white/8 shadow-[0_30px_100px_rgba(0,0,0,0.35)] backdrop-blur-xl">
-                  <img src={selected.url} alt={selected.title} className="h-full max-h-[82vh] w-full object-cover" />
+                  <img src={selectedImageUrl} alt={selected.title} className="h-full max-h-[82vh] w-full object-cover" />
                 </div>
                 <div className="rounded-[2rem] border border-white/12 bg-white/10 p-8 text-white shadow-[0_30px_100px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
-                  <div className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-100">{selected.category}</div>
+                  <div className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-100">{getGalleryCategory(selected).label}</div>
                   <h3 className="mt-4 text-3xl font-black leading-tight">{selected.title}</h3>
+                  {selectedImages.length > 1 ? (
+                    <div className="mt-6 grid grid-cols-4 gap-2">
+                      {selectedImages.map((imageUrl, imageIndex) => (
+                        <button
+                          key={`${imageUrl}-${imageIndex}`}
+                          type="button"
+                          onClick={() => setSelectedImageIndex(imageIndex)}
+                          className={`aspect-[4/3] overflow-hidden rounded-xl border ${
+                            selectedImageIndex === imageIndex ? "border-cyan-200" : "border-white/12"
+                          }`}
+                        >
+                          <img src={imageUrl} alt={`${selected.title} ${imageIndex + 1}`} className="h-full w-full object-cover" />
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
                   <p className="mt-6 text-sm leading-7 text-white/70">
                     Không gian nhà máy, tiến độ thi công và sản phẩm thực tế được cập nhật nhằm phản ánh năng lực vận hành,
                     tổ chức sản xuất và mức độ hoàn thiện của các dự án trọng điểm.

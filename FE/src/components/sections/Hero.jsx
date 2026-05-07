@@ -92,10 +92,10 @@ export function Hero() {
               initial={{ opacity: 0, y: 28 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.18 }}
-              className="text-[2.6rem] font-black uppercase leading-[1.06] tracking-[-0.035em] text-white md:text-6xl xl:text-[5rem]"
+              className="text-[2rem] font-black uppercase leading-[1.06] tracking-[-0.035em] text-white md:text-6xl xl:text-[5rem]"
             >
               {hero?.titleLine1 || "Năng Lực Đóng Tàu"}
-              <span className="mt-2 block bg-[linear-gradient(130deg,#7dd3fc,#38bdf8,#0ea5e9)] bg-clip-text text-transparent leading-[1.12]">
+              <span className="mt-2 block bg-[linear-gradient(130deg,#7dd3fc,#38bdf8,#0ea5e9)] bg-clip-text text-transparent leading-[1.62]">
                 {hero?.titleLine2 || "Vươn Ra Biển Lớn"}
               </span>
             </motion.h1>

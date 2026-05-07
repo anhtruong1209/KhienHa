@@ -32,6 +32,8 @@ export const siteContent = {
     image: "https://khienha.vn/uploads/anh/367316468994953.jpg",
     certificateLabel: "ISO 9001:2015",
     certificateText: "He thong quan ly chat luong cho hoat dong dong moi va sua chua tau thuy.",
+    videoUrl: "",
+    videoUrls: [],
   },
   contact: {
     eyebrow: "Lien he",
@@ -69,9 +71,9 @@ export const siteContent = {
     { id: 2, title: "Su menh", content: "Mang den nhung cong trinh hang hai an toan, ben bi va hieu qua kinh te." },
   ],
   gallery: [
-    { id: 1, url: "https://khienha.vn/uploads/anh/79371608532527Tau 9000T.jpg", title: "Tau hang 9.000T", category: "Dong moi" },
-    { id: 2, url: "https://khienha.vn/uploads/anh/233516468994642.jpg", title: "Lap rap phan doan", category: "Thi cong" },
-    { id: 3, url: "https://khienha.vn/uploads/anh/367316468994953.jpg", title: "Khu trien tau ngoai bai", category: "Ha tang" },
+    { id: 1, url: "https://khienha.vn/uploads/anh/79371608532527Tau 9000T.jpg", title: "Tau hang 9.000T", slug: "tau-hang-9000t", category: "Dong moi", categorySlug: "dong-moi" },
+    { id: 2, url: "https://khienha.vn/uploads/anh/233516468994642.jpg", title: "Lap rap phan doan", slug: "lap-rap-phan-doan", category: "Thi cong", categorySlug: "thi-cong" },
+    { id: 3, url: "https://khienha.vn/uploads/anh/367316468994953.jpg", title: "Khu trien tau ngoai bai", slug: "khu-trien-tau-ngoai-bai", category: "Ha tang", categorySlug: "ha-tang" },
   ],
   banners: [
     "https://khienha.vn/uploads/anh/367316468994953.jpg",

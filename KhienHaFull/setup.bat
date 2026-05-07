@@ -48,8 +48,8 @@ if not exist "public\storage" (
     echo public\storage da ton tai.
 )
 
-echo [5/5] Dong bo migration va chay server...
-call php artisan migrate --force
+echo [5/5] Dong bo migration + seed du lieu mac dinh...
+call php artisan migrate --seed --force
 if errorlevel 1 goto :error
 
 if /I "%SKIP_SERVE%"=="1" (

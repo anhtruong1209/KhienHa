@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AdminContactMessageController;
+use App\Http\Controllers\Api\AdminMediaController;
 use App\Http\Controllers\Api\AdminNewsController;
 use App\Http\Controllers\Api\AdminSessionController;
 use App\Http\Controllers\Api\AdminSiteContentController;
@@ -44,6 +45,7 @@ Route::prefix('api/admin')->group(function (): void {
     Route::middleware('admin.session')->group(function (): void {
         Route::get('site-content', [AdminSiteContentController::class, 'show']);
         Route::put('site-content', [AdminSiteContentController::class, 'update']);
+        Route::post('media/image', [AdminMediaController::class, 'storeImage']);
         Route::apiResource('news', AdminNewsController::class);
         Route::get('contact-messages', [AdminContactMessageController::class, 'index']);
         Route::patch('contact-messages/{contactMessage}', [AdminContactMessageController::class, 'update']);

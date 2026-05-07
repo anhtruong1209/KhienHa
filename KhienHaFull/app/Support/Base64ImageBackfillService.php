@@ -64,6 +64,14 @@ class Base64ImageBackfillService
                     $item['url'] = $this->convertValue($item['url'], $converted, $unchanged);
                 }
 
+                if (isset($item['images']) && is_array($item['images'])) {
+                    $item['images'] = collect($item['images'])
+                        ->map(function ($image) use (&$converted, &$unchanged) {
+                            return $this->convertValue($image, $converted, $unchanged);
+                        })
+                        ->all();
+                }
+
                 return $item;
             })
             ->all();

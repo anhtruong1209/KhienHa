@@ -136,7 +136,7 @@ export default function QualityManager() {
                   src={processImage}
                   alt="Quy trình chất lượng"
                   preview={true}
-                  className="max-h-[380px] w-full rounded-xl object-contain shadow-sm"
+                  className="max-h-[200px] w-full rounded-xl object-contain shadow-sm"
                 />
                 <div className="absolute inset-x-0 bottom-5 flex justify-center opacity-0 transition-opacity group-hover:opacity-100">
                   <label className="flex h-9 cursor-pointer items-center gap-2 rounded-full bg-white/90 px-4 text-xs font-bold text-slate-900 shadow-lg backdrop-blur-md transition-all hover:bg-white hover:scale-105">

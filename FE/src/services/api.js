@@ -1,4 +1,4 @@
-import { normalizeGalleryCategory, normalizeNewsCategory } from "@/data/category-options";
+import { normalizeNewsCategory } from "@/data/category-options";
 import { newsData } from "@/data/news";
 import { siteContent as fallbackSiteContent } from "@/data/site-content";
 
@@ -19,6 +19,34 @@ function absoluteAssetUrl(value) {
   return `${API_BASE_URL}${value.startsWith("/") ? value : `/${value}`}`;
 }
 
+function slugify(value) {
+  return (value || "")
+    .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\u0111/g, "d")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    || "gallery";
+}
+
+function normalizeGalleryImages(item) {
+  const rawImages = Array.isArray(item?.images) ? item.images : [];
+  const images = [item?.url, ...rawImages].filter(Boolean).map(absoluteAssetUrl);
+
+  return Array.from(new Set(images));
+}
+
+function normalizeVideoUrls(about) {
+  const rawUrls = [
+    ...(Array.isArray(about?.videoUrls) ? about.videoUrls : []),
+    about?.videoUrl,
+  ];
+
+  return Array.from(new Set(rawUrls.map((url) => `${url || ""}`.trim()).filter(Boolean)));
+}
+
 function normalizeSiteContent(data) {
   const merged = {
     ...fallbackSiteContent,
@@ -31,16 +59,27 @@ function normalizeSiteContent(data) {
   };
 
   merged.banners = (merged.banners || []).map(absoluteAssetUrl);
+  merged.about.videoUrls = normalizeVideoUrls(merged.about);
+  merged.about.videoUrl = merged.about.videoUrls[0] || "";
   merged.about.image = absoluteAssetUrl(merged.about?.image);
   merged.capacity = (merged.capacity || []).map((item) => ({
     ...item,
     image: absoluteAssetUrl(item.image),
   }));
-  merged.gallery = (merged.gallery || []).map((item) => ({
-    ...item,
-    category: normalizeGalleryCategory(item.category),
-    url: absoluteAssetUrl(item.url),
-  }));
+  merged.gallery = (merged.gallery || []).map((item) => {
+    const images = normalizeGalleryImages(item);
+    const category = item.category || "Thư viện";
+    const slug = item.slug || slugify(item.title || category);
+
+    return {
+      ...item,
+      category,
+      slug,
+      categorySlug: item.categorySlug || slugify(category),
+      url: images[0] || absoluteAssetUrl(item.url),
+      images,
+    };
+  });
   merged.quality.image = absoluteAssetUrl(merged.quality?.image);
   merged.quality.mainImage = absoluteAssetUrl(merged.quality?.mainImage || merged.quality?.image);
 
@@ -151,6 +190,30 @@ export async function updateSiteContent(data) {
   } catch (error) {
     console.error(error);
     return false;
+  }
+}
+
+export async function uploadImage(file, directory = "uploads/gallery") {
+  try {
+    const formData = new FormData();
+    formData.append("image", file);
+    formData.append("directory", directory);
+
+    const res = await fetch(buildUrl("/api/admin/media/image"), {
+      method: "POST",
+      credentials: "same-origin",
+      body: formData,
+    });
+
+    if (!res.ok) {
+      throw new Error(`Upload failed: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return absoluteAssetUrl(data.url);
+  } catch (error) {
+    console.error(error);
+    return "";
   }
 }
 

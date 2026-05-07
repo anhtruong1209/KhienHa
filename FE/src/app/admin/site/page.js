@@ -1,17 +1,30 @@
 "use client";
 
 import React, { startTransition, useEffect, useState } from "react";
-import { SaveOutlined } from "@ant-design/icons";
+import { DeleteOutlined, PlusOutlined, SaveOutlined } from "@ant-design/icons";
 import { Button, Card, Form, Input, Tag, Typography, message } from "antd";
 import { getSiteContent, updateSiteContent } from "@/services/api";
 
 const { Text, Title } = Typography;
+
+function normalizeVideoUrls(about) {
+  const rawUrls = [
+    ...(Array.isArray(about?.videoUrls) ? about.videoUrls : []),
+    about?.videoUrl,
+  ];
+
+  return Array.from(new Set(rawUrls.map((url) => `${url || ""}`.trim()).filter(Boolean)));
+}
 
 export default function SiteContentManager() {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [content, setContent] = useState({});
+  const watchedVideoUrls = Form.useWatch("aboutVideoUrls", form);
+  const previewVideoUrls = Array.isArray(watchedVideoUrls)
+    ? watchedVideoUrls.map((url) => `${url || ""}`.trim()).filter(Boolean)
+    : normalizeVideoUrls(content?.about);
 
   useEffect(() => {
     let active = true;
@@ -32,7 +45,7 @@ export default function SiteContentManager() {
           aboutTitle: data?.about?.title,
           aboutHighlight: data?.about?.highlight,
           aboutDescription: data?.about?.description,
-          aboutVideoUrl: data?.about?.videoUrl,
+          aboutVideoUrls: normalizeVideoUrls(data?.about).length > 0 ? normalizeVideoUrls(data?.about) : [""],
           contactTitle: data?.contact?.title,
           contactDescription: data?.contact?.description,
           address: data?.contact?.address,
@@ -55,6 +68,7 @@ export default function SiteContentManager() {
     try {
       setSaving(true);
       const values = await form.validateFields();
+      const aboutVideoUrls = Array.from(new Set((values.aboutVideoUrls || []).map((url) => `${url || ""}`.trim()).filter(Boolean)));
 
       const payload = {
         ...content,
@@ -74,7 +88,8 @@ export default function SiteContentManager() {
           title: values.aboutTitle,
           highlight: values.aboutHighlight,
           description: values.aboutDescription,
-          videoUrl: values.aboutVideoUrl || "",
+          videoUrl: aboutVideoUrls[0] || "",
+          videoUrls: aboutVideoUrls,
           image: "",
         },
         contact: {
@@ -111,7 +126,7 @@ export default function SiteContentManager() {
       <Card variant="none" className="rounded-2xl shadow-[0_4px_14px_rgba(15,23,42,0.05)]">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <Text className="text-xs leading-6 text-slate-500">
-            Phần giới thiệu ngoài landing page đã chuyển sang layout không dùng ảnh, nên mục này chỉ còn tiêu đề, highlight và mô tả.
+            Phần giới thiệu ngoài landing page quản lý nội dung chữ và danh sách link video YouTube hiển thị dạng slider.
           </Text>
 
           <Button type="primary" icon={<SaveOutlined />} onClick={handleSave} loading={saving} className="h-9 rounded-xl px-4 font-semibold" style={{ flexShrink: 0 }}>
@@ -149,7 +164,7 @@ export default function SiteContentManager() {
 
           <Card loading={loading} title="Giới thiệu" variant="none" className="rounded-2xl shadow-[0_4px_14px_rgba(15,23,42,0.05)]">
             <div className="mb-4 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs leading-6 text-slate-500">
-              Section này không còn dùng ảnh giới thiệu. Bạn chỉ cần quản lý phần chữ để landing page hiển thị gọn hơn.
+              Section này dùng nội dung chữ và slider video. Thêm nhiều link YouTube nếu muốn khách xem nhiều video giới thiệu.
             </div>
 
             <div className="grid gap-4">
@@ -162,13 +177,34 @@ export default function SiteContentManager() {
               <Form.Item name="aboutDescription" label="Mô tả">
                 <Input.TextArea rows={6} />
               </Form.Item>
-              <Form.Item
-                name="aboutVideoUrl"
-                label="Link YouTube (tuỳ chọn)"
-                extra="Dán link YouTube vào đây để nhúng video trực tiếp trong phần Giới thiệu."
-              >
-                <Input placeholder="https://www.youtube.com/watch?v=..." />
-              </Form.Item>
+              <Form.List name="aboutVideoUrls" initialValue={[""]}>
+                {(fields, { add, remove }) => (
+                  <div className="space-y-3">
+                    {fields.map((field, index) => (
+                      <div key={field.key} className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_40px] sm:items-end">
+                        <Form.Item
+                          {...field}
+                          label={index === 0 ? "Link YouTube giới thiệu" : `Link video ${index + 1}`}
+                          className="!mb-0"
+                          rules={[{ type: "url", warningOnly: true, message: "Link video nên là một URL hợp lệ." }]}
+                        >
+                          <Input placeholder="https://www.youtube.com/watch?v=..." />
+                        </Form.Item>
+                        <Button
+                          aria-label="Xóa link video"
+                          icon={<DeleteOutlined />}
+                          disabled={fields.length === 1}
+                          onClick={() => remove(field.name)}
+                          className="h-10 rounded-xl"
+                        />
+                      </div>
+                    ))}
+                    <Button type="dashed" icon={<PlusOutlined />} onClick={() => add("")} className="h-10 rounded-xl">
+                      Thêm link video
+                    </Button>
+                  </div>
+                )}
+              </Form.List>
             </div>
           </Card>
 
@@ -233,8 +269,11 @@ export default function SiteContentManager() {
             <div className="mt-2 text-xs leading-6 text-slate-500">
               {form.getFieldValue("aboutDescription") || content?.about?.description || "Mô tả giới thiệu sẽ hiển thị ở đây."}
             </div>
+            <div className="mt-3 inline-flex rounded-full bg-cyan-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-700">
+              {previewVideoUrls.length} video
+            </div>
             <div className="mt-3 rounded-xl border border-dashed border-slate-200 bg-slate-50 px-3 py-2 text-xs leading-5 text-slate-500">
-              Khối giới thiệu ngoài landing page hiện chỉ dùng text và các card năng lực, không còn ảnh minh họa.
+              Landing page sẽ hiển thị các link video này dưới dạng slider trong phần Giới thiệu.
             </div>
           </Card>
 

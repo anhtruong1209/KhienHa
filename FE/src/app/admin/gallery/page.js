@@ -1,9 +1,9 @@
 "use client";
 
-import React, { startTransition, useDeferredValue, useEffect, useMemo, useState } from "react";
+import React, { startTransition, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { Button, Card, Flex, Form, Input, Modal, Table, Typography, message } from "antd";
-import { getSiteContent, updateSiteContent, uploadImage } from "@/services/api";
+import { getSiteContent, updateSiteContent } from "@/services/api";
 
 const { Text, Title } = Typography;
 
@@ -59,6 +59,7 @@ export default function GalleryManager() {
   const [uploading, setUploading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
+  const fileInputRef = useRef(null);
   const deferredSearch = useDeferredValue(search);
 
   useEffect(() => {
@@ -141,27 +142,53 @@ export default function GalleryManager() {
   }
 
   async function handleUpload(event) {
-    const input = event.currentTarget;
     const files = Array.from(event.target.files || []);
     if (files.length === 0) return;
 
     try {
       setUploading(true);
-      const uploadedImages = (await Promise.all(files.map((file) => uploadImage(file, "uploads/gallery"))))
-        .filter((url) => typeof url === "string" && url.trim() !== "");
+      const compressed = [];
+      for (const file of files) {
+        compressed.push(await compressImage(file));
+      }
+      const validImages = compressed.filter((url) => typeof url === "string" && url.trim() !== "");
 
-      if (uploadedImages.length === 0) {
-        message.error("Không upload được ảnh. Vui lòng thử lại với ảnh nhỏ hơn 10MB.");
+      if (validImages.length === 0) {
+        message.error("Không đọc được ảnh. Vui lòng thử lại.");
         return;
       }
 
-      const nextImages = Array.from(new Set([...imageUrls, ...uploadedImages]));
+      const nextImages = Array.from(new Set([...imageUrls, ...validImages]));
       setImageUrls(nextImages);
       form.setFieldsValue({ url: nextImages[0] || "" });
-      message.success(`Đã upload ${uploadedImages.length} ảnh.`);
+      message.success(`Đã thêm ${validImages.length} ảnh.`);
     } finally {
       setUploading(false);
-      if (input) input.value = "";
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }
+
+  async function compressImage(file, maxWidth = 1920, quality = 0.82) {
+    try {
+      const tempBitmap = await createImageBitmap(file);
+      let { width, height } = tempBitmap;
+      tempBitmap.close();
+
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width);
+        width = maxWidth;
+      }
+
+      const bitmap = await createImageBitmap(file, { resizeWidth: width, resizeHeight: height, resizeQuality: "medium" });
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext("2d").drawImage(bitmap, 0, 0);
+      bitmap.close();
+
+      return canvas.toDataURL("image/jpeg", quality);
+    } catch {
+      return "";
     }
   }
 
@@ -389,7 +416,7 @@ export default function GalleryManager() {
             )}
           </Form.Item>
           <Form.Item label="Ảnh gallery" extra="Có thể chọn nhiều file ảnh cùng lúc; ảnh đầu tiên sẽ làm cover.">
-            <Input type="file" accept="image/*" multiple onChange={handleUpload} disabled={uploading} className="rounded-xl" />
+            <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleUpload} disabled={uploading} className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm" />
             {imageUrls.length > 0 ? (
               <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {imageUrls.map((imageUrl, imageIndex) => (

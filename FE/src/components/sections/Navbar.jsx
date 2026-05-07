@@ -6,12 +6,12 @@ import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const menu = [
-  { label: "Trang chủ", href: "#hero" },
-  { label: "Giới thiệu", href: "#about" },
-  { label: "Năng lực", href: "#services" },
-  { label: "Chất lượng", href: "#quality" },
-  { label: "Tin tức", href: "#news" },
-  { label: "Liên hệ", href: "#contact" },
+  { label: "Trang chủ", href: "/#hero" },
+  { label: "Giới thiệu", href: "/#about" },
+  { label: "Năng lực", href: "/#services" },
+  { label: "Chất lượng", href: "/#quality" },
+  { label: "Tin tức", href: "/#news" },
+  { label: "Liên hệ", href: "/#contact" },
 ];
 
 export function Navbar() {
@@ -51,7 +51,7 @@ export function Navbar() {
               Đăng nhập
             </Button>
           </Link>
-          <a href="#contact">
+          <a href="/#contact">
             <Button className="hidden h-10 rounded-2xl bg-[#0f172a] px-5 font-black text-white shadow-[0_14px_40px_rgba(15,23,42,0.18)] hover:bg-primary sm:inline-flex">
               Liên hệ ngay
             </Button>

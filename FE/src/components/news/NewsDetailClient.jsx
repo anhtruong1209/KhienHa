@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowLeft, Calendar, Share2, Ship, User } from "lucide-react";
+import { ArrowLeft, Calendar, Check, Copy, Ship, User } from "lucide-react";
 import { Navbar } from "@/components/sections/Navbar";
 import { Button } from "@/components/ui/button";
 import { getNewsItem } from "@/services/api";
@@ -11,6 +11,14 @@ import { getNewsItem } from "@/services/api";
 export default function NewsDetailClient({ id }) {
   const [news, setNews] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
+
+  function copyUrl() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
 
   useEffect(() => {
     let active = true;
@@ -102,12 +110,28 @@ export default function NewsDetailClient({ id }) {
             <div className="whitespace-pre-line text-base leading-8 text-[#0f172a]/72">{news.content}</div>
 
             <div className="mt-10 flex flex-wrap items-center gap-3 border-t border-slate-100 pt-8">
-              <div className="text-[11px] font-black uppercase tracking-[0.22em] text-[#0f172a]/42">Chia se</div>
-              {[1, 2, 3].map((item) => (
-                <Button key={item} variant="outline" size="icon" className="rounded-2xl">
-                  <Share2 className="h-4 w-4" />
+              <div className="text-[11px] font-black uppercase tracking-[0.22em] text-[#0f172a]/42">Chia sẻ</div>
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-2xl"
+                title="Sao chép liên kết"
+                onClick={copyUrl}
+              >
+                {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+              </Button>
+              <a
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Chia sẻ Facebook"
+              >
+                <Button variant="outline" size="icon" className="rounded-2xl">
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                  </svg>
                 </Button>
-              ))}
+              </a>
             </div>
           </article>
         </motion.div>

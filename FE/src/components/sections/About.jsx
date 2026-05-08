@@ -48,6 +48,10 @@ function getAboutVideoItems(about) {
     .map((item, index) => ({ ...item, label: `Video ${index + 1}` }));
 }
 
+function getYouTubeThumbnailUrl(videoId) {
+  return `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+}
+
 function ensureYouTubeApi() {
   if (typeof window === "undefined") return Promise.resolve(null);
   if (window.YT?.Player) return Promise.resolve(window.YT);
@@ -95,6 +99,7 @@ export function About() {
   const [about, setAbout] = useState(null);
   const [capabilities, setCapabilities] = useState([]);
   const [youtubeState, setYoutubeState] = useState("idle");
+  const [youtubeTitles, setYoutubeTitles] = useState({});
   const [activeVideoIndex, setActiveVideoIndex] = useState(0);
   const iframeRef = useRef(null);
   const playerRef = useRef(null);
@@ -112,8 +117,18 @@ export function About() {
   const videoItems = getAboutVideoItems(about);
   const safeActiveVideoIndex = videoItems.length > 0 ? Math.min(activeVideoIndex, videoItems.length - 1) : 0;
   const activeVideo = videoItems[safeActiveVideoIndex] || null;
-  const videoEmbedUrl = activeVideo?.id ? buildYouTubeEmbedUrl(activeVideo.id) : null;
+  const activeVideoId = activeVideo?.id || "";
+  const videoEmbedUrl = activeVideoId ? buildYouTubeEmbedUrl(activeVideoId) : null;
+  const activeVideoTitle = (activeVideoId ? youtubeTitles[activeVideoId] : "") || activeVideo?.label || "Video giới thiệu Khiên Hà";
+  const activeVideoThumbnailUrl = activeVideoId ? getYouTubeThumbnailUrl(activeVideoId) : null;
   const shouldShieldVideo = Boolean(videoEmbedUrl) && youtubeState !== "playing";
+
+  function rememberYouTubeTitle(player, videoId) {
+    const title = `${player?.getVideoData?.()?.title || ""}`.trim();
+    if (!title || !videoId) return;
+
+    setYoutubeTitles((current) => (current[videoId] === title ? current : { ...current, [videoId]: title }));
+  }
 
   useEffect(() => {
     if (!videoEmbedUrl || !iframeRef.current) return;
@@ -129,8 +144,12 @@ export function About() {
       player = new YT.Player(iframeRef.current, {
         events: {
           onReady: () => {
+            rememberYouTubeTitle(player, activeVideoId);
+
             progressTimerRef.current = setInterval(() => {
               if (!playerRef.current?.getDuration || !playerRef.current?.getCurrentTime) return;
+
+              rememberYouTubeTitle(playerRef.current, activeVideoId);
 
               const duration = Number(playerRef.current.getDuration()) || 0;
               const currentTime = Number(playerRef.current.getCurrentTime()) || 0;
@@ -144,6 +163,8 @@ export function About() {
             }, 350);
           },
           onStateChange: (event) => {
+            rememberYouTubeTitle(playerRef.current, activeVideoId);
+
             if (event.data === YT.PlayerState.PLAYING || event.data === YT.PlayerState.BUFFERING) {
               setYoutubeState("playing");
               return;
@@ -172,7 +193,7 @@ export function About() {
         playerRef.current = null;
       }
     };
-  }, [videoEmbedUrl]);
+  }, [videoEmbedUrl, activeVideoId]);
 
   function selectVideo(index) {
     clearInterval(progressTimerRef.current);
@@ -282,31 +303,40 @@ export function About() {
                     key={activeVideo.id}
                     ref={iframeRef}
                     src={videoEmbedUrl}
-                    title={`${activeVideo.label} giới thiệu Khiên Hà`}
+                    title={activeVideoTitle}
                     className="h-full w-full pointer-events-none"
                     loading="lazy"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     referrerPolicy="strict-origin-when-cross-origin"
                   />
-                  {/* Block YouTube "More videos" overlay at bottom-right */}
-                  <div className="absolute bottom-0 right-0 z-10 h-14 w-200 bg-slate-950" />
+                  <div aria-hidden="true" className="absolute inset-x-0 top-0 z-10 h-20 bg-transparent" />
+                  <div aria-hidden="true" className="absolute bottom-0 right-0 z-10 h-20 w-56 bg-transparent" />
                   {shouldShieldVideo ? (
-                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#020817]/92 px-6 text-center">
-                      <button
-                        type="button"
-                        onClick={handleResumeVideo}
-                        className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/12 px-5 py-3 text-sm font-black uppercase tracking-[0.16em] text-white shadow-[0_18px_55px_rgba(0,0,0,0.3)] backdrop-blur-xl transition-colors hover:bg-white/18"
-                      >
-                        <Play className="h-4 w-4 fill-current" />
-                        {youtubeState === "ended" ? "Phát lại video" : youtubeState === "paused" ? "Tiếp tục xem" : "Phát video"}
-                      </button>
+                    <div className="absolute inset-0 z-20 overflow-hidden bg-[#020817]">
+                      {activeVideoThumbnailUrl ? (
+                        <div
+                          className="absolute inset-0 bg-cover bg-center opacity-70"
+                          style={{ backgroundImage: `url(${activeVideoThumbnailUrl})` }}
+                        />
+                      ) : null}
+                      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,8,23,0.16),rgba(2,8,23,0.84))]" />
+                      <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
+                        <button
+                          type="button"
+                          onClick={handleResumeVideo}
+                          className="inline-flex items-center gap-3 rounded-full border border-white/20 bg-white px-5 py-3 text-sm font-black uppercase tracking-[0.16em] text-[#071b2f] shadow-[0_18px_55px_rgba(0,0,0,0.34)] transition-transform hover:scale-[1.02]"
+                        >
+                          <Play className="h-4 w-4 fill-current" />
+                          {youtubeState === "ended" ? "Phát lại video" : youtubeState === "paused" ? "Tiếp tục xem" : "Phát video"}
+                        </button>
+                      </div>
                     </div>
                   ) : null}
                   {youtubeState === "playing" ? (
                     <button
                       type="button"
                       onClick={handlePauseVideo}
-                      className="absolute bottom-4 left-4 z-10 inline-flex items-center gap-2 rounded-full border border-white/15 bg-[#020817]/70 px-4 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-white shadow-[0_12px_34px_rgba(0,0,0,0.28)] backdrop-blur-xl transition-colors hover:bg-[#020817]/86"
+                      className="absolute bottom-4 left-4 z-20 inline-flex items-center gap-2 rounded-full border border-white/15 bg-[#020817]/70 px-4 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-white shadow-[0_12px_34px_rgba(0,0,0,0.28)] backdrop-blur-xl transition-colors hover:bg-[#020817]/86"
                     >
                       <Pause className="h-3.5 w-3.5 fill-current" />
                       Tạm dừng
@@ -319,6 +349,20 @@ export function About() {
                 </div>
               )}
             </div>
+
+            {activeVideo ? (
+              <div className="mt-3 flex flex-col gap-2 rounded-[1.25rem] border border-white/10 bg-white/[0.06] px-4 py-3 text-white sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <div className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/70">Tên video</div>
+                  <h3 className="mt-1 overflow-hidden break-words text-sm font-black leading-6 text-white [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] sm:text-base">{activeVideoTitle}</h3>
+                </div>
+                {videoItems.length > 1 ? (
+                  <span className="shrink-0 rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-white/72">
+                    {activeVideo.label}
+                  </span>
+                ) : null}
+              </div>
+            ) : null}
 
             {videoItems.length > 1 ? (
               <div className="mt-3 grid grid-cols-[40px_minmax(0,1fr)_40px] items-center gap-2">
@@ -336,6 +380,7 @@ export function About() {
                       key={`${item.id}-${index}`}
                       type="button"
                       onClick={() => selectVideo(index)}
+                      title={youtubeTitles[item.id] || item.label}
                       className={`h-10 shrink-0 rounded-full border px-4 text-[10px] font-black uppercase tracking-[0.16em] transition-colors ${index === safeActiveVideoIndex
                           ? "border-cyan-200 bg-cyan-200 text-[#071b2f]"
                           : "border-white/10 bg-white/8 text-white/72 hover:bg-white/15 hover:text-white"

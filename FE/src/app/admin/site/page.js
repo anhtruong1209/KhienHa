@@ -273,7 +273,7 @@ export default function SiteContentManager() {
               {previewVideoUrls.length} video
             </div>
             <div className="mt-3 rounded-xl border border-dashed border-slate-200 bg-slate-50 px-3 py-2 text-xs leading-5 text-slate-500">
-              Landing page sẽ hiển thị các link video này dưới dạng slider trong phần Giới thiệu.
+              Landing page sẽ hiển thị các link video này dưới dạng slider. Tên video được lấy tự động từ YouTube và đưa xuống dưới khung phát.
             </div>
           </Card>
 

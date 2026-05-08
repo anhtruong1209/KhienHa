@@ -53,6 +53,7 @@ class AdminSiteContentController extends Controller
 
         $payload['about']['videoUrls'] = $aboutVideoUrls;
         $payload['about']['videoUrl'] = $aboutVideoUrls[0] ?? '';
+        unset($payload['about']['videoTitles']);
         $payload['about']['image'] = MediaAssetService::persistImage(
             data_get($payload, 'about.image'),
             'uploads/about'
